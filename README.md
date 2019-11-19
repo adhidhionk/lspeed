@@ -35,7 +35,6 @@ You only need a rooted Android device to function properly.
 
 <div align="center">
 **Module with prebuilt manager**
-https://github.com/Magisk-Modules-Repo/lspeed/blob/master/screenshots/1.png
 <img src="https://github.com/Magisk-Modules-Repo/lspeed/blob/master/screenshots/1.png" width="192" height="317"/> <img src="https://github.com/Magisk-Modules-Repo/lspeed/blob/master/screenshots/2.png" width="192" height="317"/> <img src="https://github.com/Magisk-Modules-Repo/lspeed/blob/master/screenshots/3.png" width="192" height="317"/> <img src="https://github.com/Magisk-Modules-Repo/lspeed/blob/master/screenshots/4.png" width="192" height="317"/>
 </div>
 
