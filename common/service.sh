@@ -2758,7 +2758,7 @@ diskSize=$((memTotal*1024*1024/3))
 if [ "$1" == "1" ]; then 
 	sendToLog "$date Activating zRam optimization";
 
-	for i in /dev/block/zram* | grep -Eo '[0-9]+$'; do
+	for i in $(ls -d /dev/block/zram* | grep -Eo '[0-9]+$'); do
 		if [ -e /dev/block/zram"$i" ]; then
 			write /sys/class/zram-control/hot_remove "$i"
 			write /sys/block/zram"$i"/reset "1"
@@ -2778,7 +2778,7 @@ if [ "$1" == "1" ]; then
 elif [ "$1" == "0" ]; then
 	sendToLog "$date Disabling zRam optimization";
 
-	for i in /dev/block/zram* | grep -Eo '[0-9]+$'; do
+	for i in $(ls -d /dev/block/zram* | grep -Eo '[0-9]+$'); do
 		if [ -e /dev/block/zram"$i" ]; then
 			write /sys/class/zram-control/hot_remove "$i"
 			write /sys/block/zram"$i"/reset "1"
