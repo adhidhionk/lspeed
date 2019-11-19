@@ -29,7 +29,7 @@
 **REQUIRES ROOT!!!**
 
 **What is L Speed:**
-- L Speed is a modification that combines tweaks inside an intuitive module, Its goal is to improve overall performance, reduce significant lags, extend battery life and improve your gaming experience on Android.
+- L Speed is a modification that combines tweaks inside an intuitive module, Its goal is to improve overall performance, reduce significant lags, extend battery life and improve your experience on Android. Fully customizable module with prebuit manager.
 The mod will and should work on any device that meets its minimum requirement.
 You only need a rooted Android device to function properly.
 
