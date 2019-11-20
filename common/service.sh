@@ -1,8 +1,8 @@
 #!/system/bin/sh
 # L Speed tweak
 # Codename : lspeed
-version="v1.0-RC2";
-date=19-11-2019;
+version="v1.0-RC3";
+date=20-11-2019;
 # Developer : Paget96
 # Paypal : https://paypal.me/Paget96
 
@@ -16,8 +16,6 @@ date=19-11-2019;
 #
 # To check if mod working go to /data/lspeed/logs/main_log.log
 # that's main output after executing service.sh
-#
-#
 #
 
 # Variables
@@ -951,6 +949,23 @@ elif [ -d "/sys/kernel/gpu" ]; then
 	gpu="/sys/kernel/gpu"
 fi
 
+if [ $memTotal -lt 3072 ]; then
+setprop ro.hwui.texture_cache_size $((memTotal*10/100/2));
+setprop ro.hwui.layer_cache_size $((memTotal*5/100/2));
+setprop ro.hwui.path_cache_size $((memTotal*2/100/2));
+setprop ro.hwui.r_buffer_cache_size $((memTotal/100/2));
+setprop ro.hwui.drop_shadow_cache_size $((memTotal/100/2));
+setprop ro.hwui.texture_cache_flushrate=0.3
+else 
+setprop ro.hwui.texture_cache_size $((memTotal*10/100));
+setprop ro.hwui.layer_cache_size $((memTotal*5/100));
+setprop ro.hwui.path_cache_size $((memTotal*2/100));
+setprop ro.hwui.r_buffer_cache_size $((memTotal/100));
+setprop ro.hwui.drop_shadow_cache_size $((memTotal/100));
+setprop ro.hwui.texture_cache_flushrate=0.3
+fi
+sendToLog "$date Optimized GPU caches";
+
 if [ -e /proc/gpufreq/gpufreq_limited_thermal_ignore ]; then
 echo "1" > /proc/gpufreq/gpufreq_limited_thermal_ignore
 echo "$date Disabled gpufreq thermal" >> $LOG;
@@ -1051,6 +1066,23 @@ elif [ -d "/sys/kernel/gpu" ]; then
 	gpu="/sys/kernel/gpu"
 fi
 
+if [ $memTotal -lt 3072 ]; then
+setprop ro.hwui.texture_cache_size $((memTotal*10/100/2));
+setprop ro.hwui.layer_cache_size $((memTotal*5/100/2));
+setprop ro.hwui.path_cache_size $((memTotal*2/100/2));
+setprop ro.hwui.r_buffer_cache_size $((memTotal/100/2));
+setprop ro.hwui.drop_shadow_cache_size $((memTotal/100/2));
+setprop ro.hwui.texture_cache_flushrate=0.3
+else 
+setprop ro.hwui.texture_cache_size $((memTotal*10/100));
+setprop ro.hwui.layer_cache_size $((memTotal*5/100));
+setprop ro.hwui.path_cache_size $((memTotal*2/100));
+setprop ro.hwui.r_buffer_cache_size $((memTotal/100));
+setprop ro.hwui.drop_shadow_cache_size $((memTotal/100));
+setprop ro.hwui.texture_cache_flushrate=0.3
+fi
+sendToLog "$date Optimized GPU caches";
+
 if [ -e /proc/gpufreq/gpufreq_limited_thermal_ignore ]; then
 echo "1" > /proc/gpufreq/gpufreq_limited_thermal_ignore
 echo "$date Disabled gpufreq thermal" >> $LOG;
@@ -1150,6 +1182,23 @@ elif [ -d "/sys/class/misc/mali0" ]; then
 elif [ -d "/sys/kernel/gpu" ]; then
 	gpu="/sys/kernel/gpu"
 fi
+
+if [ $memTotal -lt 3072 ]; then
+setprop ro.hwui.texture_cache_size $((memTotal*10/100/2));
+setprop ro.hwui.layer_cache_size $((memTotal*5/100/2));
+setprop ro.hwui.path_cache_size $((memTotal*2/100/2));
+setprop ro.hwui.r_buffer_cache_size $((memTotal/100/2));
+setprop ro.hwui.drop_shadow_cache_size $((memTotal/100/2));
+setprop ro.hwui.texture_cache_flushrate=0.3
+else 
+setprop ro.hwui.texture_cache_size $((memTotal*10/100));
+setprop ro.hwui.layer_cache_size $((memTotal*5/100));
+setprop ro.hwui.path_cache_size $((memTotal*2/100));
+setprop ro.hwui.r_buffer_cache_size $((memTotal/100));
+setprop ro.hwui.drop_shadow_cache_size $((memTotal/100));
+setprop ro.hwui.texture_cache_flushrate=0.3
+fi
+sendToLog "$date Optimized GPU caches";
 
 if [ -e /proc/gpufreq/gpufreq_limited_thermal_ignore ]; then
 echo "1" > /proc/gpufreq/gpufreq_limited_thermal_ignore
@@ -1267,6 +1316,69 @@ done
 echo "$date I/O Stats disabled" >> $LOG;
 }
 
+sdTweak() {
+
+# Storage blocks eMMC
+DEV_MMCBLK0="/dev/block/mmcblk0";
+MMCBLK0="/sys/block/mmcblk0";
+MMCBLK0_READ_AHEAD_KB="$MMCBLK0/queue/read_ahead_kb";
+DEV_MMCBLK1="/dev/block/mmcblk1";
+MMCBLK1="/sys/block/mmcblk1";
+MMCBLK1_READ_AHEAD_KB="$MMCBLK1/queue/read_ahead_kb";
+
+# Storage blocks UFS
+SDA="/sys/block/sda";
+
+sendToLog "$date Activating SD speed tweak";
+
+if [ -e $SDA ] && [ -e $MMCBLK0 ]; then
+
+	external_totalSize=$(blockdev --getsize64 $DEV_MMCBLK0);
+
+	if [ "$external_totalSize" -lt 8589934592 ]; then
+		extReadAhead="256";
+	elif [ "$external_totalSize" -ge 8589934592 ] && [ "$external_totalSize" -lt 17179869184 ]; then
+		extReadAhead="512";
+	elif [ "$external_totalSize" -ge 17179869184 ] && [ "$external_totalSize" -lt 34359738368 ]; then
+		extReadAhead="1024";
+	elif [ "$external_totalSize" -ge 34359738368 ]; then
+		extReadAhead="2048";
+	else
+		extReadAhead="256";
+	fi
+
+	sendToLog "$date Your SD Card size is: $((external_totalSize/1024/1024/1024))kb";
+	sendToLog "$date Read Ahead based on SD Card size: $((extReadAhead))kb";
+	write $MMCBLK0_READ_AHEAD_KB $extReadAhead;
+	sendToLog "$date SD speed tweak is activated";
+
+elif [ -e $SDA ] && [ -e $MMCBLK1 ]; then
+
+	external_totalSize=$(blockdev --getsize64 $DEV_MMCBLK1);
+
+	if [ "$external_totalSize" -lt 8589934592 ]; then
+		extReadAhead="256";
+	elif [ "$external_totalSize" -ge 8589934592 ] && [ "$external_totalSize" -lt 17179869184 ]; then
+		extReadAhead="512";
+	elif [ "$external_totalSize" -ge 17179869184 ] && [ "$external_totalSize" -lt 34359738368 ]; then
+		extReadAhead="1024";
+	elif [ "$external_totalSize" -ge 34359738368 ]; then
+		extReadAhead="2048";
+	else
+		extReadAhead="256";
+	fi
+
+	sendToLog "$date Your SD Card size is: $((external_totalSize/1024/1024/1024))kb";
+	sendToLog "$date Read Ahead based on SD Card size: $((extReadAhead))kb";
+	write $MMCBLK1_READ_AHEAD_KB $extReadAhead;
+	sendToLog "$date SD speed tweak is activated";
+
+else
+	sendToLog "$date SD card not available or not supported...";
+
+fi
+}
+ 
 ioBlocksOptimizationBalanced() {
 echo "$date Activating balanced I/O blocks optimization..." >> $LOG;
 
@@ -2790,6 +2902,44 @@ elif [ "$1" == "0" ]; then
 fi
 }
 
+heapOptimization() {
+
+heapSize=$((memTotal*3/16));
+
+#if [ "$heapSize" -gt "512" ]; then
+#	heapSize=512;
+#fi
+
+heapGrowthLimit=$((heapSize*5/11));
+
+sendToLog "$date Activating heap optimization";
+
+# The ideal ratio of live to free memory. Is clamped to have a value between 0.2 and 0.9.
+# This limit the managed hepSize to heapsize*heaptargetutilization
+setprop dalvik.vm.heaptargetutilization 0.85
+sendToLog "$date heapTargetUtilization=0.85";
+
+# This is the heap size that Dalvik/ART assigns to every new ‘large’ App.
+# Large Apps are the ones that include the ‘android:largeHeap’ option in their manifest.
+# Note that many apps abuse this option, in an effort to increase their performance.
+setprop dalvik.vm.heapsize "$((heapSize))m"
+sendToLog "$date heapSize=$((heapSize))m";
+
+# This is the heap size that is assigned to standard Apps.
+# This should typically be no more than half the dalvik.vm.heapsize value.
+setprop dalvik.vm.heapgrowthlimit "$((heapGrowthLimit))m"
+sendToLog "$date heapgrowthlimit=$((heapGrowthLimit))m";
+
+# Forces the free memory to never be larger than the given value.
+setprop dalvik.vm.heapmaxfree 8m
+sendToLog "$date heapmaxfree=8m";
+
+# Forces the free memory to never be smaller than the given value.
+setprop dalvik.vm.heapminfree 2m
+sendToLog "$date heapminfree=2m";
+
+sendToLog "$date Heap optimization activated";
+}
 
 #
 # Profile presets
@@ -3111,9 +3261,9 @@ fi
 #	partitionRemount;
 #fi
 
-#if [ `cat $USER_PROFILE/sd_tweak` -eq 1 ]; then
-#	partitionRemount;
-#fi
+if [ `cat $USER_PROFILE/sd_tweak` -eq 1 ]; then
+	sdTweak;
+fi
 
 #
 # LNET tweaks section
@@ -3202,9 +3352,9 @@ elif [ `cat $USER_PROFILE/virtual_memory` -eq 3 ]; then
 	virtualMemoryTweaksPerformance;
 fi
 
-#if [ `cat $USER_PROFILE/heap_optimization` -eq 1 ]; then
-#	disableMultitaskingLimitations;
-#fi
+if [ `cat $USER_PROFILE/heap_optimization` -eq 1 ]; then
+	heapOptimization;
+fi
 
 if [ `cat $USER_PROFILE/zram_optimization` -eq 0 ]; then
 	zramOptimization 0;

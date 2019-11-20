@@ -132,6 +132,7 @@ $LATESTARTSERVICE && cp -af $TMPDIR/service.sh $MODPATH/service.sh
 
 # Handle replace folders
 for TARGET in $REPLACE; do
+ui_print "$TARGET $REPLACE $MODPATH"
   mktouch $MODPATH$TARGET/.replace
 done
 
