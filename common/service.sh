@@ -1,7 +1,7 @@
 #!/system/bin/sh
 # L Speed tweak
 # Codename : lspeed
-version="v1.0-RC3";
+version="v1.0-RC4";
 date=21-11-2019;
 # Developer : Paget96
 # Paypal : https://paypal.me/Paget96
@@ -122,7 +122,6 @@ if [ -d $USER_PROFILE ]; then
 	createFile $USER_PROFILE/disable_io_stats
 	createFile $USER_PROFILE/io_blocks_optimization
 	createFile $USER_PROFILE/io_extended_queue
-	createFile $USER_PROFILE/partition_remount
 	createFile $USER_PROFILE/scheduler_tuner
 	createFile $USER_PROFILE/sd_tweak
 
@@ -155,317 +154,295 @@ fi;
 batteryImprovements() {
 sendToLog "$date Activating battery improvements...";
 
-# Disabling ksm
-if [ -e "/sys/kernel/mm/ksm/run" ]; then
-chmod 0644 /sys/kernel/mm/ksm/run
-write /sys/kernel/mm/ksm/run "0";
-sendToLog "$date KSM is disabled, saving battery cycles and improving battery life...";
-fi;
+	# Disabling ksm
+	if [ -e "/sys/kernel/mm/ksm/run" ]; then
+		chmod 0644 /sys/kernel/mm/ksm/run
+		write /sys/kernel/mm/ksm/run "0";
+		sendToLog "$date KSM is disabled, saving battery cycles and improving battery life...";
+	fi;
 
-# Disabling uksm
-if [ -e "/sys/kernel/mm/uksm/run" ]; then
-chmod 0644 /sys/kernel/mm/uksm/run
-write /sys/kernel/mm/uksm/run "0"
-sendToLog "$date UKSM is disabled, saving battery cycles and improving battery life...";
-fi;
+	# Disabling uksm
+	if [ -e "/sys/kernel/mm/uksm/run" ]; then
+		chmod 0644 /sys/kernel/mm/uksm/run
+		write /sys/kernel/mm/uksm/run "0"
+		sendToLog "$date UKSM is disabled, saving battery cycles and improving battery life...";
+	fi;
 
-# Kernel sleepers
-if [ -e "/sys/kernel/sched/gentle_fair_sleepers" ]; then
-write /sys/kernel/sched/gentle_fair_sleepers "0"
-sendToLog "$date Gentle fair sleepers disabled...";
-fi;
+	# Kernel sleepers
+	if [ -e "/sys/kernel/sched/gentle_fair_sleepers" ]; then
+		write /sys/kernel/sched/gentle_fair_sleepers "0"
+		sendToLog "$date Gentle fair sleepers disabled...";
+	fi;
 
-if [ -e "/sys/kernel/sched/arch_power" ]; then
-write /sys/kernel/sched/arch_power "1"
-sendToLog "$date Arch power enabled...";
-fi;
+	if [ -e "/sys/kernel/sched/arch_power" ]; then
+		write /sys/kernel/sched/arch_power "1"
+		sendToLog "$date Arch power enabled...";
+	fi;
 
-if [ -e "/sys/kernel/debug/sched_features" ]; then
+	if [ -e "/sys/kernel/debug/sched_features" ]; then
+		# Only give sleepers 50% of their service deficit. This allows
+		# them to run sooner, but does not allow tons of sleepers to
+		# rip the spread apart.
+		write /sys/kernel/debug/sched_features "NO_GENTLE_FAIR_SLEEPERS"
+		sendToLog "$date GENTLE_FAIR_SLEEPERS disabled...";
 
-# Only give sleepers 50% of their service deficit. This allows
-# them to run sooner, but does not allow tons of sleepers to
-# rip the spread apart.
-write /sys/kernel/debug/sched_features "NO_GENTLE_FAIR_SLEEPERS"
-sendToLog "$date GENTLE_FAIR_SLEEPERS disabled...";
+		write /sys/kernel/debug/sched_features "ARCH_POWER"
+		sendToLog "$date ARCH_POWER enabled...";
+	fi;
 
-write /sys/kernel/debug/sched_features "ARCH_POWER"
-sendToLog "$date ARCH_POWER enabled...";
-fi;
+	# Enable fast charging
+	if [ -e "/sys/kernel/fast_charge/force_fast_charge" ];  then
+		chmod 0644 /sys/kernel/fast_charge/force_fast_charge
+		write /sys/kernel/fast_charge/force_fast_charge "1"
+		sendToLog "$date Fast charge enabled";
+	fi;
 
-# Enable fast charging
-if [ -e "/sys/kernel/fast_charge/force_fast_charge" ];  then
-chmod 0644 /sys/kernel/fast_charge/force_fast_charge
-write /sys/kernel/fast_charge/force_fast_charge "1"
-sendToLog "$date Fast charge enabled";
-fi;
+	resetprop ro.audio.flinger_standbytime_ms 300
+	sendToLog "$date Set low audio flinger standby delay to 300ms for reducing power consumption";
 
-resetprop ro.audio.flinger_standbytime_ms 300
-sendToLog "$date Set low audio flinger standby delay to 300ms for reducing power consumption";
+	for i in $(ls /sys/class/scsi_disk); do
+		write /sys/class/scsi_disk/"$i"/cache_type "temporary none"
+		sendToLog "$date Set cache type to temporary none in $i";
+	done
 
-for i in $(ls /sys/class/scsi_disk); do
-write /sys/class/scsi_disk/"$i"/cache_type "temporary none"
-sendToLog "$date Set cache type to temporary none in $i";
-done
+	if [ -e /sys/module/wakeup/parameters/enable_bluetooth_timer ]; then
+		write /sys/module/wakeup/parameters/enable_bluetooth_timer "Y"
+		write /sys/module/wakeup/parameters/enable_ipa_ws "N"
+		write /sys/module/wakeup/parameters/enable_netlink_ws "Y"
+		write /sys/module/wakeup/parameters/enable_netmgr_wl_ws "Y"
+		write /sys/module/wakeup/parameters/enable_qcom_rx_wakelock_ws "N"
+		write /sys/module/wakeup/parameters/enable_timerfd_ws "Y"
+		write /sys/module/wakeup/parameters/enable_wlan_extscan_wl_ws "N"
+		write /sys/module/wakeup/parameters/enable_wlan_wow_wl_ws "N"
+		write /sys/module/wakeup/parameters/enable_wlan_ws "N"
+		write /sys/module/wakeup/parameters/enable_netmgr_wl_ws "N"
+		write /sys/module/wakeup/parameters/enable_wlan_wow_wl_ws "N"
+		write /sys/module/wakeup/parameters/enable_wlan_ipa_ws "N"
+		write /sys/module/wakeup/parameters/enable_wlan_pno_wl_ws "N"
+		write > /sys/module/wakeup/parameters/enable_wcnss_filter_lock_ws "N"
+		sendToLog "$date Blocked various wakelocks";
+	fi;
 
-if [ -e /sys/module/wakeup/parameters/enable_bluetooth_timer ]; then
-write /sys/module/wakeup/parameters/enable_bluetooth_timer "Y"
-write /sys/module/wakeup/parameters/enable_ipa_ws "N"
-write /sys/module/wakeup/parameters/enable_netlink_ws "Y"
-write /sys/module/wakeup/parameters/enable_netmgr_wl_ws "Y"
-write /sys/module/wakeup/parameters/enable_qcom_rx_wakelock_ws "N"
-write /sys/module/wakeup/parameters/enable_timerfd_ws "Y"
-write /sys/module/wakeup/parameters/enable_wlan_extscan_wl_ws "N"
-write /sys/module/wakeup/parameters/enable_wlan_wow_wl_ws "N"
-write /sys/module/wakeup/parameters/enable_wlan_ws "N"
-write /sys/module/wakeup/parameters/enable_netmgr_wl_ws "N"
-write /sys/module/wakeup/parameters/enable_wlan_wow_wl_ws "N"
-write /sys/module/wakeup/parameters/enable_wlan_ipa_ws "N"
-write /sys/module/wakeup/parameters/enable_wlan_pno_wl_ws "N"
-write > /sys/module/wakeup/parameters/enable_wcnss_filter_lock_ws "N"
-sendToLog "$date Blocked various wakelocks";
-fi;
+	if [ -e /sys/module/bcmdhd/parameters/wlrx_divide ]; then
+		write /sys/module/bcmdhd/parameters/wlrx_divide "4"
+		write /sys/module/bcmdhd/parameters/wlctrl_divide "4"
+		sendToLog "$date wlan wakelocks blocked";
+	fi;
 
-if [ -e /sys/module/bcmdhd/parameters/wlrx_divide ]; then
-write /sys/module/bcmdhd/parameters/wlrx_divide "4"
-write /sys/module/bcmdhd/parameters/wlctrl_divide "4"
-sendToLog "$date wlan wakelocks blocked";
-fi;
+	if [ -e /sys/devices/virtual/misc/boeffla_wakelock_blocker/wakelock_blocker ]; then
+		write /sys/devices/virtual/misc/boeffla_wakelock_blocker/wakelock_blocker "wlan_pno_wl;wlan_ipa;wcnss_filter_lock;[timerfd];hal_bluetooth_lock;IPA_WS;sensor_ind;wlan;netmgr_wl;qcom_rx_wakelock;wlan_wow_wl;wlan_extscan_wl;NETLINK;bam_dmux_wakelock;IPA_RM12"
+		sendToLog "$date Updated Boeffla wakelock blocker";
 
-if [ -e /sys/devices/virtual/misc/boeffla_wakelock_blocker/wakelock_blocker ]; then
-write /sys/devices/virtual/misc/boeffla_wakelock_blocker/wakelock_blocker "wlan_pno_wl;wlan_ipa;wcnss_filter_lock;[timerfd];hal_bluetooth_lock;IPA_WS;sensor_ind;wlan;netmgr_wl;qcom_rx_wakelock;wlan_wow_wl;wlan_extscan_wl;NETLINK;bam_dmux_wakelock;IPA_RM12"
-sendToLog "$date updated Boeffla wakelock blocker";
+	elif [ -e /sys/class/misc/boeffla_wakelock_blocker/wakelock_blocker ]; then
+		write /sys/class/misc/boeffla_wakelock_blocker/wakelock_blocker "wlan_pno_wl;wlan_ipa;wcnss_filter_lock;[timerfd];hal_bluetooth_lock;IPA_WS;sensor_ind;wlan;netmgr_wl;qcom_rx_wakelock;wlan_wow_wl;wlan_extscan_wl;NETLINK;bam_dmux_wakelock;IPA_RM12"
+		sendToLog "$date Updated Boeffla wakelock blocker";
+	fi;
 
-elif [ -e /sys/class/misc/boeffla_wakelock_blocker/wakelock_blocker ]; then
-write /sys/class/misc/boeffla_wakelock_blocker/wakelock_blocker "wlan_pno_wl;wlan_ipa;wcnss_filter_lock;[timerfd];hal_bluetooth_lock;IPA_WS;sensor_ind;wlan;netmgr_wl;qcom_rx_wakelock;wlan_wow_wl;wlan_extscan_wl;NETLINK;bam_dmux_wakelock;IPA_RM12"
-sendToLog "$date updated Boeffla wakelock blocker";
-fi;
+	# lpm Levels
+	lpm=/sys/module/lpm_levels
+	if [ -d $lpm/parameters ]; then
+		write $lpm/enable_low_power/l2 "4"
+		write $lpm/parameters/lpm_prediction "Y"
+		write $lpm/parameters/menu_select "N"
+		write $lpm/parameters/print_parsed_dt "N"
+		write $lpm/parameters/sleep_disabled "N"
+		write $lpm/parameters/sleep_time_override "0"
+		sendToLog "$date Low power mode sleep enabled";
+	fi;
 
-# lpm Levels
-lpm=/sys/module/lpm_levels
-if [ -d $lpm/parameters ]; then
-write $lpm/enable_low_power/l2 "4"
-write $lpm/parameters/lpm_prediction "Y"
-write $lpm/parameters/menu_select "N"
-write $lpm/parameters/print_parsed_dt "N"
-write $lpm/parameters/sleep_disabled "N"
-write $lpm/parameters/sleep_time_override "0"
-sendToLog "$date Low power mode sleep enabled";
-fi;
+	if [ -e "/sys/class/lcd/panel/power_reduce" ]; then
+		chmod 0644 /sys/class/lcd/panel/power_reduce
+		write /sys/class/lcd/panel/power_reduce "1"
+		sendToLog "$date LCD power reduce enabled";
+	fi;
 
-if [ -e "/sys/class/lcd/panel/power_reduce" ]; then
-chmod 0644 /sys/class/lcd/panel/power_reduce
-write /sys/class/lcd/panel/power_reduce "1"
-sendToLog "$date LCD power reduce enabled";
-fi;
+	if [ -e "/sys/module/pm2/parameters/idle_sleep_mode" ]; then
+		chmod 0644 /sys/module/pm2/parameters/idle_sleep_mode
+		write /sys/module/pm2/parameters/idle_sleep_mode "Y"
+		sendToLog "$date PM2 module idle sleep mode enabled";
+	fi;
 
-if [ -e "/sys/module/pm2/parameters/idle_sleep_mode" ]; then
-chmod 0644 /sys/module/pm2/parameters/idle_sleep_mode
-write /sys/module/pm2/parameters/idle_sleep_mode "Y"
-sendToLog "$date PM2 module idle sleep mode enabled";
-fi;
-
-sendToLog "$date Battery improvements are enabled";
+	sendToLog "$date Battery improvements are enabled";
 }
 
 #
 # CPU Optimization battery profile
 #
 cpuOptimizationBattery() {
-real_cpu_cores=$(ls /sys/devices/system/cpu | grep -c ^cpu[0-9]);
-cpu_cores=$((real_cpu_cores-1));
+	real_cpu_cores=$(ls /sys/devices/system/cpu | grep -c ^cpu[0-9]);
+	cpu_cores=$((real_cpu_cores-1));
 
-echo "$date Optimizing CPU..." >> $LOG;
+	echo "$date Optimizing CPU..." >> $LOG;
 
-if [ -e "/sys/devices/system/cpu/cpuidle/use_deepest_state" ]; then
-chmod 0644 /sys/devices/system/cpu/cpuidle/use_deepest_state
-echo "1" > /sys/devices/system/cpu/cpuidle/use_deepest_state
-echo "$date Enable deepest CPU idle state" >> $LOG;
-fi;
+	if [ -e "/sys/devices/system/cpu/cpuidle/use_deepest_state" ]; then
+		chmod 0644 /sys/devices/system/cpu/cpuidle/use_deepest_state
+		write /sys/devices/system/cpu/cpuidle/use_deepest_state "1"
+		sendToLog "$date Enable deepest CPU idle state";
+	fi;
 
-# Disable krait voltage boost
-if [ -e "/sys/module/acpuclock_krait/parameters/boost" ];  then
-chmod 0644 /sys/module/acpuclock_krait/parameters/boost
-echo "N" > /sys/module/acpuclock_krait/parameters/boost
-echo "$date Disable Krait voltage boost" >> $LOG;
-fi;
+	# Disable krait voltage boost
+	if [ -e "/sys/module/acpuclock_krait/parameters/boost" ];  then
+		chmod 0644 /sys/module/acpuclock_krait/parameters/boost	
+		write /sys/module/acpuclock_krait/parameters/boost "N"
+		sendToLog "$date Disable Krait voltage boost";
+	fi;
 
-if [ -e "/sys/module/workqueue/parameters/power_efficient" ]; then
-chmod 0644 /sys/module/workqueue/parameters/power_efficient
-echo "Y" > /sys/module/workqueue/parameters/power_efficient
-echo "$date Power-save workqueues enabled" >> $LOG;
-fi;
+	if [ -e "/sys/module/workqueue/parameters/power_efficient" ]; then
+		chmod 0644 /sys/module/workqueue/parameters/power_efficient
+		write /sys/module/workqueue/parameters/power_efficient "Y"
+		sendToLog "$date Power-save workqueues enabled";
+	fi;
 
-if [ -e /dev/cpuset ]; then
-echo "$date Detected $real_cpu_cores CPU cores" >> $LOG;
-echo "$date Optimizing CPUSET for $real_cpu_cores CPU cores" >> $LOG;
-if [ "$cpu_cores" -eq 3 ]; then
-	echo "1" > /dev/cpuset/background/cpus
-	echo "0-1" > /dev/cpuset/system-background/cpus
-	echo "0-3" > /dev/cpuset/foreground/cpus
-	echo "0-3" > /dev/cpuset/top-app/cpus
-elif [ "$cpu_cores" -eq 7 ]; then
-	echo "2-3" > /dev/cpuset/background/cpus
-	echo "0-3" > /dev/cpuset/system-background/cpus
-	echo "0-7" > /dev/cpuset/foreground/cpus
-	echo "0-7" > /dev/cpuset/top-app/cpus
-elif [ "$cpu_cores" -eq 9 ]; then
-	echo "2-3" > /dev/cpuset/background/cpus
-	echo "0-3" > /dev/cpuset/system-background/cpus
-	echo "0-8" > /dev/cpuset/foreground/cpus
-	echo "0-8" > /dev/cpuset/top-app/cpus
-fi;
-echo "$date CPUSET optimized" >> $LOG;
-fi;
+	if [ -e /dev/cpuset ]; then
+	echo "$date Detected $real_cpu_cores CPU cores" >> $LOG;
+	echo "$date Optimizing CPUSET for $real_cpu_cores CPU cores" >> $LOG;
+	if [ "$cpu_cores" -eq 3 ]; then
+		echo "1" > /dev/cpuset/background/cpus
+		echo "0-1" > /dev/cpuset/system-background/cpus
+		echo "0-3" > /dev/cpuset/foreground/cpus
+		echo "0-3" > /dev/cpuset/top-app/cpus
+	elif [ "$cpu_cores" -eq 7 ]; then
+		echo "2-3" > /dev/cpuset/background/cpus
+		echo "0-3" > /dev/cpuset/system-background/cpus
+		echo "0-7" > /dev/cpuset/foreground/cpus
+		echo "0-7" > /dev/cpuset/top-app/cpus
+	elif [ "$cpu_cores" -eq 9 ]; then
+		echo "2-3" > /dev/cpuset/background/cpus
+		echo "0-3" > /dev/cpuset/system-background/cpus
+		echo "0-8" > /dev/cpuset/foreground/cpus
+		echo "0-8" > /dev/cpuset/top-app/cpus
+	fi;
+	echo "$date CPUSET optimized" >> $LOG;
+	fi;
 
-if [ -e "/sys/module/workqueue/parameters/power_efficient" ]; then
-chmod 0644 /sys/module/workqueue/parameters/power_efficient
-echo "Y" > /sys/module/workqueue/parameters/power_efficient
-echo "$date Power-save workqueues enabled, scheduling workqueues on awake CPUs to save power." >> $LOG;
-fi;
+	if [ -e "/sys/module/workqueue/parameters/power_efficient" ]; then
+	chmod 0644 /sys/module/workqueue/parameters/power_efficient
+	echo "Y" > /sys/module/workqueue/parameters/power_efficient
+	echo "$date Power-save workqueues enabled, scheduling workqueues on awake CPUs to save power." >> $LOG;
+	fi;
 
-# EAS related tweaks
-echo "0" > /dev/stune/schedtune.prefer_idle
-echo "0" > /dev/stune/background/schedtune.prefer_idle
-echo "0" > /dev/stune/foreground/schedtune.prefer_idle
-echo "1" > /dev/stune/top-app/schedtune.prefer_idle
+	if [ -e /sys/module/cpu_input_boost/parameters/input_boost_duration ]; then
+	chmod 0644 /sys/module/cpu_input_boost/parameters/input_boost_duration
+	echo "0" > /sys/module/cpu_input_boost/parameters/input_boost_duration
+	echo "$date CPU Boost Input Duration=0" >> $LOG;
+	fi;
 
-if [ -e /proc/sys/kernel/sched_is_big_little ]; then
-    echo "1" > /proc/sys/kernel/sched_is_big_little
-fi;
-if [ -e /proc/sys/kernel/sched_boost ]; then
-    echo "0" > /proc/sys/kernel/sched_boost
-fi;
+	if [ -e /sys/module/cpu_boost/parameters/input_boost_ms ]; then
+	chmod 0644 /sys/module/cpu_boost/parameters/input_boost_ms
+	echo "0" > /sys/module/cpu_boost/parameters/input_boost_ms
+	echo "$date CPU Boost Input Ms=0" >> $LOG;
+	fi;
 
-echo "64" > /proc/sys/kernel/sched_nr_migrate
-echo "1" > /proc/sys/kernel/sched_cstate_aware
-echo "0" > /proc/sys/kernel/sched_child_runs_first
-echo "0" > /proc/sys/kernel/sched_initial_task_util
-echo "0" > /proc/sys/kernel/sched_use_walt_task_util
-echo "0" > /proc/sys/kernel/sched_use_walt_cpu_util
-echo "0" > /proc/sys/kernel/sched_walt_init_task_load_pct
+	if [ -e /sys/module/cpu_boost/parameters/input_boost_ms_s2 ]; then
+	chmod 0644 /sys/module/cpu_boost/parameters/input_boost_ms_s2
+	echo "0" > /sys/module/cpu_boost/parameters/input_boost_ms_s2
+	echo "$date CPU Boost Input Ms_S2=0" >> $LOG;
+	fi;
 
-if [ -e /sys/module/cpu_input_boost/parameters/input_boost_duration ]; then
-chmod 0644 /sys/module/cpu_input_boost/parameters/input_boost_duration
-echo "0" > /sys/module/cpu_input_boost/parameters/input_boost_duration
-echo "$date CPU Boost Input Duration=0" >> $LOG;
-fi;
+	if [ -e /sys/module/cpu_boost/parameters/dynamic_stune_boost ]; then
+	chmod 0644 /sys/module/cpu_boost/parameters/dynamic_stune_boost
+	echo "0" > /sys/module/cpu_boost/parameters/dynamic_stune_boost
+	echo "$date CPU Boost Dyn_Stune_Boost=0" >> $LOG;
+	fi;
 
-if [ -e /sys/module/cpu_boost/parameters/input_boost_ms ]; then
-chmod 0644 /sys/module/cpu_boost/parameters/input_boost_ms
-echo "0" > /sys/module/cpu_boost/parameters/input_boost_ms
-echo "$date CPU Boost Input Ms=0" >> $LOG;
-fi;
+	if [ -e /sys/module/cpu_input_boost/parameters/dynamic_stune_boost ]; then
+	chmod 0644 /sys/module/cpu_input_boost/parameters/dynamic_stune_boost
+	echo "0" > /sys/module/cpu_input_boost/parameters/dynamic_stune_boost
+	echo "$date CPU Boost Dyn_Stune_Boost=0" >> $LOG;
+	fi;
 
-if [ -e /sys/module/cpu_boost/parameters/input_boost_ms_s2 ]; then
-chmod 0644 /sys/module/cpu_boost/parameters/input_boost_ms_s2
-echo "0" > /sys/module/cpu_boost/parameters/input_boost_ms_s2
-echo "$date CPU Boost Input Ms_S2=0" >> $LOG;
-fi;
+	if [ -e /sys/module/cpu_input_boost/parameters/general_stune_boost ]; then
+	chmod 0644 /sys/module/cpu_input_boost/parameters/general_stune_boost
+	echo "10" > /sys/module/cpu_input_boost/parameters/general_stune_boost
+	echo "$date CPU Boost General_Stune_Boost=10" >> $LOG;
+	fi;
 
-if [ -e /sys/module/cpu_boost/parameters/dynamic_stune_boost ]; then
-chmod 0644 /sys/module/cpu_boost/parameters/dynamic_stune_boost
-echo "0" > /sys/module/cpu_boost/parameters/dynamic_stune_boost
-echo "$date CPU Boost Dyn_Stune_Boost=0" >> $LOG;
-fi;
+	if [ -e /sys/module/dsboost/parameters/input_boost_duration ]; then
+	chmod 0644 /sys/module/dsboost/parameters/input_boost_duration
+	echo "0" > /sys/module/dsboost/parameters/input_boost_duration
+	echo "$date Dsboost Input Boost Duration=0" >> $LOG;
+	fi;
 
-if [ -e /sys/module/cpu_input_boost/parameters/dynamic_stune_boost ]; then
-chmod 0644 /sys/module/cpu_input_boost/parameters/dynamic_stune_boost
-echo "0" > /sys/module/cpu_input_boost/parameters/dynamic_stune_boost
-echo "$date CPU Boost Dyn_Stune_Boost=0" >> $LOG;
-fi;
+	if [ -e /sys/module/dsboost/parameters/input_stune_boost ]; then
+	chmod 0644 /sys/module/dsboost/parameters/input_stune_boost
+	echo "0" > /sys/module/dsboost/parameters/input_stune_boost
+	echo "$date Dsboost Input Stune Boost Duration=0" >> $LOG;
+	fi;
 
-if [ -e /sys/module/cpu_input_boost/parameters/general_stune_boost ]; then
-chmod 0644 /sys/module/cpu_input_boost/parameters/general_stune_boost
-echo "10" > /sys/module/cpu_input_boost/parameters/general_stune_boost
-echo "$date CPU Boost General_Stune_Boost=10" >> $LOG;
-fi;
+	if [ -e /sys/module/dsboost/parameters/sched_stune_boost ]; then
+	chmod 0644 /sys/module/dsboost/parameters/sched_stune_boost
+	echo "0" > /sys/module/dsboost/parameters/sched_stune_boost
+	echo "$date Dsboost Sched_Stune_Boost=0" >> $LOG;
+	fi;
 
-if [ -e /sys/module/dsboost/parameters/input_boost_duration ]; then
-chmod 0644 /sys/module/dsboost/parameters/input_boost_duration
-echo "0" > /sys/module/dsboost/parameters/input_boost_duration
-echo "$date Dsboost Input Boost Duration=0" >> $LOG;
-fi;
+	if [ -e /sys/module/dsboost/parameters/cooldown_boost_duration ]; then
+	chmod 0644 /sys/module/dsboost/parameters/cooldown_boost_duration
+	echo "0" > /sys/module/dsboost/parameters/cooldown_boost_duration
+	echo "$date Dsboost Cooldown_Boost_Duration=0" >> $LOG;
+	fi;
 
-if [ -e /sys/module/dsboost/parameters/input_stune_boost ]; then
-chmod 0644 /sys/module/dsboost/parameters/input_stune_boost
-echo "0" > /sys/module/dsboost/parameters/input_stune_boost
-echo "$date Dsboost Input Stune Boost Duration=0" >> $LOG;
-fi;
+	if [ -e /sys/module/dsboost/parameters/cooldown_stune_boost ]; then
+	chmod 0644 /sys/module/dsboost/parameters/cooldown_stune_boost
+	echo "0" > /sys/module/dsboost/parameters/cooldown_stune_boost
+	echo "$date Dsboost Cooldown_Stune_Boost=0" >> $LOG;
+	fi;
 
-if [ -e /sys/module/dsboost/parameters/sched_stune_boost ]; then
-chmod 0644 /sys/module/dsboost/parameters/sched_stune_boost
-echo "0" > /sys/module/dsboost/parameters/sched_stune_boost
-echo "$date Dsboost Sched_Stune_Boost=0" >> $LOG;
-fi;
+	# CPU CTL
+	for i in $(find /dev/cpuctl -name cpu.rt_period_us); do
+	 echo "1000000" > "$i"
+	 echo "$date 1000000 to $i" >> $LOG;
+	done
 
-if [ -e /sys/module/dsboost/parameters/cooldown_boost_duration ]; then
-chmod 0644 /sys/module/dsboost/parameters/cooldown_boost_duration
-echo "0" > /sys/module/dsboost/parameters/cooldown_boost_duration
-echo "$date Dsboost Cooldown_Boost_Duration=0" >> $LOG;
-fi;
+	for i in $(find /dev/cpuctl -name cpu.rt_runtime_us); do
+	 echo "950000" > "$i"
+	 echo "$date 950000 to $i" >> $LOG;
+	done
 
-if [ -e /sys/module/dsboost/parameters/cooldown_stune_boost ]; then
-chmod 0644 /sys/module/dsboost/parameters/cooldown_stune_boost
-echo "0" > /sys/module/dsboost/parameters/cooldown_stune_boost
-echo "$date Dsboost Cooldown_Stune_Boost=0" >> $LOG;
-fi;
+	sched_rt_period_us=/proc/sys/kernel/sched_rt_period_us
+	if [ -e $sched_rt_period_us ]; then
+	 echo "1000000" > $sched_rt_period_us
+	 echo "$date sched_rt_period_us=1000000" >> $LOG;
+	fi;
 
-# CPU CTL
-for i in $(find /dev/cpuctl -name cpu.rt_period_us); do
- echo "1000000" > "$i"
- echo "$date 1000000 to $i" >> $LOG;
-done
+	sched_rt_runtime_us=/proc/sys/kernel/sched_rt_runtime_us
+	if [ -e $sched_rt_runtime_us ]; then
+	 echo "950000" > $sched_rt_runtime_us
+	 echo "$date sched_rt_runtime_us=950000" >> $LOG;
+	fi;
 
-for i in $(find /dev/cpuctl -name cpu.rt_runtime_us); do
- echo "950000" > "$i"
- echo "$date 950000 to $i" >> $LOG;
-done
+	sched_wake_to_idle=/proc/sys/kernel/sched_wake_to_idle
+	if [ -e $sched_wake_to_idle ]; then
+	 echo "0" > $sched_wake_to_idle
+	 echo "$date sched_wake_to_idle=0" >> $LOG;
+	fi;
 
-sched_rt_period_us=/proc/sys/kernel/sched_rt_period_us
-if [ -e $sched_rt_period_us ]; then
- echo "1000000" > $sched_rt_period_us
- echo "$date sched_rt_period_us=1000000" >> $LOG;
-fi;
+	# Disable touch boost
+	touchboost=/sys/module/msm_performance/parameters/touchboost
+	if [ -e $touchboost ]; then
+	 echo "0" > $touchboost
+	 echo "$date $touchboost=0" >> $LOG;
+	fi;
 
-sched_rt_runtime_us=/proc/sys/kernel/sched_rt_runtime_us
-if [ -e $sched_rt_runtime_us ]; then
- echo "950000" > $sched_rt_runtime_us
- echo "$date sched_rt_runtime_us=950000" >> $LOG;
-fi;
+	touch_boost=/sys/power/pnpmgr/touch_boost
+	if [ -e $touch_boost ]; then
+	 echo "N" > $touch_boost
+	 echo "$date $touch_boost=N" >> $LOG;
+	fi;
 
-sched_wake_to_idle=/proc/sys/kernel/sched_wake_to_idle
-if [ -e $sched_wake_to_idle ]; then
- echo "0" > $sched_wake_to_idle
- echo "$date sched_wake_to_idle=0" >> $LOG;
-fi;
+	#Disable CPU Boost
+	boost_ms=/sys/module/cpu_boost/parameters/boost_ms
+	if [ -e $boost_ms ]; then
+	 echo "0" > $boost_ms
+	 echo "$date $boost_ms=0" >> $LOG;
+	fi;
 
-# Disable touch boost
-touchboost=/sys/module/msm_performance/parameters/touchboost
-if [ -e $touchboost ]; then
- echo "0" > $touchboost
- echo "$date $touchboost=0" >> $LOG;
-fi;
+	sched_boost_on_input=/sys/module/cpu_boost/parameters/sched_boost_on_input
+	if [ -e $sched_boost_on_input ]; then
+	 echo "N" > $sched_boost_on_input
+	 echo "$date $sched_boost_on_input=0" >> $LOG;
+	fi;
 
-touch_boost=/sys/power/pnpmgr/touch_boost
-if [ -e $touch_boost ]; then
- echo "N" > $touch_boost
- echo "$date $touch_boost=N" >> $LOG;
-fi;
-
-#Disable CPU Boost
-boost_ms=/sys/module/cpu_boost/parameters/boost_ms
-if [ -e $boost_ms ]; then
- echo "0" > $boost_ms
- echo "$date $boost_ms=0" >> $LOG;
-fi;
-
-sched_boost_on_input=/sys/module/cpu_boost/parameters/sched_boost_on_input
-if [ -e $sched_boost_on_input ]; then
- echo "N" > $sched_boost_on_input
- echo "$date $sched_boost_on_input=0" >> $LOG;
-fi;
-
-echo "$date CPU is optimized..." >> $LOG;
+	echo "$date CPU is optimized..." >> $LOG;
 
 }
 
@@ -524,28 +501,6 @@ chmod 0644 /sys/module/workqueue/parameters/power_efficient
 echo "N" > /sys/module/workqueue/parameters/power_efficient
 echo "$date Power-save workqueues disabled, scheduling workqueues on awake CPUs to save power disabled" >> $LOG;
 fi;
-
-# EAS related tweaks
-echo "0" > /dev/stune/schedtune.prefer_idle
-echo "0" > /dev/stune/background/schedtune.prefer_idle
-echo "1" > /dev/stune/foreground/schedtune.prefer_idle
-echo "1" > /dev/stune/top-app/schedtune.prefer_idle
-
-echo "1" > /proc/sys/kernel/sched_cstate_aware
-if [ -e /proc/sys/kernel/sched_is_big_little ]; then
-    echo "1" > /proc/sys/kernel/sched_is_big_little
-fi;
-if [ -e /proc/sys/kernel/sched_boost ]; then
-    echo "0" > /proc/sys/kernel/sched_boost
-fi;
-
-echo "96" > /proc/sys/kernel/sched_nr_migrate
-echo "1" > /proc/sys/kernel/sched_cstate_aware
-echo "0" > /proc/sys/kernel/sched_child_runs_first
-echo "0" > /proc/sys/kernel/sched_initial_task_util
-echo "1" > /proc/sys/kernel/sched_use_walt_task_util
-echo "1" > /proc/sys/kernel/sched_use_walt_cpu_util
-echo "0" > /proc/sys/kernel/sched_walt_init_task_load_pct
 
 if [ -e /sys/module/cpu_input_boost/parameters/input_boost_duration ]; then
 chmod 0644 /sys/module/cpu_input_boost/parameters/input_boost_duration
@@ -726,32 +681,6 @@ chmod 0644 /sys/module/workqueue/parameters/power_efficient
 echo "N" > /sys/module/workqueue/parameters/power_efficient
 echo "$date Power-save workqueues disabled, scheduling workqueues on awake CPUs to save power disabled" >> $LOG;
 fi;
-
-# EAS related tweaks
-echo "0" > /dev/stune/schedtune.prefer_idle
-echo "0" > /dev/stune/background/schedtune.prefer_idle
-echo "1" > /dev/stune/foreground/schedtune.prefer_idle
-echo "1" > /dev/stune/top-app/schedtune.prefer_idle
-
-echo "1" > /proc/sys/kernel/sched_cstate_aware
-if [ -e /proc/sys/kernel/sched_is_big_little ]; then
-  echo "1" > /proc/sys/kernel/sched_is_big_little
-fi;
-if [ -e /proc/sys/kernel/sched_boost ]; then
-  echo "0" > /proc/sys/kernel/sched_boost
-fi;
-
-if [ -e /proc/sys/kernel/sched_autogroup_enabled ]; then
-  echo "0" > /proc/sys/kernel/sched_autogroup_enabled
-fi;
-
-echo "128" > /proc/sys/kernel/sched_nr_migrate
-echo "1" > /proc/sys/kernel/sched_cstate_aware
-echo "0" > /proc/sys/kernel/sched_child_runs_first
-echo "10" > /proc/sys/kernel/sched_initial_task_util
-echo "1" > /proc/sys/kernel/sched_use_walt_task_util
-echo "1" > /proc/sys/kernel/sched_use_walt_cpu_util
-echo "10" > /proc/sys/kernel/sched_walt_init_task_load_pct
 
 if [ -e /sys/module/cpu_input_boost/parameters/input_boost_duration ]; then
 chmod 0644 /sys/module/cpu_input_boost/parameters/input_boost_duration
@@ -1596,18 +1525,7 @@ echo "$date I/O extend queue is activated" >> $LOG;
 
 }
 
-partitionRemount() {
-echo "$date Remounting partitions for better IO speed..." >> $LOG;
-
-for ext4 in $(mount | grep ext4 | cut -d " " -f3);
-do
-mount -o remount,noatime -t auto "$ext4"
-done
-
-echo "$date Remounting finished" >> $LOG;
-}
-
-dnsOptimizationzCloudFlare() {
+dnsOptimizationCloudFlare() {
 echo "$date Activating DNS optimization..." >> $LOG;
 
 iptables -t nat -A OUTPUT -p udp --dport 53 -j DNAT --to 1.0.0.1:53
@@ -1945,14 +1863,14 @@ echo "$date Logging disabled..." >> $LOG;
 }
 
 disableKernelPanic() {
-echo "$date Disabling kernel panic..." >> $LOG;
+	echo "$date Disabling kernel panic..." >> $LOG;
 
-sysctl -e -w vm.panic_on_oom=0
-sysctl -e -w kernel.panic_on_oops=0
-sysctl -e -w kernel.panic=0
-sysctl -e -w kernel.panic_on_warn=0
+	sysctl -e -w vm.panic_on_oom=0
+	sysctl -e -w kernel.panic_on_oops=0
+	sysctl -e -w kernel.panic=0
+	sysctl -e -w kernel.panic_on_warn=0
 
-echo "$date Kernel panic disabled" >> $LOG;
+	echo "$date Kernel panic disabled" >> $LOG;
 }
 
 disableMultitaskingLimitations() {
@@ -2052,7 +1970,7 @@ mfk=4096;
 fi;
 
 # Extra free kbytes should not be bigger than min free kbytes
-efk=$mfk/2;
+efk=$((mfk/2));
 
 if [ "$efk" -le "2048" ]; then
 efk=2048;
@@ -2175,7 +2093,7 @@ mfk=4096;
 fi;
 
 # Extra free kbytes should not be bigger than min free kbytes
-efk=$mfk/2;
+efk=$((mfk/2));
 
 if [ "$efk" -le "2048" ]; then
 efk=2048;
@@ -2298,7 +2216,7 @@ mfk=4096;
 fi;
 
 # Extra free kbytes should not be bigger than min free kbytes
-efk=$mfk/2;
+efk=$((mfk/2));
 
 if [ "$efk" -le "2048" ]; then
 efk=2048;
@@ -2964,7 +2882,6 @@ setDefaultProfile() {
 	write $USER_PROFILE/disable_io_stats "1"
 	write $USER_PROFILE/io_blocks_optimization "2"
 	write $USER_PROFILE/io_extended_queue "0"
-	write $USER_PROFILE/partition_remount "0"
 	write $USER_PROFILE/scheduler_tuner "1"
 	write $USER_PROFILE/sd_tweak "0"
 
@@ -3010,7 +2927,6 @@ setPowerSavingProfile() {
 	write $USER_PROFILE/disable_io_stats "1"
 	write $USER_PROFILE/io_blocks_optimization "1"
 	write $USER_PROFILE/io_extended_queue "0"
-	write $USER_PROFILE/partition_remount "0"
 	write $USER_PROFILE/scheduler_tuner "1"
 	write $USER_PROFILE/sd_tweak "0"
 
@@ -3056,7 +2972,6 @@ setBalancedProfile() {
 	write $USER_PROFILE/disable_io_stats "1"
 	write $USER_PROFILE/io_blocks_optimization "2"
 	write $USER_PROFILE/io_extended_queue "0"
-	write $USER_PROFILE/partition_remount "0"
 	write $USER_PROFILE/scheduler_tuner "1"
 	write $USER_PROFILE/sd_tweak "0"
 
@@ -3102,7 +3017,6 @@ setPerformanceProfile() {
 	write $USER_PROFILE/disable_io_stats "1"
 	write $USER_PROFILE/io_blocks_optimization "3"
 	write $USER_PROFILE/io_extended_queue "1"
-	write $USER_PROFILE/partition_remount "0"
 	write $USER_PROFILE/scheduler_tuner "1"
 	write $USER_PROFILE/sd_tweak "0"
 
@@ -3253,10 +3167,6 @@ if [ `cat $USER_PROFILE/io_extended_queue` -eq 1 ]; then
 	ioExtendedQueue;
 fi
 
-if [ `cat $USER_PROFILE/partition_remount` -eq 1 ]; then
-	partitionRemount;
-fi
-
 #if [ `cat $USER_PROFILE/scheduler_tuner` -eq 1 ]; then
 #	partitionRemount;
 #fi
@@ -3271,7 +3181,7 @@ fi
 if [ `cat $USER_PROFILE/dns` -eq 1 ]; then
 	dnsOptimizationGooglePublic;
 elif [ `cat $USER_PROFILE/dns` -eq 2 ]; then
-	dnsOptimizationzCloudFlare;
+	dnsOptimizationCloudFlare;
 fi
 
 if [ `cat $USER_PROFILE/net_buffers` -eq 1 ]; then
