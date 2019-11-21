@@ -199,7 +199,7 @@ write /sys/kernel/fast_charge/force_fast_charge "1"
 sendToLog "$date Fast charge enabled";
 fi;
 
-setprop ro.audio.flinger_standbytime_ms 300
+resetprop ro.audio.flinger_standbytime_ms 300
 sendToLog "$date Set low audio flinger standby delay to 300ms for reducing power consumption";
 
 for i in $(ls /sys/class/scsi_disk); do
@@ -950,19 +950,19 @@ elif [ -d "/sys/kernel/gpu" ]; then
 fi
 
 if [ $memTotal -lt 3072 ]; then
-setprop ro.hwui.texture_cache_size $((memTotal*10/100/2));
-setprop ro.hwui.layer_cache_size $((memTotal*5/100/2));
-setprop ro.hwui.path_cache_size $((memTotal*2/100/2));
-setprop ro.hwui.r_buffer_cache_size $((memTotal/100/2));
-setprop ro.hwui.drop_shadow_cache_size $((memTotal/100/2));
-setprop ro.hwui.texture_cache_flushrate=0.3
+	resetprop ro.hwui.texture_cache_size $((memTotal*10/100/2));
+	resetprop ro.hwui.layer_cache_size $((memTotal*5/100/2));
+	resetprop ro.hwui.path_cache_size $((memTotal*2/100/2));
+	resetprop ro.hwui.r_buffer_cache_size $((memTotal/100/2));
+	resetprop ro.hwui.drop_shadow_cache_size $((memTotal/100/2));
+	resetprop ro.hwui.texture_cache_flushrate 0.3
 else 
-setprop ro.hwui.texture_cache_size $((memTotal*10/100));
-setprop ro.hwui.layer_cache_size $((memTotal*5/100));
-setprop ro.hwui.path_cache_size $((memTotal*2/100));
-setprop ro.hwui.r_buffer_cache_size $((memTotal/100));
-setprop ro.hwui.drop_shadow_cache_size $((memTotal/100));
-setprop ro.hwui.texture_cache_flushrate=0.3
+	resetprop ro.hwui.texture_cache_size $((memTotal*10/100));
+	resetprop ro.hwui.layer_cache_size $((memTotal*5/100));
+	resetprop ro.hwui.path_cache_size $((memTotal*2/100));
+	resetprop ro.hwui.r_buffer_cache_size $((memTotal/100));
+	resetprop ro.hwui.drop_shadow_cache_size $((memTotal/100));
+	resetprop ro.hwui.texture_cache_flushrate 0.3
 fi
 sendToLog "$date Optimized GPU caches";
 
@@ -1067,19 +1067,19 @@ elif [ -d "/sys/kernel/gpu" ]; then
 fi
 
 if [ $memTotal -lt 3072 ]; then
-setprop ro.hwui.texture_cache_size $((memTotal*10/100/2));
-setprop ro.hwui.layer_cache_size $((memTotal*5/100/2));
-setprop ro.hwui.path_cache_size $((memTotal*2/100/2));
-setprop ro.hwui.r_buffer_cache_size $((memTotal/100/2));
-setprop ro.hwui.drop_shadow_cache_size $((memTotal/100/2));
-setprop ro.hwui.texture_cache_flushrate=0.3
+	resetprop ro.hwui.texture_cache_size $((memTotal*10/100/2));
+	resetprop ro.hwui.layer_cache_size $((memTotal*5/100/2));
+	resetprop ro.hwui.path_cache_size $((memTotal*2/100/2));
+	resetprop ro.hwui.r_buffer_cache_size $((memTotal/100/2));
+	resetprop ro.hwui.drop_shadow_cache_size $((memTotal/100/2));
+	resetprop ro.hwui.texture_cache_flushrate 0.3
 else 
-setprop ro.hwui.texture_cache_size $((memTotal*10/100));
-setprop ro.hwui.layer_cache_size $((memTotal*5/100));
-setprop ro.hwui.path_cache_size $((memTotal*2/100));
-setprop ro.hwui.r_buffer_cache_size $((memTotal/100));
-setprop ro.hwui.drop_shadow_cache_size $((memTotal/100));
-setprop ro.hwui.texture_cache_flushrate=0.3
+	resetprop ro.hwui.texture_cache_size $((memTotal*10/100));
+	resetprop ro.hwui.layer_cache_size $((memTotal*5/100));
+	resetprop ro.hwui.path_cache_size $((memTotal*2/100));
+	resetprop ro.hwui.r_buffer_cache_size $((memTotal/100));
+	resetprop ro.hwui.drop_shadow_cache_size $((memTotal/100));
+	resetprop ro.hwui.texture_cache_flushrate 0.3
 fi
 sendToLog "$date Optimized GPU caches";
 
@@ -1184,19 +1184,19 @@ elif [ -d "/sys/kernel/gpu" ]; then
 fi
 
 if [ $memTotal -lt 3072 ]; then
-setprop ro.hwui.texture_cache_size $((memTotal*10/100/2));
-setprop ro.hwui.layer_cache_size $((memTotal*5/100/2));
-setprop ro.hwui.path_cache_size $((memTotal*2/100/2));
-setprop ro.hwui.r_buffer_cache_size $((memTotal/100/2));
-setprop ro.hwui.drop_shadow_cache_size $((memTotal/100/2));
-setprop ro.hwui.texture_cache_flushrate=0.3
+	resetprop ro.hwui.texture_cache_size $((memTotal*10/100/2));
+	resetprop ro.hwui.layer_cache_size $((memTotal*5/100/2));
+	resetprop ro.hwui.path_cache_size $((memTotal*2/100/2));
+	resetprop ro.hwui.r_buffer_cache_size $((memTotal/100/2));
+	resetprop ro.hwui.drop_shadow_cache_size $((memTotal/100/2));
+	resetprop ro.hwui.texture_cache_flushrate 0.3
 else 
-setprop ro.hwui.texture_cache_size $((memTotal*10/100));
-setprop ro.hwui.layer_cache_size $((memTotal*5/100));
-setprop ro.hwui.path_cache_size $((memTotal*2/100));
-setprop ro.hwui.r_buffer_cache_size $((memTotal/100));
-setprop ro.hwui.drop_shadow_cache_size $((memTotal/100));
-setprop ro.hwui.texture_cache_flushrate=0.3
+	resetprop ro.hwui.texture_cache_size $((memTotal*10/100));
+	resetprop ro.hwui.layer_cache_size $((memTotal*5/100));
+	resetprop ro.hwui.path_cache_size $((memTotal*2/100));
+	resetprop ro.hwui.r_buffer_cache_size $((memTotal/100));
+	resetprop ro.hwui.drop_shadow_cache_size $((memTotal/100));
+	resetprop ro.hwui.texture_cache_flushrate 0.3
 fi
 sendToLog "$date Optimized GPU caches";
 
@@ -1788,19 +1788,19 @@ echo "$date TCP tweak activated" >> $LOG;
 rilTweaks() {
 echo "$date Activating ril tweaks..." >> $LOG;
 
-setprop ro.ril.gprsclass 12
+resetprop ro.ril.gprsclass 12
 echo "$date GPRS Class changed to 12" >> $LOG;
 
-setprop ro.ril.hsdpa.category 28
+resetprop ro.ril.hsdpa.category 28
 echo "$date hsdpa category changed to 28" >> $LOG;
 
-setprop ro.ril.hsupa.category 7
+resetprop ro.ril.hsupa.category 7
 echo "$date hsupa category changed to 7" >> $LOG;
 
-setprop ro.telephony.call_ring.delay 1500
+resetprop ro.telephony.call_ring.delay 1500
 echo "$date RING/CRING event delay reduced to 1.5sec" >> $LOG;
 
-setprop ro.telephony.call_ring.multiple false
+resetprop ro.telephony.call_ring.multiple false
 echo "$date Ril sends only one RIL_UNSOL_CALL_RING, so set call_ring.multiple to false" >> $LOG;
 
 echo "$date Ril tweaks are activated" >> $LOG;
@@ -1859,7 +1859,7 @@ echo "0" > "$i"
 echo "$date Disabled debugging for $i" >> $LOG;
 done
 
-setprop ro.config.nocheckin 1
+resetprop ro.config.nocheckin 1
 setprop profiler.force_disable_err_rpt 1
 echo "$date Force disabled error reporting" >> $LOG;
 
@@ -1991,7 +1991,7 @@ echo "$date Multitasking limitations disabled" >> $LOG;
 lowRamFlagDisabled() {
 echo "$date Disabling low RAM flag..." >> $LOG;
 
-setprop ro.config.low_ram false
+resetprop ro.config.low_ram false
 
 echo "$date Low RAM flag disabled" >> $LOG;
 }
@@ -1999,7 +1999,7 @@ echo "$date Low RAM flag disabled" >> $LOG;
 lowRamFlagEnabled() {
 echo "$date Enabling low RAM flag..." >> $LOG;
 
-setprop ro.config.low_ram true
+resetprop ro.config.low_ram true
 
 echo "$date Low RAM flag enabled" >> $LOG;
 }
@@ -2085,8 +2085,8 @@ echo "$date Enabling balanced RAM manager profile" >> $LOG;
 sync
 sysctl -w vm.drop_caches=3;
 
-setprop ro.sys.fw.bg_apps_limit $backgroundAppLimit;
-setprop ro.vendor.qti.sys.fw.bg_apps_limit $backgroundAppLimit;
+resetprop ro.sys.fw.bg_apps_limit $backgroundAppLimit;
+resetprop ro.vendor.qti.sys.fw.bg_apps_limit $backgroundAppLimit;
 echo "$date Background app limit=$backgroundAppLimit" >> $LOG;
 
 parameter_adj=/sys/module/lowmemorykiller/parameters/adj;
@@ -2208,8 +2208,8 @@ echo "$date Enabling gaming RAM manager profile" >> $LOG;
 sync
 sysctl -w vm.drop_caches=3;
 
-setprop ro.sys.fw.bg_apps_limit $backgroundAppLimit;
-setprop ro.vendor.qti.sys.fw.bg_apps_limit $backgroundAppLimit;
+resetprop ro.sys.fw.bg_apps_limit $backgroundAppLimit;
+resetprop ro.vendor.qti.sys.fw.bg_apps_limit $backgroundAppLimit;
 echo "$date Background app limit=$backgroundAppLimit" >> $LOG;
 
 parameter_adj=/sys/module/lowmemorykiller/parameters/adj;
@@ -2331,8 +2331,8 @@ echo "$date Enabling multitasking RAM manager profile" >> $LOG;
 sync
 sysctl -w vm.drop_caches=3;
 
-setprop ro.sys.fw.bg_apps_limit $backgroundAppLimit;
-setprop ro.vendor.qti.sys.fw.bg_apps_limit $backgroundAppLimit;
+resetprop ro.sys.fw.bg_apps_limit $backgroundAppLimit;
+resetprop ro.vendor.qti.sys.fw.bg_apps_limit $backgroundAppLimit;
 echo "$date Background app limit=$backgroundAppLimit" >> $LOG;
 
 parameter_adj=/sys/module/lowmemorykiller/parameters/adj;
