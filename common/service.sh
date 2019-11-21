@@ -2,7 +2,7 @@
 # L Speed tweak
 # Codename : lspeed
 version="v1.0-RC3";
-date=20-11-2019;
+date=21-11-2019;
 # Developer : Paget96
 # Paypal : https://paypal.me/Paget96
 
