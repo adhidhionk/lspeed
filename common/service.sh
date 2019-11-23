@@ -3262,9 +3262,9 @@ elif [ `cat $USER_PROFILE/virtual_memory` -eq 3 ]; then
 	virtualMemoryTweaksPerformance;
 fi
 
-if [ `cat $USER_PROFILE/heap_optimization` -eq 1 ]; then
-	heapOptimization;
-fi
+#if [ `cat $USER_PROFILE/heap_optimization` -eq 1 ]; then
+#	heapOptimization;
+#fi
 
 if [ `cat $USER_PROFILE/zram_optimization` -eq 0 ]; then
 	zramOptimization 0;
