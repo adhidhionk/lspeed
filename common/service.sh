@@ -52,7 +52,7 @@ sendToLog() {
 }
 
 write() {
-	chmod 0644 "$1" 2> /dev/null
+	#chmod 0644 "$1" 2> /dev/null
     echo -n "$2" > "$1" 2> /dev/null
 }
 
@@ -3022,9 +3022,13 @@ setPerformanceProfile() {
 # Check number of arguments and perform task based on it.
 if [ $# -eq 2 ]; then
 	$1 $2;
+	
+	exit 0;
 elif [ $# -eq 1 ]; then
 	$1
-	else
+	
+	exit 0;
+else
 sendToLog "$date Starting L Speed";
 
 # Read current profile
@@ -3250,6 +3254,8 @@ elif [ `cat $USER_PROFILE/zram_optimization` -eq 1 ]; then
 fi
 
 sendToLog "$date Successfully applied $profile profile";
+
+exit 0
 fi
 
 exit 0
