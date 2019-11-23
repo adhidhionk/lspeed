@@ -1,8 +1,8 @@
 #!/system/bin/sh
 # L Speed tweak
 # Codename : lspeed
-version="v1.0-RC4";
-date=21-11-2019;
+version="v1.0-RC7";
+date=23-11-2019;
 # Developer : Paget96
 # Paypal : https://paypal.me/Paget96
 
@@ -59,7 +59,7 @@ write() {
 lockFile() {
 	chmod 0644 "$1" 2> /dev/null
     echo -n "$2" > "$1" 2> /dev/null
-	chmod 044 "$1" 2> /dev/null
+	chmod 0444 "$1" 2> /dev/null
 }
 
 # Setting up default L Speed dirs and files
@@ -156,14 +156,12 @@ sendToLog "$date Activating battery improvements...";
 
 	# Disabling ksm
 	if [ -e "/sys/kernel/mm/ksm/run" ]; then
-		chmod 0644 /sys/kernel/mm/ksm/run
 		write /sys/kernel/mm/ksm/run "0";
 		sendToLog "$date KSM is disabled, saving battery cycles and improving battery life...";
 	fi;
 
 	# Disabling uksm
 	if [ -e "/sys/kernel/mm/uksm/run" ]; then
-		chmod 0644 /sys/kernel/mm/uksm/run
 		write /sys/kernel/mm/uksm/run "0"
 		sendToLog "$date UKSM is disabled, saving battery cycles and improving battery life...";
 	fi;
@@ -192,7 +190,6 @@ sendToLog "$date Activating battery improvements...";
 
 	# Enable fast charging
 	if [ -e "/sys/kernel/fast_charge/force_fast_charge" ];  then
-		chmod 0644 /sys/kernel/fast_charge/force_fast_charge
 		write /sys/kernel/fast_charge/force_fast_charge "1"
 		sendToLog "$date Fast charge enabled";
 	fi;
@@ -200,10 +197,11 @@ sendToLog "$date Activating battery improvements...";
 	resetprop ro.audio.flinger_standbytime_ms 300
 	sendToLog "$date Set low audio flinger standby delay to 300ms for reducing power consumption";
 
-	for i in $(ls /sys/class/scsi_disk); do
-		write /sys/class/scsi_disk/"$i"/cache_type "temporary none"
-		sendToLog "$date Set cache type to temporary none in $i";
-	done
+	scsi_disk=$(ls /sys/class/scsi_disk);
+	for i in $scsi_disk; do
+ 		write /sys/class/scsi_disk/"$i"/cache_type "temporary none"
+ 		sendToLog "$date Set cache type to temporary none in $i";
+ 	done
 
 	if [ -e /sys/module/wakeup/parameters/enable_bluetooth_timer ]; then
 		write /sys/module/wakeup/parameters/enable_bluetooth_timer "Y"
@@ -219,7 +217,7 @@ sendToLog "$date Activating battery improvements...";
 		write /sys/module/wakeup/parameters/enable_wlan_wow_wl_ws "N"
 		write /sys/module/wakeup/parameters/enable_wlan_ipa_ws "N"
 		write /sys/module/wakeup/parameters/enable_wlan_pno_wl_ws "N"
-		write > /sys/module/wakeup/parameters/enable_wcnss_filter_lock_ws "N"
+		write /sys/module/wakeup/parameters/enable_wcnss_filter_lock_ws "N"
 		sendToLog "$date Blocked various wakelocks";
 	fi;
 
@@ -251,13 +249,11 @@ sendToLog "$date Activating battery improvements...";
 	fi;
 
 	if [ -e "/sys/class/lcd/panel/power_reduce" ]; then
-		chmod 0644 /sys/class/lcd/panel/power_reduce
 		write /sys/class/lcd/panel/power_reduce "1"
 		sendToLog "$date LCD power reduce enabled";
 	fi;
 
 	if [ -e "/sys/module/pm2/parameters/idle_sleep_mode" ]; then
-		chmod 0644 /sys/module/pm2/parameters/idle_sleep_mode
 		write /sys/module/pm2/parameters/idle_sleep_mode "Y"
 		sendToLog "$date PM2 module idle sleep mode enabled";
 	fi;
@@ -275,22 +271,14 @@ cpuOptimizationBattery() {
 	echo "$date Optimizing CPU..." >> $LOG;
 
 	if [ -e "/sys/devices/system/cpu/cpuidle/use_deepest_state" ]; then
-		chmod 0644 /sys/devices/system/cpu/cpuidle/use_deepest_state
 		write /sys/devices/system/cpu/cpuidle/use_deepest_state "1"
 		sendToLog "$date Enable deepest CPU idle state";
 	fi;
 
 	# Disable krait voltage boost
 	if [ -e "/sys/module/acpuclock_krait/parameters/boost" ];  then
-		chmod 0644 /sys/module/acpuclock_krait/parameters/boost	
 		write /sys/module/acpuclock_krait/parameters/boost "N"
 		sendToLog "$date Disable Krait voltage boost";
-	fi;
-
-	if [ -e "/sys/module/workqueue/parameters/power_efficient" ]; then
-		chmod 0644 /sys/module/workqueue/parameters/power_efficient
-		write /sys/module/workqueue/parameters/power_efficient "Y"
-		sendToLog "$date Power-save workqueues enabled";
 	fi;
 
 	if [ -e /dev/cpuset ]; then
@@ -468,12 +456,6 @@ echo "N" > /sys/module/acpuclock_krait/parameters/boost
 echo "$date Disable Krait voltage boost" >> $LOG;
 fi;
 
-if [ -e "/sys/module/workqueue/parameters/power_efficient" ]; then
-chmod 0644 /sys/module/workqueue/parameters/power_efficient
-echo "Y" > /sys/module/workqueue/parameters/power_efficient
-echo "$date Power-save workqueues enabled" >> $LOG;
-fi;
-
 if [ -e /dev/cpuset ]; then
 echo "$date Detected $real_cpu_cores CPU cores" >> $LOG;
 echo "$date Optimizing CPUSET for $real_cpu_cores CPU cores" >> $LOG;
@@ -646,12 +628,6 @@ if [ -e "/sys/module/acpuclock_krait/parameters/boost" ];  then
 chmod 0644 /sys/module/acpuclock_krait/parameters/boost
 echo "Y" > /sys/module/acpuclock_krait/parameters/boost
 echo "$date Enable Krait voltage boost" >> $LOG;
-fi;
-
-if [ -e "/sys/module/workqueue/parameters/power_efficient" ]; then
-chmod 0644 /sys/module/workqueue/parameters/power_efficient
-echo "N" > /sys/module/workqueue/parameters/power_efficient
-echo "$date Power-save workqueues disabled" >> $LOG;
 fi;
 
 if [ -e /dev/cpuset ]; then
@@ -1517,7 +1493,7 @@ sd=`ls -d /sys/block/sd*`;
 
 for i in $mmc $sd
 do
-echo "512" > "$i";
+echo "512" > "$i"/queue/nr_requests;
 echo "$date nr_requests=512 in $i" >> $LOG;
 done
 
@@ -1636,9 +1612,12 @@ echo "$date Small net buffers activated" >> $LOG;
 netSpeedPlus() {
 echo "$date Activating Net Speed+..." >> $LOG;
 
-for i in $(ls /sys/class/net); do
-echo "128" > /sys/class/net/"$i"/tx_queue_len
-echo "$date tx_queue_len=128 in $i" >> $LOG;
+net=$(ls /sys/class/net);
+for i in $net; do
+	if [ -e /sys/class/net/"$i"/tx_queue_len ]; then
+		write /sys/class/net/"$i"/tx_queue_len "128"
+		sendToLog "$date tx_queue_len=128 in $i";
+	fi
 done
 
 #for i in $(ls /sys/class/net); do
@@ -1788,8 +1767,8 @@ echo "$date Console suspended" >> $LOG;
 fi;
 
 log_mode=/sys/module/logger/parameters/log_mode
-if [ -e $LOG_mode ]; then
-echo "2" > $LOG_mode
+if [ -e $log_mode ]; then
+echo "2" > $log_mode
 echo "$date Logger disabled" >> $LOG;
 fi;
 
@@ -1824,8 +1803,8 @@ echo "$date Disabled ext4 runtime debugging" >> $LOG;
 fi;
 
 logger_mode=/sys/kernel/logger_mode/logger_mode
-if [ -e $LOGger_mode ]; then
-echo "0" > $LOGger_mode
+if [ -e $logger_mode ]; then
+echo "0" > $logger_mode
 echo "$date Logger disabled" >> $LOG;
 fi;
 
@@ -1836,8 +1815,8 @@ echo "$date Logger disabled" >> $LOG;
 fi;
 
 logger_enabled=/sys/module/logger/parameters/enabled
-if [ -e $LOGger_enabled ]; then
-echo "0" > $LOGger_enabled
+if [ -e $logger_enabled ]; then
+echo "0" > $logger_enabled
 echo "$date Logger disabled" >> $LOG;
 fi;
 
@@ -2052,14 +2031,12 @@ fi;
 
 parameter_min_free_kbytes=/proc/sys/vm/min_free_kbytes;
 if [ -e $parameter_min_free_kbytes ]; then
-chmod 0666 $parameter_min_free_kbytes;
 echo "$mfk" > $parameter_min_free_kbytes;
 echo "$date min_free_kbytes=$mfk" >> $LOG;
 fi;
 
 parameter_extra_free_kbytes=/proc/sys/vm/extra_free_kbytes;
 if [ -e $parameter_extra_free_kbytes ]; then
-chmod 0666 $parameter_extra_free_kbytes;
 echo "$efk" > $parameter_extra_free_kbytes;
 echo "$date extra_free_kbytes=$efk" >> $LOG;
 fi;
@@ -2175,14 +2152,12 @@ fi;
 
 parameter_min_free_kbytes=/proc/sys/vm/min_free_kbytes;
 if [ -e $parameter_min_free_kbytes ]; then
-chmod 0666 $parameter_min_free_kbytes;
 echo "$mfk" > $parameter_min_free_kbytes;
 echo "$date min_free_kbytes=$mfk" >> $LOG;
 fi;
 
 parameter_extra_free_kbytes=/proc/sys/vm/extra_free_kbytes;
 if [ -e $parameter_extra_free_kbytes ]; then
-chmod 0666 $parameter_extra_free_kbytes;
 echo "$efk" > $parameter_extra_free_kbytes;
 echo "$date extra_free_kbytes=$efk" >> $LOG;
 fi;
@@ -2298,14 +2273,12 @@ fi;
 
 parameter_min_free_kbytes=/proc/sys/vm/min_free_kbytes;
 if [ -e $parameter_min_free_kbytes ]; then
-chmod 0666 $parameter_min_free_kbytes;
 echo "$mfk" > $parameter_min_free_kbytes;
 echo "$date min_free_kbytes=$mfk" >> $LOG;
 fi;
 
 parameter_extra_free_kbytes=/proc/sys/vm/extra_free_kbytes;
 if [ -e $parameter_extra_free_kbytes ]; then
-chmod 0666 $parameter_extra_free_kbytes;
 echo "$efk" > $parameter_extra_free_kbytes;
 echo "$date extra_free_kbytes=$efk" >> $LOG;
 fi;
@@ -2790,7 +2763,9 @@ if [ "$1" == "1" ]; then
 
 	for i in $(ls -d /dev/block/zram* | grep -Eo '[0-9]+$'); do
 		if [ -e /dev/block/zram"$i" ]; then
-			write /sys/class/zram-control/hot_remove "$i"
+			if [ -e /sys/class/zram-control/hot_remove ]; then
+				write /sys/class/zram-control/hot_remove "$i"
+			fi
 			write /sys/block/zram"$i"/reset "1"
 			swapoff /dev/block/zram"$i"
 			sendToLog "$date Disabling /dev/block/zram"$i"";
@@ -2810,7 +2785,9 @@ elif [ "$1" == "0" ]; then
 
 	for i in $(ls -d /dev/block/zram* | grep -Eo '[0-9]+$'); do
 		if [ -e /dev/block/zram"$i" ]; then
-			write /sys/class/zram-control/hot_remove "$i"
+			if [ -e /sys/class/zram-control/hot_remove ]; then
+				write /sys/class/zram-control/hot_remove "$i"
+			fi
 			write /sys/block/zram"$i"/reset "1"
 			swapoff /dev/block/zram"$i"
 			sendToLog "$date Disabling /dev/block/zram"$i"";
@@ -3166,10 +3143,6 @@ fi
 if [ `cat $USER_PROFILE/io_extended_queue` -eq 1 ]; then
 	ioExtendedQueue;
 fi
-
-#if [ `cat $USER_PROFILE/scheduler_tuner` -eq 1 ]; then
-#	partitionRemount;
-#fi
 
 if [ `cat $USER_PROFILE/sd_tweak` -eq 1 ]; then
 	sdTweak;
