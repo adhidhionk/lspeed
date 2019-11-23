@@ -2880,7 +2880,7 @@ setDefaultProfile() {
 	write $USER_PROFILE/oom_killer "0"
 	write $USER_PROFILE/swappiness "1"
 	write $USER_PROFILE/virtual_memory "2"
-	write $USER_PROFILE/heap_optimization "1"
+	write $USER_PROFILE/heap_optimization "0"
 	write $USER_PROFILE/zram_optimization "0"
 }
 
@@ -2925,7 +2925,7 @@ setPowerSavingProfile() {
 	write $USER_PROFILE/oom_killer "0"
 	write $USER_PROFILE/swappiness "1"
 	write $USER_PROFILE/virtual_memory "1"
-	write $USER_PROFILE/heap_optimization "1"
+	write $USER_PROFILE/heap_optimization "0"
 	write $USER_PROFILE/zram_optimization "0"
 }
 
@@ -2970,7 +2970,7 @@ setBalancedProfile() {
 	write $USER_PROFILE/oom_killer "0"
 	write $USER_PROFILE/swappiness "2"
 	write $USER_PROFILE/virtual_memory "2"
-	write $USER_PROFILE/heap_optimization "1"
+	write $USER_PROFILE/heap_optimization "0"
 	write $USER_PROFILE/zram_optimization "0"
 }
 
@@ -3015,7 +3015,7 @@ setPerformanceProfile() {
 	write $USER_PROFILE/oom_killer "0"
 	write $USER_PROFILE/swappiness "1"
 	write $USER_PROFILE/virtual_memory "3"
-	write $USER_PROFILE/heap_optimization "1"
+	write $USER_PROFILE/heap_optimization "0"
 	write $USER_PROFILE/zram_optimization "0"
 }
 
@@ -3143,6 +3143,10 @@ fi
 if [ `cat $USER_PROFILE/io_extended_queue` -eq 1 ]; then
 	ioExtendedQueue;
 fi
+
+#if [ `cat $USER_PROFILE/scheduler_tuner` -eq 1 ]; then
+#	schedulerTuner;
+#fi
 
 if [ `cat $USER_PROFILE/sd_tweak` -eq 1 ]; then
 	sdTweak;
