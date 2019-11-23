@@ -3216,7 +3216,7 @@ fi
 #
 # RAM manager section
 #
-if [ `$USER_PROFILE/ram_manager` -eq 1 ]; then
+if [ `cat $USER_PROFILE/ram_manager` -eq 1 ]; then
 	ramManagerMultitasking;
 elif [ `cat $USER_PROFILE/ram_manager` -eq 2 ]; then
 	ramManagerBalanced;
@@ -3241,17 +3241,17 @@ elif [ `cat $USER_PROFILE/oom_killer` -eq 1 ]; then
 fi
 
 if [ `cat $USER_PROFILE/swappiness` -eq 1 ]; then
-	swappinessTendency1;
+	swappinessTendency 1;
 elif [ `cat $USER_PROFILE/swappiness` -eq 2 ]; then
-	swappinessTendency10;
+	swappinessTendency 2;
 elif [ `cat $USER_PROFILE/swappiness` -eq 3 ]; then
-	swappinessTendency25;
+	swappinessTendency 3;
 elif [ `cat $USER_PROFILE/swappiness` -eq 4 ]; then
-	swappinessTendency50;
+	swappinessTendency 4;
 elif [ `cat $USER_PROFILE/swappiness` -eq 5 ]; then
-	swappinessTendency75;
+	swappinessTendency 5;
 elif [ `cat $USER_PROFILE/swappiness` -eq 6 ]; then
-	swappinessTendency100;
+	swappinessTendency 6;
 fi
 
 if [ `cat $USER_PROFILE/virtual_memory` -eq 1 ]; then
