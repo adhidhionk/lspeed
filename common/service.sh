@@ -1,8 +1,8 @@
 #!/system/bin/sh
 # L Speed tweak
 # Codename : lspeed
-version="v1.0-RC7";
-date=23-11-2019;
+version="v1.0-RC8";
+build_date=24-11-2019;
 # Developer : Paget96
 # Paypal : https://paypal.me/Paget96
 
@@ -19,7 +19,6 @@ date=23-11-2019;
 #
 
 # Variables
-date="[$(date +"%H:%M:%S %d-%m-%Y")]";
 memTotal=$(free -m | awk '/^Mem:/{print $2}');
 
 #PATHS
@@ -48,7 +47,7 @@ createFile() {
 }
 
 sendToLog() {
-    echo "$1" | tee -a $LOG
+    echo "[$(date +"%H:%M:%S %d-%m-%Y")] $1" | tee -a $LOG
 }
 
 write() {
@@ -152,29 +151,29 @@ fi;
 # Battery improvements
 #
 batteryImprovements() {
-sendToLog "$date Activating battery improvements...";
+sendToLog "Activating battery improvements...";
 
 	# Disabling ksm
 	if [ -e "/sys/kernel/mm/ksm/run" ]; then
 		write /sys/kernel/mm/ksm/run "0";
-		sendToLog "$date KSM is disabled, saving battery cycles and improving battery life...";
+		sendToLog "KSM is disabled, saving battery cycles and improving battery life...";
 	fi;
 
 	# Disabling uksm
 	if [ -e "/sys/kernel/mm/uksm/run" ]; then
 		write /sys/kernel/mm/uksm/run "0"
-		sendToLog "$date UKSM is disabled, saving battery cycles and improving battery life...";
+		sendToLog "UKSM is disabled, saving battery cycles and improving battery life...";
 	fi;
 
 	# Kernel sleepers
 	if [ -e "/sys/kernel/sched/gentle_fair_sleepers" ]; then
 		write /sys/kernel/sched/gentle_fair_sleepers "0"
-		sendToLog "$date Gentle fair sleepers disabled...";
+		sendToLog "Gentle fair sleepers disabled...";
 	fi;
 
 	if [ -e "/sys/kernel/sched/arch_power" ]; then
 		write /sys/kernel/sched/arch_power "1"
-		sendToLog "$date Arch power enabled...";
+		sendToLog "Arch power enabled...";
 	fi;
 
 	if [ -e "/sys/kernel/debug/sched_features" ]; then
@@ -182,25 +181,25 @@ sendToLog "$date Activating battery improvements...";
 		# them to run sooner, but does not allow tons of sleepers to
 		# rip the spread apart.
 		write /sys/kernel/debug/sched_features "NO_GENTLE_FAIR_SLEEPERS"
-		sendToLog "$date GENTLE_FAIR_SLEEPERS disabled...";
+		sendToLog "GENTLE_FAIR_SLEEPERS disabled...";
 
 		write /sys/kernel/debug/sched_features "ARCH_POWER"
-		sendToLog "$date ARCH_POWER enabled...";
+		sendToLog "ARCH_POWER enabled...";
 	fi;
 
 	# Enable fast charging
 	if [ -e "/sys/kernel/fast_charge/force_fast_charge" ];  then
 		write /sys/kernel/fast_charge/force_fast_charge "1"
-		sendToLog "$date Fast charge enabled";
+		sendToLog "Fast charge enabled";
 	fi;
 
 	resetprop ro.audio.flinger_standbytime_ms 300
-	sendToLog "$date Set low audio flinger standby delay to 300ms for reducing power consumption";
+	sendToLog "Set low audio flinger standby delay to 300ms for reducing power consumption";
 
 	scsi_disk=$(ls /sys/class/scsi_disk);
 	for i in $scsi_disk; do
  		write /sys/class/scsi_disk/"$i"/cache_type "temporary none"
- 		sendToLog "$date Set cache type to temporary none in $i";
+ 		sendToLog "Set cache type to temporary none in $i";
  	done
 
 	if [ -e /sys/module/wakeup/parameters/enable_bluetooth_timer ]; then
@@ -218,22 +217,22 @@ sendToLog "$date Activating battery improvements...";
 		write /sys/module/wakeup/parameters/enable_wlan_ipa_ws "N"
 		write /sys/module/wakeup/parameters/enable_wlan_pno_wl_ws "N"
 		write /sys/module/wakeup/parameters/enable_wcnss_filter_lock_ws "N"
-		sendToLog "$date Blocked various wakelocks";
+		sendToLog "Blocked various wakelocks";
 	fi;
 
 	if [ -e /sys/module/bcmdhd/parameters/wlrx_divide ]; then
 		write /sys/module/bcmdhd/parameters/wlrx_divide "4"
 		write /sys/module/bcmdhd/parameters/wlctrl_divide "4"
-		sendToLog "$date wlan wakelocks blocked";
+		sendToLog "wlan wakelocks blocked";
 	fi;
 
 	if [ -e /sys/devices/virtual/misc/boeffla_wakelock_blocker/wakelock_blocker ]; then
-		write /sys/devices/virtual/misc/boeffla_wakelock_blocker/wakelock_blocker "wlan_pno_wl;wlan_ipa;wcnss_filter_lock;[timerfd];hal_bluetooth_lock;IPA_WS;sensor_ind;wlan;netmgr_wl;qcom_rx_wakelock;wlan_wow_wl;wlan_extscan_wl;NETLINK;bam_dmux_wakelock;IPA_RM12"
-		sendToLog "$date Updated Boeffla wakelock blocker";
+		write /sys/devices/virtual/misc/boeffla_wakelock_blocker/wakelock_blocker "wlan_pno_wl;wlan_ipa;wcnss_filter_lock;hal_bluetooth_lock;IPA_WS;sensor_ind;wlan;netmgr_wl;qcom_rx_wakelock;wlan_wow_wl;wlan_extscan_wl;NETLINK;bam_dmux_wakelock;IPA_RM12"
+		sendToLog "Updated Boeffla wakelock blocker";
 
 	elif [ -e /sys/class/misc/boeffla_wakelock_blocker/wakelock_blocker ]; then
-		write /sys/class/misc/boeffla_wakelock_blocker/wakelock_blocker "wlan_pno_wl;wlan_ipa;wcnss_filter_lock;[timerfd];hal_bluetooth_lock;IPA_WS;sensor_ind;wlan;netmgr_wl;qcom_rx_wakelock;wlan_wow_wl;wlan_extscan_wl;NETLINK;bam_dmux_wakelock;IPA_RM12"
-		sendToLog "$date Updated Boeffla wakelock blocker";
+		write /sys/class/misc/boeffla_wakelock_blocker/wakelock_blocker "wlan_pno_wl;wlan_ipa;wcnss_filter_lock;hal_bluetooth_lock;IPA_WS;sensor_ind;wlan;netmgr_wl;qcom_rx_wakelock;wlan_wow_wl;wlan_extscan_wl;NETLINK;bam_dmux_wakelock;IPA_RM12"
+		sendToLog "Updated Boeffla wakelock blocker";
 	fi;
 
 	# lpm Levels
@@ -245,20 +244,20 @@ sendToLog "$date Activating battery improvements...";
 		write $lpm/parameters/print_parsed_dt "N"
 		write $lpm/parameters/sleep_disabled "N"
 		write $lpm/parameters/sleep_time_override "0"
-		sendToLog "$date Low power mode sleep enabled";
+		sendToLog "Low power mode sleep enabled";
 	fi;
 
 	if [ -e "/sys/class/lcd/panel/power_reduce" ]; then
 		write /sys/class/lcd/panel/power_reduce "1"
-		sendToLog "$date LCD power reduce enabled";
+		sendToLog "LCD power reduce enabled";
 	fi;
 
 	if [ -e "/sys/module/pm2/parameters/idle_sleep_mode" ]; then
 		write /sys/module/pm2/parameters/idle_sleep_mode "Y"
-		sendToLog "$date PM2 module idle sleep mode enabled";
+		sendToLog "PM2 module idle sleep mode enabled";
 	fi;
 
-	sendToLog "$date Battery improvements are enabled";
+	sendToLog "Battery improvements are enabled";
 }
 
 #
@@ -268,170 +267,135 @@ cpuOptimizationBattery() {
 	real_cpu_cores=$(ls /sys/devices/system/cpu | grep -c ^cpu[0-9]);
 	cpu_cores=$((real_cpu_cores-1));
 
-	echo "$date Optimizing CPU..." >> $LOG;
+	sendToLog "Optimizing CPU...";
 
 	if [ -e "/sys/devices/system/cpu/cpuidle/use_deepest_state" ]; then
 		write /sys/devices/system/cpu/cpuidle/use_deepest_state "1"
-		sendToLog "$date Enable deepest CPU idle state";
+		sendToLog "Enable deepest CPU idle state";
 	fi;
 
 	# Disable krait voltage boost
 	if [ -e "/sys/module/acpuclock_krait/parameters/boost" ];  then
 		write /sys/module/acpuclock_krait/parameters/boost "N"
-		sendToLog "$date Disable Krait voltage boost";
-	fi;
-
-	if [ -e /dev/cpuset ]; then
-	echo "$date Detected $real_cpu_cores CPU cores" >> $LOG;
-	echo "$date Optimizing CPUSET for $real_cpu_cores CPU cores" >> $LOG;
-	if [ "$cpu_cores" -eq 3 ]; then
-		echo "1" > /dev/cpuset/background/cpus
-		echo "0-1" > /dev/cpuset/system-background/cpus
-		echo "0-3" > /dev/cpuset/foreground/cpus
-		echo "0-3" > /dev/cpuset/top-app/cpus
-	elif [ "$cpu_cores" -eq 7 ]; then
-		echo "2-3" > /dev/cpuset/background/cpus
-		echo "0-3" > /dev/cpuset/system-background/cpus
-		echo "0-7" > /dev/cpuset/foreground/cpus
-		echo "0-7" > /dev/cpuset/top-app/cpus
-	elif [ "$cpu_cores" -eq 9 ]; then
-		echo "2-3" > /dev/cpuset/background/cpus
-		echo "0-3" > /dev/cpuset/system-background/cpus
-		echo "0-8" > /dev/cpuset/foreground/cpus
-		echo "0-8" > /dev/cpuset/top-app/cpus
-	fi;
-	echo "$date CPUSET optimized" >> $LOG;
+		sendToLog "Disable Krait voltage boost";
 	fi;
 
 	if [ -e "/sys/module/workqueue/parameters/power_efficient" ]; then
-	chmod 0644 /sys/module/workqueue/parameters/power_efficient
-	echo "Y" > /sys/module/workqueue/parameters/power_efficient
-	echo "$date Power-save workqueues enabled, scheduling workqueues on awake CPUs to save power." >> $LOG;
+		write /sys/module/workqueue/parameters/power_efficient "Y"
+		sendToLog "Power-save workqueues enabled, scheduling workqueues on awake CPUs to save power."
 	fi;
 
 	if [ -e /sys/module/cpu_input_boost/parameters/input_boost_duration ]; then
-	chmod 0644 /sys/module/cpu_input_boost/parameters/input_boost_duration
-	echo "0" > /sys/module/cpu_input_boost/parameters/input_boost_duration
-	echo "$date CPU Boost Input Duration=0" >> $LOG;
+		write /sys/module/cpu_input_boost/parameters/input_boost_duration "0"
+		sendToLog "CPU Boost Input Duration=0"
 	fi;
 
 	if [ -e /sys/module/cpu_boost/parameters/input_boost_ms ]; then
-	chmod 0644 /sys/module/cpu_boost/parameters/input_boost_ms
-	echo "0" > /sys/module/cpu_boost/parameters/input_boost_ms
-	echo "$date CPU Boost Input Ms=0" >> $LOG;
+		write /sys/module/cpu_boost/parameters/input_boost_ms "0"
+		sendToLog "CPU Boost Input Ms=0"
 	fi;
 
 	if [ -e /sys/module/cpu_boost/parameters/input_boost_ms_s2 ]; then
-	chmod 0644 /sys/module/cpu_boost/parameters/input_boost_ms_s2
-	echo "0" > /sys/module/cpu_boost/parameters/input_boost_ms_s2
-	echo "$date CPU Boost Input Ms_S2=0" >> $LOG;
+		write /sys/module/cpu_boost/parameters/input_boost_ms_s2 "0"
+		sendToLog "CPU Boost Input Ms_S2=0"
 	fi;
 
 	if [ -e /sys/module/cpu_boost/parameters/dynamic_stune_boost ]; then
-	chmod 0644 /sys/module/cpu_boost/parameters/dynamic_stune_boost
-	echo "0" > /sys/module/cpu_boost/parameters/dynamic_stune_boost
-	echo "$date CPU Boost Dyn_Stune_Boost=0" >> $LOG;
+		write /sys/module/cpu_boost/parameters/dynamic_stune_boost "0"
+		sendToLog "CPU Boost Dyn_Stune_Boost=0"
 	fi;
 
 	if [ -e /sys/module/cpu_input_boost/parameters/dynamic_stune_boost ]; then
-	chmod 0644 /sys/module/cpu_input_boost/parameters/dynamic_stune_boost
-	echo "0" > /sys/module/cpu_input_boost/parameters/dynamic_stune_boost
-	echo "$date CPU Boost Dyn_Stune_Boost=0" >> $LOG;
+		write /sys/module/cpu_input_boost/parameters/dynamic_stune_boost "0"
+		sendToLog "CPU input boost Dyn_Stune_Boost=0"
 	fi;
 
 	if [ -e /sys/module/cpu_input_boost/parameters/general_stune_boost ]; then
-	chmod 0644 /sys/module/cpu_input_boost/parameters/general_stune_boost
-	echo "10" > /sys/module/cpu_input_boost/parameters/general_stune_boost
-	echo "$date CPU Boost General_Stune_Boost=10" >> $LOG;
+		write /sys/module/cpu_input_boost/parameters/general_stune_boost "10"
+		sendToLog "CPU input boost General_Stune_Boost=10"
 	fi;
 
 	if [ -e /sys/module/dsboost/parameters/input_boost_duration ]; then
-	chmod 0644 /sys/module/dsboost/parameters/input_boost_duration
-	echo "0" > /sys/module/dsboost/parameters/input_boost_duration
-	echo "$date Dsboost Input Boost Duration=0" >> $LOG;
+		write /sys/module/dsboost/parameters/input_boost_duration "0"
+		sendToLog "Dsboost Input Boost Duration=0"
 	fi;
 
 	if [ -e /sys/module/dsboost/parameters/input_stune_boost ]; then
-	chmod 0644 /sys/module/dsboost/parameters/input_stune_boost
-	echo "0" > /sys/module/dsboost/parameters/input_stune_boost
-	echo "$date Dsboost Input Stune Boost Duration=0" >> $LOG;
+		write /sys/module/dsboost/parameters/input_stune_boost "0"
+		sendToLog "Dsboost Input Stune Boost Duration=0"
 	fi;
 
 	if [ -e /sys/module/dsboost/parameters/sched_stune_boost ]; then
-	chmod 0644 /sys/module/dsboost/parameters/sched_stune_boost
-	echo "0" > /sys/module/dsboost/parameters/sched_stune_boost
-	echo "$date Dsboost Sched_Stune_Boost=0" >> $LOG;
+		write /sys/module/dsboost/parameters/sched_stune_boost "0"
+		sendToLog "Dsboost Sched_Stune_Boost=0"
 	fi;
 
 	if [ -e /sys/module/dsboost/parameters/cooldown_boost_duration ]; then
-	chmod 0644 /sys/module/dsboost/parameters/cooldown_boost_duration
-	echo "0" > /sys/module/dsboost/parameters/cooldown_boost_duration
-	echo "$date Dsboost Cooldown_Boost_Duration=0" >> $LOG;
+		write /sys/module/dsboost/parameters/cooldown_boost_duration "0"
+		sendToLog "Dsboost Cooldown_Boost_Duration=0"
 	fi;
 
 	if [ -e /sys/module/dsboost/parameters/cooldown_stune_boost ]; then
-	chmod 0644 /sys/module/dsboost/parameters/cooldown_stune_boost
-	echo "0" > /sys/module/dsboost/parameters/cooldown_stune_boost
-	echo "$date Dsboost Cooldown_Stune_Boost=0" >> $LOG;
+		write /sys/module/dsboost/parameters/cooldown_stune_boost "0"
+		sendToLog "Dsboost Cooldown_Stune_Boost=0"
 	fi;
 
 	# CPU CTL
 	for i in $(find /dev/cpuctl -name cpu.rt_period_us); do
-	 echo "1000000" > "$i"
-	 echo "$date 1000000 to $i" >> $LOG;
+		write "$i" "1000000"
+		sendToLog "1000000 to $i"
 	done
 
 	for i in $(find /dev/cpuctl -name cpu.rt_runtime_us); do
-	 echo "950000" > "$i"
-	 echo "$date 950000 to $i" >> $LOG;
+		write "$i" "950000"
+		sendToLog "950000 to $i"
 	done
 
 	sched_rt_period_us=/proc/sys/kernel/sched_rt_period_us
 	if [ -e $sched_rt_period_us ]; then
-	 echo "1000000" > $sched_rt_period_us
-	 echo "$date sched_rt_period_us=1000000" >> $LOG;
+		write $sched_rt_period_us "1000000"
+		sendToLog "$sched_rt_period_us=1000000"
 	fi;
 
 	sched_rt_runtime_us=/proc/sys/kernel/sched_rt_runtime_us
 	if [ -e $sched_rt_runtime_us ]; then
-	 echo "950000" > $sched_rt_runtime_us
-	 echo "$date sched_rt_runtime_us=950000" >> $LOG;
+		write $sched_rt_runtime_us "950000"
+		sendToLog "$sched_rt_runtime_us=950000"
 	fi;
 
 	sched_wake_to_idle=/proc/sys/kernel/sched_wake_to_idle
 	if [ -e $sched_wake_to_idle ]; then
-	 echo "0" > $sched_wake_to_idle
-	 echo "$date sched_wake_to_idle=0" >> $LOG;
+		write $sched_wake_to_idle "0"
+		sendToLog "$sched_wake_to_idle=0"
 	fi;
 
 	# Disable touch boost
 	touchboost=/sys/module/msm_performance/parameters/touchboost
 	if [ -e $touchboost ]; then
-	 echo "0" > $touchboost
-	 echo "$date $touchboost=0" >> $LOG;
+		write $touchboost "0"
+		sendToLog "$touchboost=0"
 	fi;
 
 	touch_boost=/sys/power/pnpmgr/touch_boost
 	if [ -e $touch_boost ]; then
-	 echo "N" > $touch_boost
-	 echo "$date $touch_boost=N" >> $LOG;
+		write $touch_boost "N"
+		sendToLog "$touch_boost=N"
 	fi;
 
 	#Disable CPU Boost
 	boost_ms=/sys/module/cpu_boost/parameters/boost_ms
 	if [ -e $boost_ms ]; then
-	 echo "0" > $boost_ms
-	 echo "$date $boost_ms=0" >> $LOG;
+		write $boost_ms "N"
+		sendToLog "$boost_ms=N"
 	fi;
 
 	sched_boost_on_input=/sys/module/cpu_boost/parameters/sched_boost_on_input
 	if [ -e $sched_boost_on_input ]; then
-	 echo "N" > $sched_boost_on_input
-	 echo "$date $sched_boost_on_input=0" >> $LOG;
+		write $sched_boost_on_input "N"
+		sendToLog "$sched_boost_on_input=N"
 	fi;
 
-	echo "$date CPU is optimized..." >> $LOG;
-
+	sendToLog "CPU is optimized..."
 }
 
 #
@@ -441,171 +405,135 @@ cpuOptimizationBalanced() {
 real_cpu_cores=$(ls /sys/devices/system/cpu | grep -c ^cpu[0-9]);
 cpu_cores=$((real_cpu_cores-1));
 
-echo "$date Optimizing CPU..." >> $LOG;
+sendToLog "Optimizing CPU...";
 
 if [ -e "/sys/devices/system/cpu/cpuidle/use_deepest_state" ]; then
-chmod 0644 /sys/devices/system/cpu/cpuidle/use_deepest_state
-echo "1" > /sys/devices/system/cpu/cpuidle/use_deepest_state
-echo "$date Enable deepest CPU idle state" >> $LOG;
+	write /sys/devices/system/cpu/cpuidle/use_deepest_state "1"
+	sendToLog "Enable deepest CPU idle state";
 fi;
 
 # Disable krait voltage boost
 if [ -e "/sys/module/acpuclock_krait/parameters/boost" ];  then
-chmod 0644 /sys/module/acpuclock_krait/parameters/boost
-echo "N" > /sys/module/acpuclock_krait/parameters/boost
-echo "$date Disable Krait voltage boost" >> $LOG;
-fi;
-
-if [ -e /dev/cpuset ]; then
-echo "$date Detected $real_cpu_cores CPU cores" >> $LOG;
-echo "$date Optimizing CPUSET for $real_cpu_cores CPU cores" >> $LOG;
-if [ "$cpu_cores" -eq 3 ]; then
-	echo "1" > /dev/cpuset/background/cpus
-	echo "0-1" > /dev/cpuset/system-background/cpus
-	echo "0-3" > /dev/cpuset/foreground/cpus
-	echo "0-3" > /dev/cpuset/top-app/cpus
-elif [ "$cpu_cores" -eq 7 ]; then
-	echo "2-3" > /dev/cpuset/background/cpus
-	echo "0-3" > /dev/cpuset/system-background/cpus
-	echo "0-7" > /dev/cpuset/foreground/cpus
-	echo "0-7" > /dev/cpuset/top-app/cpus
-elif [ "$cpu_cores" -eq 9 ]; then
-	echo "2-3" > /dev/cpuset/background/cpus
-	echo "0-3" > /dev/cpuset/system-background/cpus
-	echo "0-8" > /dev/cpuset/foreground/cpus
-	echo "0-8" > /dev/cpuset/top-app/cpus
-fi;
-echo "$date CPUSET optimized" >> $LOG;
+	write /sys/module/acpuclock_krait/parameters/boost "N"
+	sendToLog "Disable Krait voltage boost";
 fi;
 
 if [ -e "/sys/module/workqueue/parameters/power_efficient" ]; then
-chmod 0644 /sys/module/workqueue/parameters/power_efficient
-echo "N" > /sys/module/workqueue/parameters/power_efficient
-echo "$date Power-save workqueues disabled, scheduling workqueues on awake CPUs to save power disabled" >> $LOG;
+	write /sys/module/workqueue/parameters/power_efficient "N"
+	sendToLog "Power-save workqueues disabled, scheduling workqueues on awake CPUs to save power."
 fi;
 
 if [ -e /sys/module/cpu_input_boost/parameters/input_boost_duration ]; then
-chmod 0644 /sys/module/cpu_input_boost/parameters/input_boost_duration
-echo "60" > /sys/module/cpu_input_boost/parameters/input_boost_duration
-echo "$date CPU Boost Input Duration=60" >> $LOG;
+	write /sys/module/cpu_input_boost/parameters/input_boost_duration "60"
+	sendToLog "CPU Boost Input Duration=60"
 fi;
 
 if [ -e /sys/module/cpu_boost/parameters/input_boost_ms ]; then
-chmod 0644 /sys/module/cpu_boost/parameters/input_boost_ms
-echo "60" > /sys/module/cpu_boost/parameters/input_boost_ms
-echo "$date CPU Boost Input Ms=60" >> $LOG;
+	write /sys/module/cpu_boost/parameters/input_boost_ms "60"
+	sendToLog "CPU Boost Input Ms=60"
 fi;
 
 if [ -e /sys/module/cpu_boost/parameters/input_boost_ms_s2 ]; then
-chmod 0644 /sys/module/cpu_boost/parameters/input_boost_ms_s2
-echo "30" > /sys/module/cpu_boost/parameters/input_boost_ms_s2
-echo "$date CPU Boost Input Ms_S2=30" >> $LOG;
+	write /sys/module/cpu_boost/parameters/input_boost_ms_s2 "30"
+	sendToLog "CPU Boost Input Ms_S2=30"
 fi;
 
 if [ -e /sys/module/cpu_boost/parameters/dynamic_stune_boost ]; then
-chmod 0644 /sys/module/cpu_boost/parameters/dynamic_stune_boost
-echo "20" > /sys/module/cpu_boost/parameters/dynamic_stune_boost
-echo "$date CPU Boost Dyn_Stune_Boost=20" >> $LOG;
+	write /sys/module/cpu_boost/parameters/dynamic_stune_boost "20"
+	sendToLog "CPU Boost Dyn_Stune_Boost=20"
 fi;
 
 if [ -e /sys/module/cpu_input_boost/parameters/dynamic_stune_boost ]; then
-chmod 0644 /sys/module/cpu_input_boost/parameters/dynamic_stune_boost
-echo "20" > /sys/module/cpu_input_boost/parameters/dynamic_stune_boost
-echo "$date CPU Boost Dyn_Stune_Boost=20" >> $LOG;
+	write /sys/module/cpu_input_boost/parameters/dynamic_stune_boost "20"
+	sendToLog "CPU input boost Dyn_Stune_Boost=20"
 fi;
 
 if [ -e /sys/module/cpu_input_boost/parameters/general_stune_boost ]; then
-chmod 0644 /sys/module/cpu_input_boost/parameters/general_stune_boost
-echo "60" > /sys/module/cpu_input_boost/parameters/general_stune_boost
-echo "$date CPU Boost General_Stune_Boost=60" >> $LOG;
+	write /sys/module/cpu_input_boost/parameters/general_stune_boost "60"
+	sendToLog "CPU input boost General_Stune_Boost=60"
 fi;
 
 if [ -e /sys/module/dsboost/parameters/input_boost_duration ]; then
-chmod 0644 /sys/module/dsboost/parameters/input_boost_duration
-echo "60" > /sys/module/dsboost/parameters/input_boost_duration
-echo "$date Dsboost Input Boost Duration=60" >> $LOG;
+	write /sys/module/dsboost/parameters/input_boost_duration "60"
+	sendToLog "Dsboost Input Boost Duration=60"
 fi;
 
 if [ -e /sys/module/dsboost/parameters/input_stune_boost ]; then
-chmod 0644 /sys/module/dsboost/parameters/input_stune_boost
-echo "60" > /sys/module/dsboost/parameters/input_stune_boost
-echo "$date Dsboost Input Stune Boost Duration=60" >> $LOG;
+	write /sys/module/dsboost/parameters/input_stune_boost "60"
+	sendToLog "Dsboost Input Stune Boost Duration=60"
 fi;
 
 if [ -e /sys/module/dsboost/parameters/sched_stune_boost ]; then
-chmod 0644 /sys/module/dsboost/parameters/sched_stune_boost
-echo "10" > /sys/module/dsboost/parameters/sched_stune_boost
-echo "$date Dsboost Sched_Stune_Boost=10" >> $LOG;
+	write /sys/module/dsboost/parameters/sched_stune_boost "10"
+	sendToLog "Dsboost Sched_Stune_Boost=10"
 fi;
 
 if [ -e /sys/module/dsboost/parameters/cooldown_boost_duration ]; then
-chmod 0644 /sys/module/dsboost/parameters/cooldown_boost_duration
-echo "60" > /sys/module/dsboost/parameters/cooldown_boost_duration
-echo "$date Dsboost Cooldown_Boost_Duration=60" >> $LOG;
+	write /sys/module/dsboost/parameters/cooldown_boost_duration "60"
+	sendToLog "Dsboost Cooldown_Boost_Duration=60"
 fi;
 
 if [ -e /sys/module/dsboost/parameters/cooldown_stune_boost ]; then
-chmod 0644 /sys/module/dsboost/parameters/cooldown_stune_boost
-echo "10" > /sys/module/dsboost/parameters/cooldown_stune_boost
-echo "$date Dsboost Cooldown_Stune_Boost=10" >> $LOG;
+	write /sys/module/dsboost/parameters/cooldown_stune_boost "10"
+	sendToLog "Dsboost Cooldown_Stune_Boost=10"
 fi;
 
+# CPU CTL
 for i in $(find /dev/cpuctl -name cpu.rt_period_us); do
- echo "1000000" > "$i"
- echo "$date 1000000 to $i" >> $LOG;
+	write "$i" "1000000"
+	sendToLog "1000000 to $i"
 done
 
 for i in $(find /dev/cpuctl -name cpu.rt_runtime_us); do
- echo "950000" > "$i"
- echo "$date 950000 to $i" >> $LOG;
+	write "$i" "950000"
+	sendToLog "950000 to $i"
 done
 
 sched_rt_period_us=/proc/sys/kernel/sched_rt_period_us
 if [ -e $sched_rt_period_us ]; then
- echo "1000000" > $sched_rt_period_us
- echo "$date sched_rt_period_us=1000000" >> $LOG;
+	write $sched_rt_period_us "1000000"
+	sendToLog "$sched_rt_period_us=1000000"
 fi;
 
 sched_rt_runtime_us=/proc/sys/kernel/sched_rt_runtime_us
 if [ -e $sched_rt_runtime_us ]; then
- echo "950000" > $sched_rt_runtime_us
- echo "$date sched_rt_runtime_us=950000" >> $LOG;
+	write $sched_rt_runtime_us "950000"
+	sendToLog "$sched_rt_runtime_us=950000"
 fi;
 
 sched_wake_to_idle=/proc/sys/kernel/sched_wake_to_idle
 if [ -e $sched_wake_to_idle ]; then
- echo "0" > $sched_wake_to_idle
- echo "$date sched_wake_to_idle=0" >> $LOG;
+	write $sched_wake_to_idle "0"
+	sendToLog "$sched_wake_to_idle=0"
 fi;
 
 # Disable touch boost
 touchboost=/sys/module/msm_performance/parameters/touchboost
 if [ -e $touchboost ]; then
- echo "0" > $touchboost
- echo "$date $touchboost=0" >> $LOG;
+	write $touchboost "0"
+	sendToLog "$touchboost=0"
 fi;
 
 touch_boost=/sys/power/pnpmgr/touch_boost
 if [ -e $touch_boost ]; then
- echo "N" > $touch_boost
- echo "$date $touch_boost=N" >> $LOG;
+	write $touch_boost "N"
+	sendToLog "$touch_boost=N"
 fi;
 
 #Disable CPU Boost
 boost_ms=/sys/module/cpu_boost/parameters/boost_ms
 if [ -e $boost_ms ]; then
- echo "0" > $boost_ms
- echo "$date $boost_ms=0" >> $LOG;
+	write $boost_ms "N"
+	sendToLog "$boost_ms=N"
 fi;
 
 sched_boost_on_input=/sys/module/cpu_boost/parameters/sched_boost_on_input
 if [ -e $sched_boost_on_input ]; then
- echo "N" > $sched_boost_on_input
- echo "$date $sched_boost_on_input=0" >> $LOG;
+	write $sched_boost_on_input "N"
+	sendToLog "$sched_boost_on_input=N"
 fi;
 
-echo "$date CPU is optimized..." >> $LOG;
-
+sendToLog "CPU is optimized..."
 }
 
 #
@@ -615,215 +543,180 @@ cpuOptimizationPerformance() {
 real_cpu_cores=$(ls /sys/devices/system/cpu | grep -c ^cpu[0-9]);
 cpu_cores=$((real_cpu_cores-1));
 
-echo "$date Optimizing CPU..." >> $LOG;
+sendToLog "Optimizing CPU...";
 
 if [ -e "/sys/devices/system/cpu/cpuidle/use_deepest_state" ]; then
-chmod 0644 /sys/devices/system/cpu/cpuidle/use_deepest_state
-echo "1" > /sys/devices/system/cpu/cpuidle/use_deepest_state
-echo "$date Enable deepest CPU idle state" >> $LOG;
+	write /sys/devices/system/cpu/cpuidle/use_deepest_state "1"
+	sendToLog "Enable deepest CPU idle state";
 fi;
 
 # Disable krait voltage boost
 if [ -e "/sys/module/acpuclock_krait/parameters/boost" ];  then
-chmod 0644 /sys/module/acpuclock_krait/parameters/boost
-echo "Y" > /sys/module/acpuclock_krait/parameters/boost
-echo "$date Enable Krait voltage boost" >> $LOG;
-fi;
-
-if [ -e /dev/cpuset ]; then
-echo "$date Detected $real_cpu_cores CPU cores" >> $LOG;
-echo "$date Optimizing CPUSET for $real_cpu_cores CPU cores" >> $LOG;
-if [ "$cpu_cores" -eq 3 ]; then
-	echo "1" > /dev/cpuset/background/cpus
-	echo "0-1" > /dev/cpuset/system-background/cpus
-	echo "0-3" > /dev/cpuset/foreground/cpus
-	echo "0-3" > /dev/cpuset/top-app/cpus
-elif [ "$cpu_cores" -eq 7 ]; then
-	echo "2-3" > /dev/cpuset/background/cpus
-	echo "0-3" > /dev/cpuset/system-background/cpus
-	echo "0-7" > /dev/cpuset/foreground/cpus
-	echo "0-7" > /dev/cpuset/top-app/cpus
-elif [ "$cpu_cores" -eq 9 ]; then
-	echo "2-3" > /dev/cpuset/background/cpus
-	echo "0-3" > /dev/cpuset/system-background/cpus
-	echo "0-8" > /dev/cpuset/foreground/cpus
-	echo "0-8" > /dev/cpuset/top-app/cpus
-fi;
-echo "$date CPUSET optimized" >> $LOG;
+	write /sys/module/acpuclock_krait/parameters/boost "Y"
+	sendToLog "Enable Krait voltage boost";
 fi;
 
 if [ -e "/sys/module/workqueue/parameters/power_efficient" ]; then
-chmod 0644 /sys/module/workqueue/parameters/power_efficient
-echo "N" > /sys/module/workqueue/parameters/power_efficient
-echo "$date Power-save workqueues disabled, scheduling workqueues on awake CPUs to save power disabled" >> $LOG;
+	write /sys/module/workqueue/parameters/power_efficient "N"
+	sendToLog "Power-save workqueues disabled, scheduling workqueues on awake CPUs to save power."
 fi;
 
 if [ -e /sys/module/cpu_input_boost/parameters/input_boost_duration ]; then
-chmod 0644 /sys/module/cpu_input_boost/parameters/input_boost_duration
-echo "120" > /sys/module/cpu_input_boost/parameters/input_boost_duration
-echo "$date CPU Boost Input Duration=120" >> $LOG;
+	write /sys/module/cpu_input_boost/parameters/input_boost_duration "120"
+	sendToLog "CPU Boost Input Duration=120"
 fi;
 
 if [ -e /sys/module/cpu_boost/parameters/input_boost_ms ]; then
-chmod 0644 /sys/module/cpu_boost/parameters/input_boost_ms
-echo "120" > /sys/module/cpu_boost/parameters/input_boost_ms
-echo "$date CPU Boost Input Ms=120" >> $LOG;
+	write /sys/module/cpu_boost/parameters/input_boost_ms "120"
+	sendToLog "CPU Boost Input Ms=120"
 fi;
 
 if [ -e /sys/module/cpu_boost/parameters/input_boost_ms_s2 ]; then
-chmod 0644 /sys/module/cpu_boost/parameters/input_boost_ms_s2
-echo "50" > /sys/module/cpu_boost/parameters/input_boost_ms_s2
-echo "$date CPU Boost Input Ms_S2=50" >> $LOG;
+	write /sys/module/cpu_boost/parameters/input_boost_ms_s2 "50"
+	sendToLog "CPU Boost Input Ms_S2=50"
 fi;
 
 if [ -e /sys/module/cpu_boost/parameters/dynamic_stune_boost ]; then
-chmod 0644 /sys/module/cpu_boost/parameters/dynamic_stune_boost
-echo "30" > /sys/module/cpu_boost/parameters/dynamic_stune_boost
-echo "$date CPU Boost Dyn_Stune_Boost=30" >> $LOG;
+	write /sys/module/cpu_boost/parameters/dynamic_stune_boost "30"
+	sendToLog "CPU Boost Dyn_Stune_Boost=30"
 fi;
 
 if [ -e /sys/module/cpu_input_boost/parameters/dynamic_stune_boost ]; then
-chmod 0644 /sys/module/cpu_input_boost/parameters/dynamic_stune_boost
-echo "30" > /sys/module/cpu_input_boost/parameters/dynamic_stune_boost
-echo "$date CPU Boost Dyn_Stune_Boost=30" >> $LOG;
+	write /sys/module/cpu_input_boost/parameters/dynamic_stune_boost "30"
+	sendToLog "CPU input boost Dyn_Stune_Boost=30"
 fi;
 
 if [ -e /sys/module/cpu_input_boost/parameters/general_stune_boost ]; then
-chmod 0644 /sys/module/cpu_input_boost/parameters/general_stune_boost
-echo "10" > /sys/module/cpu_input_boost/parameters/general_stune_boost
-echo "$date CPU Boost General_Stune_Boost=10" >> $LOG;
+	write /sys/module/cpu_input_boost/parameters/general_stune_boost "10"
+	sendToLog "CPU input boost General_Stune_Boost=10"
 fi;
 
 if [ -e /sys/module/dsboost/parameters/input_boost_duration ]; then
-chmod 0644 /sys/module/dsboost/parameters/input_boost_duration
-echo "120" > /sys/module/dsboost/parameters/input_boost_duration
-echo "$date Dsboost Input Boost Duration=120" >> $LOG;
+	write /sys/module/dsboost/parameters/input_boost_duration "120"
+	sendToLog "Dsboost Input Boost Duration=120"
 fi;
 
 if [ -e /sys/module/dsboost/parameters/input_stune_boost ]; then
-chmod 0644 /sys/module/dsboost/parameters/input_stune_boost
-echo "120" > /sys/module/dsboost/parameters/input_stune_boost
-echo "$date Dsboost Input Stune Boost Duration=120" >> $LOG;
+	write /sys/module/dsboost/parameters/input_stune_boost "120"
+	sendToLog "Dsboost Input Stune Boost Duration=120"
 fi;
 
 if [ -e /sys/module/dsboost/parameters/sched_stune_boost ]; then
-chmod 0644 /sys/module/dsboost/parameters/sched_stune_boost
-echo "10" > /sys/module/dsboost/parameters/sched_stune_boost
-echo "$date Dsboost Sched_Stune_Boost=10" >> $LOG;
+	write /sys/module/dsboost/parameters/sched_stune_boost "10"
+	sendToLog "Dsboost Sched_Stune_Boost=10"
 fi;
 
 if [ -e /sys/module/dsboost/parameters/cooldown_boost_duration ]; then
-chmod 0644 /sys/module/dsboost/parameters/cooldown_boost_duration
-echo "120" > /sys/module/dsboost/parameters/cooldown_boost_duration
-echo "$date Dsboost Cooldown_Boost_Duration=120" >> $LOG;
+	write /sys/module/dsboost/parameters/cooldown_boost_duration "120"
+	sendToLog "Dsboost Cooldown_Boost_Duration=120"
 fi;
 
 if [ -e /sys/module/dsboost/parameters/cooldown_stune_boost ]; then
-chmod 0644 /sys/module/dsboost/parameters/cooldown_stune_boost
-echo "10" > /sys/module/dsboost/parameters/cooldown_stune_boost
-echo "$date Dsboost Cooldown_Stune_Boost=10" >> $LOG;
+	write /sys/module/dsboost/parameters/cooldown_stune_boost "10"
+	sendToLog "Dsboost Cooldown_Stune_Boost=10"
 fi;
 
+
+# CPU CTL
 for i in $(find /dev/cpuctl -name cpu.rt_period_us); do
- echo "1000000" > "$i"
- echo "$date 1000000 to $i" >> $LOG;
+	write "$i" "1000000"
+	sendToLog "1000000 to $i"
 done
 
 for i in $(find /dev/cpuctl -name cpu.rt_runtime_us); do
- echo "950000" > "$i"
- echo "$date 950000 to $i" >> $LOG;
+	write "$i" "950000"
+	sendToLog "950000 to $i"
 done
 
 sched_rt_period_us=/proc/sys/kernel/sched_rt_period_us
 if [ -e $sched_rt_period_us ]; then
- echo "1000000" > $sched_rt_period_us
- echo "$date sched_rt_period_us=1000000" >> $LOG;
+	write $sched_rt_period_us "1000000"
+	sendToLog "$sched_rt_period_us=1000000"
 fi;
 
 sched_rt_runtime_us=/proc/sys/kernel/sched_rt_runtime_us
 if [ -e $sched_rt_runtime_us ]; then
- echo "950000" > $sched_rt_runtime_us
- echo "$date sched_rt_runtime_us=950000" >> $LOG;
+	write $sched_rt_runtime_us "950000"
+	sendToLog "$sched_rt_runtime_us=950000"
 fi;
 
 sched_wake_to_idle=/proc/sys/kernel/sched_wake_to_idle
 if [ -e $sched_wake_to_idle ]; then
- echo "0" > $sched_wake_to_idle
- echo "$date sched_wake_to_idle=0" >> $LOG;
+	write $sched_wake_to_idle "0"
+	sendToLog "$sched_wake_to_idle=0"
 fi;
 
 # Disable touch boost
 touchboost=/sys/module/msm_performance/parameters/touchboost
 if [ -e $touchboost ]; then
- echo "0" > $touchboost
- echo "$date $touchboost=0" >> $LOG;
+	write $touchboost "0"
+	sendToLog "$touchboost=0"
 fi;
 
 touch_boost=/sys/power/pnpmgr/touch_boost
 if [ -e $touch_boost ]; then
- echo "N" > $touch_boost
- echo "$date $touch_boost=N" >> $LOG;
+	write $touch_boost "N"
+	sendToLog "$touch_boost=N"
 fi;
 
 #Disable CPU Boost
 boost_ms=/sys/module/cpu_boost/parameters/boost_ms
 if [ -e $boost_ms ]; then
- echo "0" > $boost_ms
- echo "$date $boost_ms=0" >> $LOG;
+	write $boost_ms "N"
+	sendToLog "$boost_ms=N"
 fi;
 
 sched_boost_on_input=/sys/module/cpu_boost/parameters/sched_boost_on_input
 if [ -e $sched_boost_on_input ]; then
- echo "N" > $sched_boost_on_input
- echo "$date $sched_boost_on_input=0" >> $LOG;
+	write $sched_boost_on_input "N"
+	sendToLog "$sched_boost_on_input=N"
 fi;
 
-echo "$date CPU is optimized..." >> $LOG;
-
+sendToLog "CPU is optimized..."
 }
 
 entropyAggressive() {
-echo "$date Activating aggressive entropy profile..." >> $LOG;
+sendToLog "Activating aggressive entropy profile..."
 
 sysctl -e -w kernel.random.read_wakeup_threshold=512
 sysctl -e -w kernel.random.write_wakeup_threshold=1024
 sysctl -e -w kernel.random.urandom_min_reseed_secs=90
 
-echo "$date Aggressive entropy profile activated" >> $LOG;
+sendToLog "Aggressive entropy profile activated"
 }
 
 entropyEnlarger() {
-echo "$date Activating enlarger entropy profile..." >> $LOG;
+sendToLog "Activating enlarger entropy profile..."
 
 sysctl -e -w kernel.random.read_wakeup_threshold=128
 sysctl -e -w kernel.random.write_wakeup_threshold=896
 sysctl -e -w kernel.random.urandom_min_reseed_secs=90
 
-echo "$date Enlarger entropy profile activated" >> $LOG;
+sendToLog "Enlarger entropy profile activated"
 }
 
 entropyLight() {
-echo "$date Activating light entropy profile..." >> $LOG;
+sendToLog "Activating light entropy profile..."
 
 sysctl -e -w kernel.random.read_wakeup_threshold=64
 sysctl -e -w kernel.random.write_wakeup_threshold=128
 sysctl -e -w kernel.random.urandom_min_reseed_secs=90
 
-echo "$date Light entropy profile activated" >> $LOG;
+sendToLog "Light entropy profile activated"
 }
 
 entropyModerate() {
-echo "$date Activating moderate entropy profile..." >> $LOG;
+sendToLog "Activating moderate entropy profile..."
 
 sysctl -e -w kernel.random.read_wakeup_threshold=128
 sysctl -e -w kernel.random.write_wakeup_threshold=512
 sysctl -e -w kernel.random.urandom_min_reseed_secs=90
 
-echo "$date Moderate entropy profile activated" >> $LOG;
+sendToLog "Moderate entropy profile activated"
 }
 
 gpuOptimizerBalanced() {
-echo "$date Optimizing GPU..." >> $LOG;
+sendToLog "Optimizing GPU..."
 
 # GPU related tweaks
 if [ -d "/sys/class/kgsl/kgsl-3d0" ]; then
@@ -869,78 +762,77 @@ else
 	resetprop ro.hwui.drop_shadow_cache_size $((memTotal/100));
 	resetprop ro.hwui.texture_cache_flushrate 0.3
 fi
-sendToLog "$date Optimized GPU caches";
+sendToLog "Optimized GPU caches";
 
 if [ -e /proc/gpufreq/gpufreq_limited_thermal_ignore ]; then
-echo "1" > /proc/gpufreq/gpufreq_limited_thermal_ignore
-echo "$date Disabled gpufreq thermal" >> $LOG;
+	write /proc/gpufreq/gpufreq_limited_thermal_ignore "1"		
+	sendToLog "Disabled gpufreq thermal"
 fi;
 
 if [ -e /proc/mali/dvfs_enable ]; then
-echo "1" > /proc/mali/dvfs_enable
-echo "$date dvfs enabled" >> $LOG;
+	write /proc/mali/dvfs_enable "1"		
+	sendToLog "dvfs enabled"
 fi;
 
 if [ -e /sys/module/simple_gpu_algorithm/parameters/simple_gpu_activate ]; then
-echo "1" > /sys/module/simple_gpu_algorithm/parameters/simple_gpu_activate
-echo "Y" > /sys/module/simple_gpu_algorithm/parameters/simple_gpu_activate
-echo "$date Simple GPU algorithm enabled" >> $LOG;
+	write /sys/module/simple_gpu_algorithm/parameters/simple_gpu_activate "1"		
+	sendToLog "Simple GPU algorithm enabled"
 fi;
 
 # Adreno idler
-if [ -e /sys/module/adreno_idler/parameters/adreno_idler_active ];  then
-echo "Y" > /sys/module/adreno_idler/parameters/adreno_idler_active
-echo "6000" > /sys/module/adreno_idler/parameters/adreno_idler_idleworkload
-echo "15" > /sys/module/adreno_idler/parameters/adreno_idler_downdifferential
-echo "15" > /sys/module/adreno_idler/parameters/adreno_idler_idlewait
-echo "$date Disabled adreno idler" >> $LOG;
+if [ -e /sys/module/adreno_idler/parameters/adreno_idler_active ]; then
+	write /sys/module/adreno_idler/parameters/adreno_idler_active "N"
+	write /sys/module/adreno_idler/parameters/adreno_idler_idleworkload "6000"
+	write /sys/module/adreno_idler/parameters/adreno_idler_downdifferential "15"
+	write /sys/module/adreno_idler/parameters/adreno_idler_idlewait "15"
+	sendToLog "Disabled and tweaked adreno idler"
 fi;
 
 if [ -e $gpu/devfreq/adrenoboost ]; then
- echo "1" > $gpu/devfreq/adrenoboost
- echo "$date Adreno boost is set to 1" >> $LOG;
+	write $gpu/devfreq/adrenoboost "1"
+	sendToLog "Adreno boost is set to 1"
 fi;
 
 if [ -e $gpu/throttling ]; then
-echo "0" > $gpu/throttling
-echo "$date GPU throttling disabled" >> $LOG;
+	write $gpu/throttling "0"
+	sendToLog "GPU throttling disabled"
 fi;
 
 if [ -e $gpu/max_pwrlevel ]; then
-echo "0" > $gpu/max_pwrlevel
-echo "$date GPU max power level disabled" >> $LOG;
+	write $gpu/max_pwrlevel "0"
+	sendToLog "GPU max power level disabled"
 fi;
 
 if [ -e $gpu/force_no_nap ]; then
-echo "1" > $gpu/force_no_nap
-echo "$date force_no_nap enabled" >> $LOG;
+	write $gpu/force_no_nap "1"
+	sendToLog "force_no_nap enabled"
 fi;
 
 if [ -e $gpu/bus_split ]; then
-echo "1" > $gpu/bus_split
-echo "$date bus_split enabled" >> $LOG;
+	write $gpu/bus_split "1"
+	sendToLog "bus_split enabled"
 fi;
 
 if [ -e $gpu/force_bus_on ]; then
-echo "0" > $gpu/force_bus_on
-echo "$date force_bus_on disabled" >> $LOG;
+	write $gpu/force_bus_on "1"		
+	sendToLog "force_bus_on enabled"
 fi;
 
 if [ -e $gpu/force_clk_on ]; then
-echo "0" > $gpu/force_clk_on
-echo "$date force_clk_on disabled" >> $LOG;
+	write $gpu/force_clk_on "1"		
+	sendToLog "force_clk_on enabled"
 fi;
-
+	
 if [ -e $gpu/force_rail_on ]; then
-echo "0" > $gpu/force_rail_on
-echo "$date force_rail_on disabled" >> $LOG;
+	write $gpu/force_rail_on "1"		
+	sendToLog "force_rail_on enabled"
 fi;
 
-echo "$date GPU is optimized..." >> $LOG;
+sendToLog "GPU is optimized..."
 }
 
 gpuOptimizerPerformance() {
-echo "$date Optimizing GPU..." >> $LOG;
+sendToLog "Optimizing GPU..."
 
 # GPU related tweaks
 if [ -d "/sys/class/kgsl/kgsl-3d0" ]; then
@@ -986,78 +878,77 @@ else
 	resetprop ro.hwui.drop_shadow_cache_size $((memTotal/100));
 	resetprop ro.hwui.texture_cache_flushrate 0.3
 fi
-sendToLog "$date Optimized GPU caches";
+sendToLog "Optimized GPU caches";
 
 if [ -e /proc/gpufreq/gpufreq_limited_thermal_ignore ]; then
-echo "1" > /proc/gpufreq/gpufreq_limited_thermal_ignore
-echo "$date Disabled gpufreq thermal" >> $LOG;
+	write /proc/gpufreq/gpufreq_limited_thermal_ignore "1"		
+	sendToLog "Disabled gpufreq thermal"
 fi;
 
 if [ -e /proc/mali/dvfs_enable ]; then
-echo "1" > /proc/mali/dvfs_enable
-echo "$date dvfs enabled" >> $LOG;
+	write /proc/mali/dvfs_enable "1"		
+	sendToLog "dvfs enabled"
 fi;
 
 if [ -e /sys/module/simple_gpu_algorithm/parameters/simple_gpu_activate ]; then
-echo "1" > /sys/module/simple_gpu_algorithm/parameters/simple_gpu_activate
-echo "Y" > /sys/module/simple_gpu_algorithm/parameters/simple_gpu_activate
-echo "$date Simple GPU algorithm enabled" >> $LOG;
+	write /sys/module/simple_gpu_algorithm/parameters/simple_gpu_activate "1"		
+	sendToLog "Simple GPU algorithm enabled"
 fi;
 
 # Adreno idler
-if [ -e /sys/module/adreno_idler/parameters/adreno_idler_active ];  then
-echo "Y" > /sys/module/adreno_idler/parameters/adreno_idler_active
-echo "6000" > /sys/module/adreno_idler/parameters/adreno_idler_idleworkload
-echo "15" > /sys/module/adreno_idler/parameters/adreno_idler_downdifferential
-echo "15" > /sys/module/adreno_idler/parameters/adreno_idler_idlewait
-echo "$date Disabled adreno idler" >> $LOG;
+if [ -e /sys/module/adreno_idler/parameters/adreno_idler_active ]; then
+	write /sys/module/adreno_idler/parameters/adreno_idler_active "N"
+	write /sys/module/adreno_idler/parameters/adreno_idler_idleworkload "6000"
+	write /sys/module/adreno_idler/parameters/adreno_idler_downdifferential "15"
+	write /sys/module/adreno_idler/parameters/adreno_idler_idlewait "15"
+	sendToLog "Disabled and tweaked adreno idler"
 fi;
 
 if [ -e $gpu/devfreq/adrenoboost ]; then
- echo "2" > $gpu/devfreq/adrenoboost
- echo "$date Adreno boost is set to 2" >> $LOG;
+	write $gpu/devfreq/adrenoboost "2"
+	sendToLog "Adreno boost is set to 2"
 fi;
 
 if [ -e $gpu/throttling ]; then
-echo "0" > $gpu/throttling
-echo "$date GPU throttling disabled" >> $LOG;
+	write $gpu/throttling "0"
+	sendToLog "GPU throttling disabled"
 fi;
 
 if [ -e $gpu/max_pwrlevel ]; then
-echo "0" > $gpu/max_pwrlevel
-echo "$date GPU max power level disabled" >> $LOG;
+	write $gpu/max_pwrlevel "0"
+	sendToLog "GPU max power level disabled"
 fi;
 
 if [ -e $gpu/force_no_nap ]; then
-echo "1" > $gpu/force_no_nap
-echo "$date force_no_nap enabled" >> $LOG;
+	write $gpu/force_no_nap "1"
+	sendToLog "force_no_nap enabled"
 fi;
 
 if [ -e $gpu/bus_split ]; then
-echo "0" > $gpu/bus_split
-echo "$date bus_split disabled" >> $LOG;
+	write $gpu/bus_split "0"
+	sendToLog "bus_split disabled"
 fi;
 
 if [ -e $gpu/force_bus_on ]; then
-echo "1" > $gpu/force_bus_on
-echo "$date force_bus_on enabled" >> $LOG;
+	write $gpu/force_bus_on "1"		
+	sendToLog "force_bus_on enabled"
 fi;
 
 if [ -e $gpu/force_clk_on ]; then
-echo "1" > $gpu/force_clk_on
-echo "$date force_clk_on enabled" >> $LOG;
+	write $gpu/force_clk_on "1"		
+	sendToLog "force_clk_on enabled"
 fi;
-
+	
 if [ -e $gpu/force_rail_on ]; then
-echo "1" > $gpu/force_rail_on
-echo "$date force_rail_on enabled" >> $LOG;
+	write $gpu/force_rail_on "1"		
+	sendToLog "force_rail_on enabled"
 fi;
 
-echo "$date GPU is optimized..." >> $LOG;
+sendToLog "GPU is optimized..."
 }
 
 gpuOptimizerPowerSaving() {
-echo "$date Optimizing GPU..." >> $LOG;
+sendToLog "Optimizing GPU..."
 
 # GPU related tweaks
 if [ -d "/sys/class/kgsl/kgsl-3d0" ]; then
@@ -1103,122 +994,122 @@ else
 	resetprop ro.hwui.drop_shadow_cache_size $((memTotal/100));
 	resetprop ro.hwui.texture_cache_flushrate 0.3
 fi
-sendToLog "$date Optimized GPU caches";
+sendToLog "Optimized GPU caches";
+
 
 if [ -e /proc/gpufreq/gpufreq_limited_thermal_ignore ]; then
-echo "1" > /proc/gpufreq/gpufreq_limited_thermal_ignore
-echo "$date Disabled gpufreq thermal" >> $LOG;
+	write /proc/gpufreq/gpufreq_limited_thermal_ignore "1"
+	sendToLog "Disabled gpufreq thermal"
 fi;
 
 if [ -e /proc/mali/dvfs_enable ]; then
-echo "1" > /proc/mali/dvfs_enable
-echo "$date dvfs enabled" >> $LOG;
+	write /proc/mali/dvfs_enable "1"
+	sendToLog "dvfs enabled"
 fi;
 
 if [ -e /sys/module/simple_gpu_algorithm/parameters/simple_gpu_activate ]; then
-echo "1" > /sys/module/simple_gpu_algorithm/parameters/simple_gpu_activate
-echo "Y" > /sys/module/simple_gpu_algorithm/parameters/simple_gpu_activate
-echo "$date Simple GPU algorithm enabled" >> $LOG;
+	write /sys/module/simple_gpu_algorithm/parameters/simple_gpu_activate "1"
+	sendToLog "Simple GPU algorithm enabled"
 fi;
 
 # Adreno idler
-if [ -e /sys/module/adreno_idler/parameters/adreno_idler_active ];  then
-echo "Y" > /sys/module/adreno_idler/parameters/adreno_idler_active
-echo "10000" > /sys/module/adreno_idler/parameters/adreno_idler_idleworkload
-echo "35" > /sys/module/adreno_idler/parameters/adreno_idler_downdifferential
-echo "25" > /sys/module/adreno_idler/parameters/adreno_idler_idlewait
-echo "$date Enabled and tweaked adreno idler" >> $LOG;
+if [ -e /sys/module/adreno_idler/parameters/adreno_idler_active ]; then
+	write /sys/module/adreno_idler/parameters/adreno_idler_active "Y"
+	write /sys/module/adreno_idler/parameters/adreno_idler_idleworkload "10000"
+	write /sys/module/adreno_idler/parameters/adreno_idler_downdifferential "35"
+	write /sys/module/adreno_idler/parameters/adreno_idler_idlewait "25"
+	sendToLog "Enabled and tweaked adreno idler"
 fi;
 
 if [ -e $gpu/devfreq/adrenoboost ]; then
- echo "0" > $gpu/devfreq/adrenoboost
- echo "$date Adreno boost is set to 0" >> $LOG;
+	write $gpu/devfreq/adrenoboost "0"
+	sendToLog "Adreno boost is set to 0"
 fi;
 
 if [ -e $gpu/throttling ]; then
-echo "0" > $gpu/throttling
-echo "$date GPU throttling disabled" >> $LOG;
+	write $gpu/throttling "0"
+	sendToLog "GPU throttling disabled"
 fi;
 
 if [ -e $gpu/max_pwrlevel ]; then
-echo "0" > $gpu/max_pwrlevel
-echo "$date GPU max power level disabled" >> $LOG;
+	write $gpu/max_pwrlevel "0"
+	sendToLog "GPU max power level disabled"
 fi;
 
 if [ -e $gpu/force_no_nap ]; then
-echo "0" > $gpu/force_no_nap
-echo "$date force_no_nap disabled" >> $LOG;
+	write $gpu/force_no_nap "0"
+	sendToLog "force_no_nap disabled"
 fi;
 
 if [ -e $gpu/bus_split ]; then
-echo "1" > $gpu/bus_split
-echo "$date bus_split enabled" >> $LOG;
+	write $gpu/bus_split "1"
+	sendToLog "bus_split enabled"
 fi;
 
 if [ -e $gpu/force_bus_on ]; then
-echo "0" > $gpu/force_bus_on
-echo "$date force_bus_on disabled" >> $LOG;
+	write $gpu/force_bus_on "0"
+	sendToLog "force_bus_on disabled"
 fi;
 
 if [ -e $gpu/force_clk_on ]; then
-echo "0" > $gpu/force_clk_on
-echo "$date force_clk_on disabled" >> $LOG;
+	write $gpu/force_clk_on "0"
+	sendToLog "force_clk_on disabled"
 fi;
 
 if [ -e $gpu/force_rail_on ]; then
-echo "0" > $gpu/force_rail_on
-echo "$date force_rail_on disabled" >> $LOG;
+	write $gpu/force_rail_on "0"
+	sendToLog "force_rail_on disabled"
 fi;
 
-echo "$date GPU is optimized..." >> $LOG;
+sendToLog "GPU is optimized..."
 }
 
 optimizeBuffers() {
-echo "$date Changing GPU buffer count" >> $LOG;
+sendToLog "Changing GPU buffer count"
 
 setprop debug.egl.buffcount 4
 
-echo "$date GPU buffer count set to 4" >> $LOG;
+sendToLog "GPU buffer count set to 4"
 }
 
 renderOpenglesUsingGpu() {
-echo "$date Setting GPU to render OpenGLES..." >> $LOG;
+sendToLog "Setting GPU to render OpenGLES..."
 
 setprop debug.egl.hw 1
 
-echo "$date GPU successfully set up to render OpenGLES" >> $LOG;
+sendToLog "GPU successfully set up to render OpenGLES"
 }
 
 useOpenglSkia() {
-echo "$date Changing app rendering to skiagl..." >> $LOG;
+sendToLog "Changing app rendering to skiagl..."
 
 setprop debug.hwui.renderer skiagl
 
-echo "$date Rendering chaned to skiagl" >> $LOG;
+sendToLog "Rendering chaned to skiagl"
 }
 
 enableIoStats() {
-echo "$date Disabling I/O Stats..." >> $LOG;
+sendToLog "Enabling I/O Stats..."
 
 for i in $(find /sys -name iostats);
-do
-echo "1" > "$i";
-echo "$date iostats=1 in $i" >> $LOG;
+	do
+		write "$i" "1"
+		sendToLog "iostats=1 in $i"
 done
 
-echo "$date I/O Stats disabled" >> $LOG;
+sendToLog "I/O Stats enabled"
 }
 
 disableIoStats() {
-echo "$date Disabling I/O Stats..." >> $LOG;
+sendToLog "Disabling I/O Stats..."
 
 for i in $(find /sys -name iostats);
-do
-echo "0" > "$i";
-echo "$date iostats=0 in $i" >> $LOG;
+	do
+		write "$i" "0"
+		sendToLog "iostats=0 in $i"
 done
 
-echo "$date I/O Stats disabled" >> $LOG;
+sendToLog "I/O Stats disabled"
 }
 
 sdTweak() {
@@ -1234,7 +1125,7 @@ MMCBLK1_READ_AHEAD_KB="$MMCBLK1/queue/read_ahead_kb";
 # Storage blocks UFS
 SDA="/sys/block/sda";
 
-sendToLog "$date Activating SD speed tweak";
+sendToLog "Activating SD speed tweak";
 
 if [ -e $SDA ] && [ -e $MMCBLK0 ]; then
 
@@ -1252,10 +1143,10 @@ if [ -e $SDA ] && [ -e $MMCBLK0 ]; then
 		extReadAhead="256";
 	fi
 
-	sendToLog "$date Your SD Card size is: $((external_totalSize/1024/1024/1024))kb";
-	sendToLog "$date Read Ahead based on SD Card size: $((extReadAhead))kb";
+	sendToLog "Your SD Card size is: $((external_totalSize/1024/1024/1024))kb";
+	sendToLog "Read Ahead based on SD Card size: $((extReadAhead))kb";
 	write $MMCBLK0_READ_AHEAD_KB $extReadAhead;
-	sendToLog "$date SD speed tweak is activated";
+	sendToLog "SD speed tweak is activated";
 
 elif [ -e $SDA ] && [ -e $MMCBLK1 ]; then
 
@@ -1273,236 +1164,235 @@ elif [ -e $SDA ] && [ -e $MMCBLK1 ]; then
 		extReadAhead="256";
 	fi
 
-	sendToLog "$date Your SD Card size is: $((external_totalSize/1024/1024/1024))kb";
-	sendToLog "$date Read Ahead based on SD Card size: $((extReadAhead))kb";
+	sendToLog "Your SD Card size is: $((external_totalSize/1024/1024/1024))kb";
+	sendToLog "Read Ahead based on SD Card size: $((extReadAhead))kb";
 	write $MMCBLK1_READ_AHEAD_KB $extReadAhead;
-	sendToLog "$date SD speed tweak is activated";
+	sendToLog "SD speed tweak is activated";
 
 else
-	sendToLog "$date SD card not available or not supported...";
+	sendToLog "SD card not available or not supported...";
 
 fi
 }
  
 ioBlocksOptimizationBalanced() {
-echo "$date Activating balanced I/O blocks optimization..." >> $LOG;
+sendToLog "Activating balanced I/O blocks optimization..."
 
 for i in $(find /sys -name add_random);
-do
-echo "0" > "$i";
-echo "$date add_random=0 in $i" >> $LOG;
+	do
+		write "$i" "0"
+		sendToLog "add_random=0 in $i"
 done
 
 for i in $(find /sys -name nomerges);
-do
-echo "0" > "$i";
-echo "$date nomerges=0 in $i" >> $LOG;
+	do
+		write "$i" "0"
+		sendToLog "nomerges=0 in $i"
 done
 
 for i in $(find /sys -name rq_affinity);
-do
-echo "1" > "$i";
-echo "$date rq_affinity=1 in $i" >> $LOG;
+	do
+		write "$i" "1"
+		sendToLog "rq_affinity=1 in $i"
 done
 
 for i in $(find /sys -name nr_requests);
-do
-echo "128" > "$i";
-echo "$date nr_requests=128 in $i" >> $LOG;
+	do
+		write "$i" "128"
+		sendToLog "nr_requests=128 in $i"
 done
 
 for i in $(find /sys -name read_ahead_kb);
-do
-echo "128" > "$i";
-echo "$date read_ahead_kb=128 in $i" >> $LOG;
+	do
+		write "$i" "128"
+		sendToLog "read_ahead_kb=128 in $i"
 done
 
 for i in $(find /sys -name io_poll);
-do
-echo "0" > "$i";
-echo "$date io_poll=0 in $i" >> $LOG;
+	do
+		write "$i" "0"
+		sendToLog "io_poll=0 in $i"
 done
 
 for i in $(find /sys -name write_cache);
-do
-echo "write through" > "$i";
-echo "$date write_cache=write through in $i" >> $LOG;
+	do
+		write "$i" "write through"
+		sendToLog "write_cache=write through in $i"
 done
 
 # MMC CRC disabled
 removable=/sys/module/mmc_core/parameters/removable
 if [ -e $removable ]; then
-echo "N" > $removable
-echo "$date CRC Checks disabled $removable" >> $LOG;
+	write $removable "N"
+	sendToLog "CRC Checks disabled $removable"
 fi;
 
 crc=/sys/module/mmc_core/parameters/crc
 if [ -e $crc ]; then
-echo "N" > $crc
-echo "$date CRC Checks disabled $crc" >> $LOG;
+	write $crc "N"
+	sendToLog "CRC Checks disabled $crc"
 fi;
 
 use_spi_crc=/sys/module/mmc_core/parameters/use_spi_crc
 if [ -e $use_spi_crc ]; then
-echo "N" > $use_spi_crc
-echo "$date CRC Checks disabled $use_spi_crc" >> $LOG;
+	write $use_spi_crc "N"
+	sendToLog "CRC Checks disabled $use_spi_crc"
 fi;
 
-echo "$date Balanced I/O blocks optimization activated" >> $LOG;
+sendToLog "Balanced I/O blocks optimization activated"
 }
 
 ioBlocksOptimizationPerformance() {
-echo "$date Activating performance I/O blocks optimization..." >> $LOG;
+sendToLog "Activating performance I/O blocks optimization..."
 
 for i in $(find /sys -name add_random);
-do
-echo "0" > "$i";
-echo "$date add_random=0 in $i" >> $LOG;
+	do
+		write "$i" "0"
+		sendToLog "add_random=0 in $i"
 done
 
 for i in $(find /sys -name nomerges);
-do
-echo "0" > "$i";
-echo "$date nomerges=0 in $i" >> $LOG;
+	do
+		write "$i" "0"
+		sendToLog "nomerges=0 in $i"
 done
 
 for i in $(find /sys -name rq_affinity);
-do
-echo "2" > "$i";
-echo "$date rq_affinity=2 in $i" >> $LOG;
+	do
+		write "$i" "2"
+		sendToLog "rq_affinity=2 in $i"
 done
 
 for i in $(find /sys -name nr_requests);
-do
-echo "128" > "$i";
-echo "$date nr_requests=128 in $i" >> $LOG;
+	do
+		write "$i" "128"
+		sendToLog "nr_requests=128 in $i"
 done
 
 for i in $(find /sys -name read_ahead_kb);
-do
-echo "128" > "$i";
-echo "$date read_ahead_kb=128 in $i" >> $LOG;
+	do
+		write "$i" "128"
+		sendToLog "read_ahead_kb=128 in $i"
 done
 
 for i in $(find /sys -name io_poll);
-do
-echo "0" > "$i";
-echo "$date io_poll=0 in $i" >> $LOG;
+	do
+		write "$i" "0"
+		sendToLog "io_poll=0 in $i"
 done
 
 for i in $(find /sys -name write_cache);
-do
-echo "write through" > "$i";
-echo "$date write_cache=write through in $i" >> $LOG;
+	do
+		write "$i" "write through"
+		sendToLog "write_cache=write through in $i"
 done
 
 # MMC CRC disabled
 removable=/sys/module/mmc_core/parameters/removable
 if [ -e $removable ]; then
-echo "N" > $removable
-echo "$date CRC Checks disabled $removable" >> $LOG;
+	write $removable "N"
+	sendToLog "CRC Checks disabled $removable"
 fi;
 
 crc=/sys/module/mmc_core/parameters/crc
 if [ -e $crc ]; then
-echo "N" > $crc
-echo "$date CRC Checks disabled $crc" >> $LOG;
+	write $crc "N"
+	sendToLog "CRC Checks disabled $crc"
 fi;
 
 use_spi_crc=/sys/module/mmc_core/parameters/use_spi_crc
 if [ -e $use_spi_crc ]; then
-echo "N" > $use_spi_crc
-echo "$date CRC Checks disabled $use_spi_crc" >> $LOG;
+	write $use_spi_crc "N"
+	sendToLog "CRC Checks disabled $use_spi_crc"
 fi;
 
-echo "$date Performance I/O blocks optimization activated" >> $LOG;
+sendToLog "Performance I/O blocks optimization activated"
 }
 
 ioBlocksOptimizationPowerSaving() {
-echo "$date Activating power saving I/O blocks optimization..." >> $LOG;
+sendToLog "Activating power saving I/O blocks optimization..."
 
 for i in $(find /sys -name add_random);
-do
-echo "0" > "$i";
-echo "$date add_random=0 in $i" >> $LOG;
+	do
+		write "$i" "0"
+		sendToLog "add_random=0 in $i"
 done
 
 for i in $(find /sys -name nomerges);
-do
-echo "0" > "$i";
-echo "$date nomerges=0 in $i" >> $LOG;
+	do
+		write "$i" "0"
+		sendToLog "nomerges=0 in $i"
 done
 
 for i in $(find /sys -name rq_affinity);
-do
-echo "0" > "$i";
-echo "$date rq_affinity=0 in $i" >> $LOG;
+	do
+		write "$i" "0"
+		sendToLog "rq_affinity=0 in $i"
 done
 
 for i in $(find /sys -name nr_requests);
-do
-echo "64" > "$i";
-echo "$date nr_requests=64 in $i" >> $LOG;
+	do
+		write "$i" "64"
+		sendToLog "nr_requests=64 in $i"
 done
 
 for i in $(find /sys -name read_ahead_kb);
-do
-echo "64" > "$i";
-echo "$date read_ahead_kb=64 in $i" >> $LOG;
+	do
+		write "$i" "256"
+		sendToLog "read_ahead_kb=256 in $i"
 done
 
 for i in $(find /sys -name io_poll);
-do
-echo "0" > "$i";
-echo "$date io_poll=0 in $i" >> $LOG;
+	do
+		write "$i" "0"
+		sendToLog "io_poll=0 in $i"
 done
 
 for i in $(find /sys -name write_cache);
-do
-echo "write through" > "$i";
-echo "$date write_cache=write through in $i" >> $LOG;
+	do
+		write "$i" "write through"
+		sendToLog "write_cache=write through in $i"
 done
 
 # MMC CRC disabled
 removable=/sys/module/mmc_core/parameters/removable
 if [ -e $removable ]; then
-echo "N" > $removable
-echo "$date CRC Checks disabled $removable" >> $LOG;
+	write $removable "N"
+	sendToLog "CRC Checks disabled $removable"
 fi;
 
 crc=/sys/module/mmc_core/parameters/crc
 if [ -e $crc ]; then
-echo "N" > $crc
-echo "$date CRC Checks disabled $crc" >> $LOG;
+	write $crc "N"
+	sendToLog "CRC Checks disabled $crc"
 fi;
 
 use_spi_crc=/sys/module/mmc_core/parameters/use_spi_crc
 if [ -e $use_spi_crc ]; then
-echo "N" > $use_spi_crc
-echo "$date CRC Checks disabled $use_spi_crc" >> $LOG;
+	write $use_spi_crc "N"
+	sendToLog "CRC Checks disabled $use_spi_crc"
 fi;
 
-echo "$date Power saving I/O blocks optimization activated" >> $LOG;
+sendToLog "Power saving I/O blocks optimization activated"
 }
 
 ioExtendedQueue() {
-echo "$date Activating I/O extend queue..." >> $LOG;
+sendToLog "Activating I/O extend queue..."
 
 mmc=`ls -d /sys/block/mmc*`;
 sd=`ls -d /sys/block/sd*`;
 
 for i in $mmc $sd
-do
-echo "512" > "$i"/queue/nr_requests;
-echo "$date nr_requests=512 in $i" >> $LOG;
+	do
+		write "$i" "512"
+		sendToLog "nr_requests=512 in $i"
 done
 
-echo "$date I/O extend queue is activated" >> $LOG;
-
+sendToLog "I/O extend queue is activated"
 }
 
 dnsOptimizationCloudFlare() {
-echo "$date Activating DNS optimization..." >> $LOG;
+sendToLog "Activating DNS optimization..."
 
 iptables -t nat -A OUTPUT -p udp --dport 53 -j DNAT --to 1.0.0.1:53
 iptables -t nat -I OUTPUT -p udp --dport 53 -j DNAT --to 1.0.0.1:53
@@ -1532,13 +1422,13 @@ setprop net.wlan0.dns2 1.0.0.1
 setprop 2606:4700:4700::1111
 setprop 2606:4700:4700::1001
 
-echo "$date Changing DNS to CloudFlare" >> $LOG;
+sendToLog "Changing DNS to CloudFlare"
 
-echo "$date DNS optimization is activated" >> $LOG;
+sendToLog "DNS optimization is activated"
 }
 
 dnsOptimizationGooglePublic() {
-echo "$date Activating DNS optimization..." >> $LOG;
+sendToLog "Activating DNS optimization..."
 
 iptables -t nat -A OUTPUT -p udp --dport 53 -j DNAT --to 8.8.8.8:53
 iptables -t nat -I OUTPUT -p udp --dport 53 -j DNAT --to 8.8.4.4:53
@@ -1568,13 +1458,13 @@ setprop net.wlan0.dns2 8.8.4.4
 setprop 2001:4860:4860::8888
 setprop 2001:4860:4860::8844
 
-echo "$date Changing DNS to Google Public" >> $LOG;
+sendToLog "Changing DNS to Google Public"
 
-echo "$date DNS optimization is activated" >> $LOG;
+sendToLog "DNS optimization is activated"
 }
 
 netBuffersBig() {
-echo "$date Activating big net buffers..." >> $LOG;
+sendToLog "Activating big net buffers..."
 
 # Define TCP buffer sizes for various networks
 # ReadMin, ReadInitial, ReadMax, WriteMin, WriteInitial, WriteMax
@@ -1588,11 +1478,11 @@ setprop net.tcp.buffersize.lte 524288,1048576,2097152,524288,1048576,2097152
 setprop net.tcp.buffersize.hsdpa 6144,87380,1048576,6144,87380,1048576
 setprop net.tcp.buffersize.evdo_b 6144,87380,1048576,6144,87380,1048576
 
-echo "$date Big net buffers activated" >> $LOG;
+sendToLog "Big net buffers activated"
 }
 
 netBuffersSmall() {
-echo "$date Activating small net buffers..." >> $LOG;
+sendToLog "Activating small net buffers..."
 
 # Define TCP buffer sizes for various networks
 # ReadMin, ReadInitial, ReadMax, WriteMin, WriteInitial, WriteMax
@@ -1606,30 +1496,31 @@ setprop net.tcp.buffersize.evdo_b 4096,32768,65536,4096,32768,65536
 setprop net.tcp.buffersize.lte 4096,32768,65536,4096,32768,65536
 setprop net.tcp.buffersize.default 4096,32768,12582912,4096,32768,12582912
 
-echo "$date Small net buffers activated" >> $LOG;
+sendToLog "Small net buffers activated"
 }
 
 netSpeedPlus() {
-echo "$date Activating Net Speed+..." >> $LOG;
+sendToLog "Activating Net Speed+..."
+
 
 net=$(ls /sys/class/net);
 for i in $net; do
 	if [ -e /sys/class/net/"$i"/tx_queue_len ]; then
 		write /sys/class/net/"$i"/tx_queue_len "128"
-		sendToLog "$date tx_queue_len=128 in $i";
+		sendToLog "tx_queue_len=128 in $i";
 	fi
 done
 
 #for i in $(ls /sys/class/net); do
 #echo "1500" > /sys/class/net/"$i"/mtu
-#echo "$date mtu=1500 in $i" >> $LOG;
+#echo "mtu=1500 in $i" >> $LOG;
 #done
 
-echo "$date Net Speed+ activated" >> $LOG;
+sendToLog "Net Speed+ activated"
 }
 
 netTcpTweaks() {
-echo "$date Activating TCP tweak..." >> $LOG;
+sendToLog "Activating TCP tweak..."
 
 #echo "128" > /proc/sys/net/core/netdev_max_backlog
 #echo "0" > /proc/sys/net/core/netdev_tstamp_prequeue
@@ -1678,249 +1569,248 @@ echo "261120" > /proc/sys/net/core/wmem_max
 echo "261120" > /proc/sys/net/core/rmem_default
 echo "261120" > /proc/sys/net/core/wmem_default
 
-echo "$date TCP tweak activated" >> $LOG;
-
+sendToLog "TCP tweak activated"
 }
 
 rilTweaks() {
-echo "$date Activating ril tweaks..." >> $LOG;
+sendToLog "Activating ril tweaks..."
 
 resetprop ro.ril.gprsclass 12
-echo "$date GPRS Class changed to 12" >> $LOG;
+sendToLog "GPRS Class changed to 12"
 
 resetprop ro.ril.hsdpa.category 28
-echo "$date hsdpa category changed to 28" >> $LOG;
+sendToLog "hsdpa category changed to 28"
 
 resetprop ro.ril.hsupa.category 7
-echo "$date hsupa category changed to 7" >> $LOG;
+sendToLog "hsupa category changed to 7"
 
 resetprop ro.telephony.call_ring.delay 1500
-echo "$date RING/CRING event delay reduced to 1.5sec" >> $LOG;
+sendToLog "RING/CRING event delay reduced to 1.5sec"
 
 resetprop ro.telephony.call_ring.multiple false
-echo "$date Ril sends only one RIL_UNSOL_CALL_RING, so set call_ring.multiple to false" >> $LOG;
+sendToLog "Ril sends only one RIL_UNSOL_CALL_RING, so set call_ring.multiple to false"
 
-echo "$date Ril tweaks are activated" >> $LOG;
+sendToLog "Ril tweaks are activated"
 }
 
 disableDebugging() {
-echo "$date Powerful logging disable started..." >> $LOG;
+sendToLog "Powerful logging disable started..."
 
 for i in $(find /sys -name debug_mask); do
- echo "0" > "$i"
- echo "$date Disabled debugging for $i" >> $LOG;
+	write "$i" "0"
+	sendToLog "Disabled debugging for $i"
 done
 
 for i in $(find /sys -name debug); do
- echo "0" > "$i"
- echo "$date Disabled debugging for $i" >> $LOG;
+	write "$i" "0"
+	sendToLog "Disabled debugging for $i"
 done
 
 for i in $(find /sys -name debug_enable); do
- echo "0" > "$i"
- echo "$date Disabled debugging for $i" >> $LOG;
+	write "$i" "0"
+	sendToLog "Disabled debugging for $i"
 done
 
 for i in $(find /sys -name debug_level); do
-echo "0" > "$i"
-echo "$date Disabled debugging for $i" >> $LOG;
+	write "$i" "0"
+	sendToLog "Disabled debugging for $i"
 done
 
 for i in $(find /sys -name edac_mc_log_ce); do
-echo "0" > "$i"
-echo "$date Disabled debugging for $i" >> $LOG;
+	write "$i" "0"
+	sendToLog "Disabled debugging for $i"
 done
 
 for i in $(find /sys -name edac_mc_log_ue); do
-echo "0" > "$i"
-echo "$date Disabled debugging for $i" >> $LOG;
+	write "$i" "0"
+	sendToLog "Disabled debugging for $i"
 done
 
 for i in $(find /sys -name pwrnap); do
-echo "0" > "$i"
-echo "$date Disabled debugging for $i" >> $LOG;
+	write "$i" "0"
+	sendToLog "Disabled debugging for $i"
 done
 
 for i in $(find /sys -name enable_event_log); do
-echo "0" > "$i"
-echo "$date Disabled debugging for $i" >> $LOG;
+	write "$i" "0"
+	sendToLog "Disabled debugging for $i"
 done
 
 for i in $(find /sys -name log_ecn_error); do
-echo "0" > "$i"
-echo "$date Disabled debugging for $i" >> $LOG;
+	write "$i" "0"
+	sendToLog "Disabled debugging for $i"
 done
 
 for i in $(find /sys -name snapshot_crashdumper); do
-echo "0" > "$i"
-echo "$date Disabled debugging for $i" >> $LOG;
+	write "$i" "0"
+	sendToLog "Disabled debugging for $i"
 done
 
 resetprop ro.config.nocheckin 1
 setprop profiler.force_disable_err_rpt 1
-echo "$date Force disabled error reporting" >> $LOG;
+sendToLog "Force disabled error reporting"
 
 console_suspend=/sys/module/printk/parameters/console_suspend
 if [ -e $console_suspend ]; then
-echo "Y" > $console_suspend
-echo "$date Console suspended" >> $LOG;
+	write $console_suspend "Y"
+	sendToLog "Console suspended"
 fi;
 
 log_mode=/sys/module/logger/parameters/log_mode
 if [ -e $log_mode ]; then
-echo "2" > $log_mode
-echo "$date Logger disabled" >> $LOG;
+	write $log_mode "2"
+	sendToLog "Logger disabled"
 fi;
 
 debug_enabled=/sys/kernel/debug/debug_enabled
 if [ -e $debug_enabled ]; then
-echo "N" > $debug_enabled
-echo "$date Disabled kernel debugging" >> $LOG;
+	write $debug_enabled "N"
+	sendToLog "Disabled kernel debugging"
 fi;
 
 exception_trace=/proc/sys/debug/exception-trace
 if [ -e "$exception_trace" ]; then
-echo "0" > "$exception_trace"
-echo "$date Disabled exception-trace debugger" >> $LOG;
+	write $exception_trace "0"
+	sendToLog "Disabled exception-trace debugger"
 fi;
 
 mali_debug_level=/sys/module/mali/parameters/mali_debug_level
 if [ -e $mali_debug_level ]; then
-echo "0" > $mali_debug_level
-echo "$date Disabled mali GPU debugging" >> $LOG;
+	write $mali_debug_level "0"
+	sendToLog "Disabled mali GPU debugging"
 fi;
 
 block_dump=/proc/sys/vm/block_dump
 if [ -e $block_dump ]; then
-echo "0" > $block_dump
-echo "$date Disabled I/O block debugging" >> $LOG;
+	write $block_dump "0"
+	sendToLog "Disabled I/O block debugging"
 fi;
 
 mballoc_debug=/sys/module/ext4/parameters/mballoc_debug
 if [ -e $mballoc_debug ]; then
-echo "0" > $mballoc_debug
-echo "$date Disabled ext4 runtime debugging" >> $LOG;
+	write $mballoc_debug "0"
+	sendToLog "Disabled ext4 runtime debugging"
 fi;
 
 logger_mode=/sys/kernel/logger_mode/logger_mode
 if [ -e $logger_mode ]; then
-echo "0" > $logger_mode
-echo "$date Logger disabled" >> $LOG;
+	write $logger_mode "0"
+	sendToLog "Disabled $logger_mode"
 fi;
 
 log_enabled=/sys/module/logger/parameters/log_enabled
-if [ -e $LOG_enabled ]; then
-echo "0" > $LOG_enabled
-echo "$date Logger disabled" >> $LOG;
+if [ -e $log_enabled ]; then
+	write $log_enabled "0"
+	sendToLog "Disabled $log_enabled"
 fi;
 
 logger_enabled=/sys/module/logger/parameters/enabled
 if [ -e $logger_enabled ]; then
-echo "0" > $logger_enabled
-echo "$date Logger disabled" >> $LOG;
+	write $logger_enabled "0"
+	sendToLog "Disabled $logger_enabled"
 fi;
 
 compat_log=/proc/sys/kernel/compat-log
 if [ -e $compat_log ]; then
-echo "0" > $compat_log
-echo "$date Compat logging disabled" >> $LOG;
+	write $compat_log "0"
+	sendToLog "Compat logging disabled"
 fi;
 
 disable_ertm=/sys/module/bluetooth/parameters/disable_ertm
 if [ -e $disable_ertm ]; then
-echo "0" > $disable_ertm
-echo "$date Bluetooth ertm disabled" >> $LOG;
+	write $disable_ertm "0"
+	sendToLog "Bluetooth ertm disabled"
 fi;
 
 disable_esco=/sys/module/bluetooth/parameters/disable_esco
 if [ -e $disable_esco ]; then
-echo "0" > $disable_esco
-echo "$date Bluetooth esco is disabled" >> $LOG;
+	write $disable_esco "0"
+	sendToLog "Bluetooth esco is disabled"
 fi;
 
-echo "$date Logging disabled..." >> $LOG;
+sendToLog "Logging disabled..."
 }
 
 disableKernelPanic() {
-	echo "$date Disabling kernel panic..." >> $LOG;
+sendToLog "Disabling kernel panic..."
 
 	sysctl -e -w vm.panic_on_oom=0
 	sysctl -e -w kernel.panic_on_oops=0
 	sysctl -e -w kernel.panic=0
 	sysctl -e -w kernel.panic_on_warn=0
 
-	echo "$date Kernel panic disabled" >> $LOG;
+sendToLog "Kernel panic disabled"
 }
 
 disableMultitaskingLimitations() {
-echo "$date Disabling multitasking limitations..." >> $LOG;
+sendToLog "Disabling multitasking limitations..."
 
 setprop MIN_HIDDEN_APPS false
-echo "$date MIN_HIDDEN_APPS=false" >> $LOG;
+sendToLog "MIN_HIDDEN_APPS=false"
 
 setprop ACTIVITY_INACTIVE_RESET_TIME false
-echo "$date ACTIVITY_INACTIVE_RESET_TIME=false" >> $LOG;
+sendToLog "ACTIVITY_INACTIVE_RESET_TIME=false"
 
 setprop MIN_RECENT_TASKS false
-echo "$date MIN_RECENT_TASKS=false" >> $LOG;
+sendToLog "MIN_RECENT_TASKS=false"
 
 setprop PROC_START_TIMEOUT false
-echo "$date PROC_START_TIMEOUT=false" >> $LOG;
+sendToLog "PROC_START_TIMEOUT=false"
 
 setprop CPU_MIN_CHECK_DURATION false
-echo "$date CPU_MIN_CHECK_DURATION=false" >> $LOG;
+sendToLog "CPU_MIN_CHECK_DURATION=false"
 
 setprop GC_TIMEOUT false
-echo "$date GC_TIMEOUT=false" >> $LOG;
+sendToLog "GC_TIMEOUT=false"
 
 setprop SERVICE_TIMEOUT false
-echo "$date SERVICE_TIMEOUT=false" >> $LOG;
+sendToLog "SERVICE_TIMEOUT=false"
 
 setprop MIN_CRASH_INTERVAL false
-echo "$date MIN_CRASH_INTERVAL=false" >> $LOG;
+sendToLog "MIN_CRASH_INTERVAL=false"
 
 setprop ENFORCE_PROCESS_LIMIT false
-echo "$date ENFORCE_PROCESS_LIMIT=false" >> $LOG;
+sendToLog "ENFORCE_PROCESS_LIMIT=false"
 
-echo "$date Multitasking limitations disabled" >> $LOG;
+sendToLog "Multitasking limitations disabled"
 }
 
 lowRamFlagDisabled() {
-echo "$date Disabling low RAM flag..." >> $LOG;
+sendToLog "Disabling low RAM flag..."
 
 resetprop ro.config.low_ram false
 
-echo "$date Low RAM flag disabled" >> $LOG;
+sendToLog "Low RAM flag disabled"
 }
 
 lowRamFlagEnabled() {
-echo "$date Enabling low RAM flag..." >> $LOG;
+sendToLog "Enabling low RAM flag..."
 
 resetprop ro.config.low_ram true
 
-echo "$date Low RAM flag enabled" >> $LOG;
+sendToLog "Low RAM flag enabled"
 }
 
 oomKillerDisabled() {
-echo "$date Disabled OOM killer..." >> $LOG;
+sendToLog "Disabled OOM killer..."
 
 oom_kill_allocating_task=/proc/sys/vm/oom_kill_allocating_task
 if [ -e $oom_kill_allocating_task ]; then
-echo "0" > $oom_kill_allocating_task
+	write $oom_kill_allocating_task "0"
 fi;
 
-echo "$date OOM killer disabled" >> $LOG;
+sendToLog "OOM killer disabled"
 }
 
 oomKillerEnabled() {
-echo "$date Enabling OOM killer..." >> $LOG;
+sendToLog "Enabling OOM killer..."
 
 oom_kill_allocating_task=/proc/sys/vm/oom_kill_allocating_task
 if [ -e $oom_kill_allocating_task ]; then
-echo "1" > $oom_kill_allocating_task
+	write $oom_kill_allocating_task "1"
 fi;
 
-echo "$date OOM killer enabled" >> $LOG;
+sendToLog "OOM killer enabled"
 }
 
 ramManagerBalanced() {
@@ -1977,71 +1867,66 @@ adaptiveLmk="0";
 # How much memory of swap will be counted as free
 fudgeSwap="1024";
 
-echo "$date Enabling balanced RAM manager profile" >> $LOG;
+
+sendToLog "Enabling balanced RAM manager profile"
 
 sync
 sysctl -w vm.drop_caches=3;
 
 resetprop ro.sys.fw.bg_apps_limit $backgroundAppLimit;
 resetprop ro.vendor.qti.sys.fw.bg_apps_limit $backgroundAppLimit;
-echo "$date Background app limit=$backgroundAppLimit" >> $LOG;
+sendToLog "Background app limit=$backgroundAppLimit"
 
 parameter_adj=/sys/module/lowmemorykiller/parameters/adj;
 if [ -e $parameter_adj ]; then
-chmod 0666 $parameter_adj;
-echo "$adj" > $parameter_adj;
-echo "$date adj=$adj" >> $LOG;
+	write $parameter_adj "$adj"
+	sendToLog "adj=$adj"
 fi;
 
 parameter_oom_reaper=/sys/module/lowmemorykiller/parameters/oom_reaper;
 if [ -e $parameter_oom_reaper ]; then
-chmod 0666 $parameter_oom_reaper;
-echo "$oomReaper" > $parameter_oom_reaper;
-echo "$date oom_reaper=$oomReaper" >> $LOG;
+	write $parameter_oom_reaper "$oomReaper"
+	sendToLog "oom_reaper=$oomReaper"
 fi;
 
 parameter_lmk_fast_run=/sys/module/lowmemorykiller/parameters/lmk_fast_run;
 if [ -e $parameter_lmk_fast_run ]; then
-chmod 0666 $parameter_lmk_fast_run;
-echo "$fastRun" > $parameter_lmk_fast_run;
-echo "$date lmk_fast_run=$fastRun" >> $LOG;
+	write $parameter_lmk_fast_run "$fastRun"
+	sendToLog "lmk_fast_run=$fastRun"
 fi;
 
 parameter_adaptive_lmk=/sys/module/lowmemorykiller/parameters/enable_adaptive_lmk;
 if [ -e $parameter_adaptive_lmk ]; then
-chmod 0666 $parameter_adaptive_lmk;
-echo "$adaptiveLmk" > $parameter_adaptive_lmk;
-setprop lmk.autocalc false;
-echo "$date adaptive_lmk=$adaptiveLmk" >> $LOG;
+	write $parameter_adaptive_lmk "$adaptiveLmk"
+	setprop lmk.autocalc false;
+	sendToLog "adaptive_lmk=$adaptiveLmk"
 fi;
 
 parameter_fudge_swap=/sys/module/lowmemorykiller/parameters/fudgeswap;
 if [ -e $parameter_fudge_swap ]; then
-chmod 0666 $parameter_fudge_swap;
-echo "$fudgeSwap" > $parameter_fudge_swap;
-echo "$date fudge_swap=$fudgeSwap" >> $LOG;
+	write $parameter_fudge_swap "$fudgeSwap"
+	sendToLog "fudge_swap=$fudgeSwap"
 fi;
 
 parameter_minfree=/sys/module/lowmemorykiller/parameters/minfree;
 if [ -e $parameter_minfree ]; then
-chmod 0666 $parameter_minfree;
-echo "$minFree" > $parameter_minfree;
-echo "$date minfree=$minFree" >> $LOG;
+	write $parameter_minfree "$minFree"
+	sendToLog "minfree=$minFree"
 fi;
 
 parameter_min_free_kbytes=/proc/sys/vm/min_free_kbytes;
 if [ -e $parameter_min_free_kbytes ]; then
-echo "$mfk" > $parameter_min_free_kbytes;
-echo "$date min_free_kbytes=$mfk" >> $LOG;
+	write $parameter_min_free_kbytes "$mfk"
+	sendToLog "min_free_kbytes=$mfk"
 fi;
 
 parameter_extra_free_kbytes=/proc/sys/vm/extra_free_kbytes;
 if [ -e $parameter_extra_free_kbytes ]; then
-echo "$efk" > $parameter_extra_free_kbytes;
-echo "$date extra_free_kbytes=$efk" >> $LOG;
+	write $parameter_extra_free_kbytes "$efk"
+	sendToLog "extra_free_kbytes=$efk"
 fi;
 
-echo "$date Balanced RAM manager profile for $((memTotal))mb devices successfully applied" >> $LOG;
+sendToLog "Balanced RAM manager profile for $((memTotal))mb devices successfully applied"
 }
 
 ramManagerGaming() {
@@ -2098,71 +1983,66 @@ adaptiveLmk="0";
 # How much memory of swap will be counted as free
 fudgeSwap="1024";
 
-echo "$date Enabling gaming RAM manager profile" >> $LOG;
+
+sendToLog "Enabling gaming RAM manager profile"
 
 sync
 sysctl -w vm.drop_caches=3;
 
 resetprop ro.sys.fw.bg_apps_limit $backgroundAppLimit;
 resetprop ro.vendor.qti.sys.fw.bg_apps_limit $backgroundAppLimit;
-echo "$date Background app limit=$backgroundAppLimit" >> $LOG;
+sendToLog "Background app limit=$backgroundAppLimit"
 
 parameter_adj=/sys/module/lowmemorykiller/parameters/adj;
 if [ -e $parameter_adj ]; then
-chmod 0666 $parameter_adj;
-echo "$adj" > $parameter_adj;
-echo "$date adj=$adj" >> $LOG;
+	write $parameter_adj "$adj"
+	sendToLog "adj=$adj"
 fi;
 
 parameter_oom_reaper=/sys/module/lowmemorykiller/parameters/oom_reaper;
 if [ -e $parameter_oom_reaper ]; then
-chmod 0666 $parameter_oom_reaper;
-echo "$oomReaper" > $parameter_oom_reaper;
-echo "$date oom_reaper=$oomReaper" >> $LOG;
+	write $parameter_oom_reaper "$oomReaper"
+	sendToLog "oom_reaper=$oomReaper"
 fi;
 
 parameter_lmk_fast_run=/sys/module/lowmemorykiller/parameters/lmk_fast_run;
 if [ -e $parameter_lmk_fast_run ]; then
-chmod 0666 $parameter_lmk_fast_run;
-echo "$fastRun" > $parameter_lmk_fast_run;
-echo "$date lmk_fast_run=$fastRun" >> $LOG;
+	write $parameter_lmk_fast_run "$fastRun"
+	sendToLog "lmk_fast_run=$fastRun"
 fi;
 
 parameter_adaptive_lmk=/sys/module/lowmemorykiller/parameters/enable_adaptive_lmk;
 if [ -e $parameter_adaptive_lmk ]; then
-chmod 0666 $parameter_adaptive_lmk;
-echo "$adaptiveLmk" > $parameter_adaptive_lmk;
-setprop lmk.autocalc false;
-echo "$date adaptive_lmk=$adaptiveLmk" >> $LOG;
+	write $parameter_adaptive_lmk "$adaptiveLmk"
+	setprop lmk.autocalc false;
+	sendToLog "adaptive_lmk=$adaptiveLmk"
 fi;
 
 parameter_fudge_swap=/sys/module/lowmemorykiller/parameters/fudgeswap;
 if [ -e $parameter_fudge_swap ]; then
-chmod 0666 $parameter_fudge_swap;
-echo "$fudgeSwap" > $parameter_fudge_swap;
-echo "$date fudge_swap=$fudgeSwap" >> $LOG;
+	write $parameter_fudge_swap "$fudgeSwap"
+	sendToLog "fudge_swap=$fudgeSwap"
 fi;
 
 parameter_minfree=/sys/module/lowmemorykiller/parameters/minfree;
 if [ -e $parameter_minfree ]; then
-chmod 0666 $parameter_minfree;
-echo "$minFree" > $parameter_minfree;
-echo "$date minfree=$minFree" >> $LOG;
+	write $parameter_minfree "$minFree"
+	sendToLog "minfree=$minFree"
 fi;
 
 parameter_min_free_kbytes=/proc/sys/vm/min_free_kbytes;
 if [ -e $parameter_min_free_kbytes ]; then
-echo "$mfk" > $parameter_min_free_kbytes;
-echo "$date min_free_kbytes=$mfk" >> $LOG;
+	write $parameter_min_free_kbytes "$mfk"
+	sendToLog "min_free_kbytes=$mfk"
 fi;
 
 parameter_extra_free_kbytes=/proc/sys/vm/extra_free_kbytes;
 if [ -e $parameter_extra_free_kbytes ]; then
-echo "$efk" > $parameter_extra_free_kbytes;
-echo "$date extra_free_kbytes=$efk" >> $LOG;
+	write $parameter_extra_free_kbytes "$efk"
+	sendToLog "extra_free_kbytes=$efk"
 fi;
 
-echo "$date Gaming RAM manager profile for $((memTotal))mb devices successfully applied" >> $LOG;
+sendToLog "Gaming RAM manager profile for $((memTotal))mb devices successfully applied"
 }
 
 ramManagerMultitasking() {
@@ -2219,125 +2099,120 @@ adaptiveLmk="0";
 # How much memory of swap will be counted as free
 fudgeSwap="1024";
 
-echo "$date Enabling multitasking RAM manager profile" >> $LOG;
+
+sendToLog "Enabling multitasking RAM manager profile"
 
 sync
 sysctl -w vm.drop_caches=3;
 
 resetprop ro.sys.fw.bg_apps_limit $backgroundAppLimit;
 resetprop ro.vendor.qti.sys.fw.bg_apps_limit $backgroundAppLimit;
-echo "$date Background app limit=$backgroundAppLimit" >> $LOG;
+sendToLog "Background app limit=$backgroundAppLimit"
 
 parameter_adj=/sys/module/lowmemorykiller/parameters/adj;
 if [ -e $parameter_adj ]; then
-chmod 0666 $parameter_adj;
-echo "$adj" > $parameter_adj;
-echo "$date adj=$adj" >> $LOG;
+	write $parameter_adj "$adj"
+	sendToLog "adj=$adj"
 fi;
 
 parameter_oom_reaper=/sys/module/lowmemorykiller/parameters/oom_reaper;
 if [ -e $parameter_oom_reaper ]; then
-chmod 0666 $parameter_oom_reaper;
-echo "$oomReaper" > $parameter_oom_reaper;
-echo "$date oom_reaper=$oomReaper" >> $LOG;
+	write $parameter_oom_reaper "$oomReaper"
+	sendToLog "oom_reaper=$oomReaper"
 fi;
 
 parameter_lmk_fast_run=/sys/module/lowmemorykiller/parameters/lmk_fast_run;
 if [ -e $parameter_lmk_fast_run ]; then
-chmod 0666 $parameter_lmk_fast_run;
-echo "$fastRun" > $parameter_lmk_fast_run;
-echo "$date lmk_fast_run=$fastRun" >> $LOG;
+	write $parameter_lmk_fast_run "$fastRun"
+	sendToLog "lmk_fast_run=$fastRun"
 fi;
 
 parameter_adaptive_lmk=/sys/module/lowmemorykiller/parameters/enable_adaptive_lmk;
 if [ -e $parameter_adaptive_lmk ]; then
-chmod 0666 $parameter_adaptive_lmk;
-echo "$adaptiveLmk" > $parameter_adaptive_lmk;
-setprop lmk.autocalc false;
-echo "$date adaptive_lmk=$adaptiveLmk" >> $LOG;
+	write $parameter_adaptive_lmk "$adaptiveLmk"
+	setprop lmk.autocalc false;
+	sendToLog "adaptive_lmk=$adaptiveLmk"
 fi;
 
 parameter_fudge_swap=/sys/module/lowmemorykiller/parameters/fudgeswap;
 if [ -e $parameter_fudge_swap ]; then
-chmod 0666 $parameter_fudge_swap;
-echo "$fudgeSwap" > $parameter_fudge_swap;
-echo "$date fudge_swap=$fudgeSwap" >> $LOG;
+	write $parameter_fudge_swap "$fudgeSwap"
+	sendToLog "fudge_swap=$fudgeSwap"
 fi;
 
 parameter_minfree=/sys/module/lowmemorykiller/parameters/minfree;
 if [ -e $parameter_minfree ]; then
-chmod 0666 $parameter_minfree;
-echo "$minFree" > $parameter_minfree;
-echo "$date minfree=$minFree" >> $LOG;
+	write $parameter_minfree "$minFree"
+	sendToLog "minfree=$minFree"
 fi;
 
 parameter_min_free_kbytes=/proc/sys/vm/min_free_kbytes;
 if [ -e $parameter_min_free_kbytes ]; then
-echo "$mfk" > $parameter_min_free_kbytes;
-echo "$date min_free_kbytes=$mfk" >> $LOG;
+	write $parameter_min_free_kbytes "$mfk"
+	sendToLog "min_free_kbytes=$mfk"
 fi;
 
 parameter_extra_free_kbytes=/proc/sys/vm/extra_free_kbytes;
 if [ -e $parameter_extra_free_kbytes ]; then
-echo "$efk" > $parameter_extra_free_kbytes;
-echo "$date extra_free_kbytes=$efk" >> $LOG;
+	write $parameter_extra_free_kbytes "$efk"
+	sendToLog "extra_free_kbytes=$efk"
 fi;
 
-echo "$date Multitasking RAM manager profile for $((memTotal))mb devices successfully applied" >> $LOG;
+sendToLog "Multitasking RAM manager profile for $((memTotal))mb devices successfully applied"
 }
 
 swappinessTendency() {
-	sendToLog "$date Setting swappiness tendency...";
+	sendToLog "Setting swappiness tendency...";
 
 	swappiness=/proc/sys/vm/swappiness
 	if [ -e $swappiness ]; then
 		if [ "$1" == "1" ]; then
 			write $swappiness "1"
 			
-			sendToLog "$date swappiness=1";
-			sendToLog "$date Swappiness tendency set to 1";
+			sendToLog "swappiness=1";
+			sendToLog "Swappiness tendency set to 1";
 		elif [ "$1" == "2" ]; then
 			write $swappiness "10"
 			
-			sendToLog "$date swappiness=10";
-			sendToLog "$date Swappiness tendency set to 10";
+			sendToLog "swappiness=10";
+			sendToLog "Swappiness tendency set to 10";
 			
 		elif [ "$1" == "3" ]; then
 			write $swappiness "25"
 			
-			sendToLog "$date swappiness=25";
-			sendToLog "$date Swappiness tendency set to 25";
+			sendToLog "swappiness=25";
+			sendToLog "Swappiness tendency set to 25";
 			
 		elif [ "$1" == "4" ]; then
 			write $swappiness "50"
 			
-			sendToLog "$date swappiness=50";
-			sendToLog "$date Swappiness tendency set to 50";
+			sendToLog "swappiness=50";
+			sendToLog "Swappiness tendency set to 50";
 
 		elif [ "$1" == "5" ]; then
 			write $swappiness "75"
 			
-			sendToLog "$date swappiness=75";
-			sendToLog "$date Swappiness tendency set to 75";
+			sendToLog "swappiness=75";
+			sendToLog "Swappiness tendency set to 75";
 
 		elif [ "$1" == "6" ]; then
 			write $swappiness "100"
 			
-			sendToLog "$date swappiness=100";
-			sendToLog "$date Swappiness tendency set to 100";			
+			sendToLog "swappiness=100";
+			sendToLog "Swappiness tendency set to 100";			
 		fi
 	fi;
 }
 
 virtualMemoryTweaksBalanced() {
-echo "$date Activating balanced virtual memory tweaks..." >> $LOG;
+sendToLog "Activating balanced virtual memory tweaks..."
 
 sync
 
 leases_enable=/proc/sys/fs/leases-enable
 if [ -e $leases_enable ]; then
-echo "1" > $leases_enable
-echo "$date $leases_enable=1" >> $LOG;
+	write $leases_enable "1"		
+	sendToLog "leases_enable=1"
 fi;
 
 # This file specifies the grace period (in seconds) that the kernel grants
@@ -2348,60 +2223,60 @@ fi;
 
 lease_break_time=/proc/sys/fs/lease-break-time
 if [ -e $lease_break_time ]; then
-echo "10" > $lease_break_time
-echo "$date $lease_break_time=10" >> $LOG;
+	write $lease_break_time "10"		
+	sendToLog "lease_break_time=10"
 fi;
 
 # dnotify is a signal used to notify a process about file/directory changes.
 dir_notify_enable=/proc/sys/fs/dir-notify-enable
 if [ -e $dir_notify_enable ]; then
-echo "0" > $dir_notify_enable
-echo "$date $dir_notify_enable=0" >> $LOG;
+	write $dir_notify_enable "0"		
+	sendToLog "dir_notify_enable=0"
 fi;
 
-echo "$date File system parameters are updated" >> $LOG;
+sendToLog "File system parameters are updated"
 
 enable_process_reclaim=/sys/module/process_reclaim/parameters/enable_process_reclaim
 if [ -e $enable_process_reclaim ]; then
-echo "0" > $enable_process_reclaim
-echo "$date Reclaiming pages of inactive tasks disabled" >> $LOG;
+	write $enable_process_reclaim "0"		
+	sendToLog "Reclaiming pages of inactive tasks disabled"
 fi;
 
 # This parameter tells how much of physical RAM to take when swap is full
 overcommit_ratio=/proc/sys/vm/overcommit_ratio
 if [ -e overcommit_ratio ]; then
-echo "0" > $overcommit_ratio
-echo "$date overcommit_ratio=0" >> $LOG;
+	write $overcommit_ratio "0"		
+	sendToLog "overcommit_ratio=0"
 fi;
 
 oom_dump_tasks=/proc/sys/vm/oom_dump_tasks
 if [ -e $oom_dump_tasks ]; then
-echo "0" > $oom_dump_tasks
-echo "$date OOM dump tasks are disabled" >> $LOG;
+	write $oom_dump_tasks "0"		
+	sendToLog "OOM dump tasks are disabled"
 fi;
 
 vfs_cache_pressure=/proc/sys/vm/vfs_cache_pressure
 if [ -e $vfs_cache_pressure ]; then
-echo "60" > $vfs_cache_pressure
-echo "$date vfs_cache_pressure=60" >> $LOG;
+	write $vfs_cache_pressure "60"		
+	sendToLog "vfs_cache_pressure=60"
 fi;
 
 laptop_mode=/proc/sys/vm/laptop_mode
 if [ -e $laptop_mode ]; then
-echo "0" > $laptop_mode
-echo "$date laptop_mode=0" >> $LOG;
+	write $laptop_mode "0"		
+	sendToLog "laptop_mode=0"
 fi;
 
 compact_memory=/proc/sys/vm/compact_memory
 if [ -e $compact_memory ]; then
-echo "1" > $compact_memory
-echo "$date compact_memory=1" >> $LOG;
+	write $compact_memory "1"		
+	sendToLog "compact_memory=1"
 fi;
 
 compact_unevictable_allowed=/proc/sys/vm/compact_unevictable_allowed
 if [ -e $compact_unevictable_allowed ]; then
-echo "1" > $compact_unevictable_allowed
-echo "$date compact_unevictable_allowed=1" >> $LOG;
+	write $compact_unevictable_allowed "1"		
+	sendToLog "compact_unevictable_allowed=1"
 fi;
 
 # page-cluster controls the number of pages up to which consecutive pages
@@ -2420,8 +2295,8 @@ fi;
 # that consecutive pages readahead would have brought in.
 page_cluster=/proc/sys/vm/page-cluster
 if [ -e $page_cluster ]; then
-echo "0" > $page_cluster
-echo "$date page_cluster=0" >> $LOG;
+	write $page_cluster "0"		
+	sendToLog "page_cluster=0"
 fi;
 
 # vm.dirty_expire_centisecs is how long something can be in cache
@@ -2432,16 +2307,16 @@ fi;
 # unsafe this is also a safeguard against data loss.
 dirty_expire_centisecs=/proc/sys/vm/dirty_expire_centisecs
 if [ -e $dirty_expire_centisecs ]; then
-echo "300" > $dirty_expire_centisecs
-echo "$date dirty_expire_centisecs=300" >> $LOG;
+	write $dirty_expire_centisecs "300"		
+	sendToLog "dirty_expire_centisecs=300"
 fi;
 
 # vm.dirty_writeback_centisecs is how often the pdflush/flush/kdmflush processes wake up
 # and check to see if work needs to be done.
 dirty_writeback_centisecs=/proc/sys/vm/dirty_writeback_centisecs
 if [ -e $dirty_writeback_centisecs ]; then
-echo "800" > $dirty_writeback_centisecs
-echo "$date dirty_writeback_centisecs=800" >> $LOG;
+	write $dirty_writeback_centisecs "800"		
+	sendToLog "dirty_writeback_centisecs=800"
 fi;
 
 # vm.dirty_background_ratio is the percentage of system memory(RAM)
@@ -2453,8 +2328,8 @@ fi;
 # dirty_background_ratio = dirty_ratio / 2
 dirty_background_ratio=/proc/sys/vm/dirty_background_ratio
 if [ -e $dirty_background_ratio ]; then
-echo "10" > $dirty_background_ratio
-echo "$date dirty_background_ratio=10" >> $LOG;
+	write $dirty_background_ratio "10"		
+	sendToLog "dirty_background_ratio=10"
 fi;
 
 # vm.dirty_ratio is the absolute maximum amount of system memory
@@ -2464,22 +2339,22 @@ fi;
 # but is a safeguard against too much data being cached unsafely in memory.
 dirty_ratio=/proc/sys/vm/dirty_ratio
 if [ -e $dirty_ratio ]; then
-echo "35" > $dirty_ratio
-echo "$date dirty_ratio=35" >> $LOG;
+	write $dirty_ratio "35"		
+	sendToLog "dirty_ratio=35"
 fi;
 
-echo "$date Balanced virtual memory tweaks activated" >> $LOG;
+sendToLog "Balanced virtual memory tweaks activated"
 }
 
 virtualMemoryTweaksBattery() {
-echo "$date Activating battery virtual memory tweaks..." >> $LOG;
+sendToLog "Activating battery virtual memory tweaks..."
 
 sync
 
 leases_enable=/proc/sys/fs/leases-enable
 if [ -e $leases_enable ]; then
-echo "1" > $leases_enable
-echo "$date $leases_enable=1" >> $LOG;
+	write $leases_enable "1"		
+	sendToLog "leases_enable=1"
 fi;
 
 # This file specifies the grace period (in seconds) that the kernel grants
@@ -2490,60 +2365,60 @@ fi;
 
 lease_break_time=/proc/sys/fs/lease-break-time
 if [ -e $lease_break_time ]; then
-echo "10" > $lease_break_time
-echo "$date $lease_break_time=10" >> $LOG;
+	write $lease_break_time "10"		
+	sendToLog "lease_break_time=10"
 fi;
 
 # dnotify is a signal used to notify a process about file/directory changes.
 dir_notify_enable=/proc/sys/fs/dir-notify-enable
 if [ -e $dir_notify_enable ]; then
-echo "0" > $dir_notify_enable
-echo "$date $dir_notify_enable=0" >> $LOG;
+	write $dir_notify_enable "0"		
+	sendToLog "dir_notify_enable=0"
 fi;
 
-echo "$date File system parameters are updated" >> $LOG;
+sendToLog "File system parameters are updated"
 
 enable_process_reclaim=/sys/module/process_reclaim/parameters/enable_process_reclaim
 if [ -e $enable_process_reclaim ]; then
-echo "0" > $enable_process_reclaim
-echo "$date Reclaiming pages of inactive tasks disabled" >> $LOG;
+	write $enable_process_reclaim "0"		
+	sendToLog "Reclaiming pages of inactive tasks disabled"
 fi;
 
 # This parameter tells how much of physical RAM to take when swap is full
 overcommit_ratio=/proc/sys/vm/overcommit_ratio
 if [ -e overcommit_ratio ]; then
-echo "0" > $overcommit_ratio
-echo "$date overcommit_ratio=0" >> $LOG;
+	write $overcommit_ratio "0"		
+	sendToLog "overcommit_ratio=0"
 fi;
 
 oom_dump_tasks=/proc/sys/vm/oom_dump_tasks
 if [ -e $oom_dump_tasks ]; then
-echo "0" > $oom_dump_tasks
-echo "$date OOM dump tasks are disabled" >> $LOG;
+	write $oom_dump_tasks "0"		
+	sendToLog "OOM dump tasks are disabled"
 fi;
 
 vfs_cache_pressure=/proc/sys/vm/vfs_cache_pressure
 if [ -e $vfs_cache_pressure ]; then
-echo "40" > $vfs_cache_pressure
-echo "$date vfs_cache_pressure=40" >> $LOG;
+	write $vfs_cache_pressure "40"		
+	sendToLog "vfs_cache_pressure=40"
 fi;
 
 laptop_mode=/proc/sys/vm/laptop_mode
 if [ -e $laptop_mode ]; then
-echo "0" > $laptop_mode
-echo "$date laptop_mode=0" >> $LOG;
+	write $laptop_mode "0"		
+	sendToLog "laptop_mode=0"
 fi;
 
 compact_memory=/proc/sys/vm/compact_memory
 if [ -e $compact_memory ]; then
-echo "1" > $compact_memory
-echo "$date compact_memory=1" >> $LOG;
+	write $compact_memory "1"		
+	sendToLog "compact_memory=1"
 fi;
 
 compact_unevictable_allowed=/proc/sys/vm/compact_unevictable_allowed
 if [ -e $compact_unevictable_allowed ]; then
-echo "1" > $compact_unevictable_allowed
-echo "$date compact_unevictable_allowed=1" >> $LOG;
+	write $compact_unevictable_allowed "1"		
+	sendToLog "compact_unevictable_allowed=1"
 fi;
 
 # page-cluster controls the number of pages up to which consecutive pages
@@ -2562,8 +2437,8 @@ fi;
 # that consecutive pages readahead would have brought in.
 page_cluster=/proc/sys/vm/page-cluster
 if [ -e $page_cluster ]; then
-echo "0" > $page_cluster
-echo "$date page_cluster=0" >> $LOG;
+	write $page_cluster "0"		
+	sendToLog "page_cluster=0"
 fi;
 
 # vm.dirty_expire_centisecs is how long something can be in cache
@@ -2574,16 +2449,16 @@ fi;
 # unsafe this is also a safeguard against data loss.
 dirty_expire_centisecs=/proc/sys/vm/dirty_expire_centisecs
 if [ -e $dirty_expire_centisecs ]; then
-echo "500" > $dirty_expire_centisecs
-echo "$date dirty_expire_centisecs=500" >> $LOG;
+	write $dirty_expire_centisecs "500"		
+	sendToLog "dirty_expire_centisecs=500"
 fi;
 
 # vm.dirty_writeback_centisecs is how often the pdflush/flush/kdmflush processes wake up
 # and check to see if work needs to be done.
 dirty_writeback_centisecs=/proc/sys/vm/dirty_writeback_centisecs
 if [ -e $dirty_writeback_centisecs ]; then
-echo "1000" > $dirty_writeback_centisecs
-echo "$date dirty_writeback_centisecs=1000" >> $LOG;
+	write $dirty_writeback_centisecs "1000"		
+	sendToLog "dirty_writeback_centisecs=1000"
 fi;
 
 # vm.dirty_background_ratio is the percentage of system memory(RAM)
@@ -2595,8 +2470,8 @@ fi;
 # dirty_background_ratio = dirty_ratio / 2
 dirty_background_ratio=/proc/sys/vm/dirty_background_ratio
 if [ -e $dirty_background_ratio ]; then
-echo "5" > $dirty_background_ratio
-echo "$date dirty_background_ratio=5" >> $LOG;
+	write $dirty_background_ratio "5"		
+	sendToLog "dirty_background_ratio=5"
 fi;
 
 # vm.dirty_ratio is the absolute maximum amount of system memory
@@ -2606,22 +2481,22 @@ fi;
 # but is a safeguard against too much data being cached unsafely in memory.
 dirty_ratio=/proc/sys/vm/dirty_ratio
 if [ -e $dirty_ratio ]; then
-echo "20" > $dirty_ratio
-echo "$date dirty_ratio=20" >> $LOG;
+	write $dirty_ratio "20"		
+	sendToLog "dirty_ratio=20"
 fi;
 
-echo "$date Battery virtual memory tweaks activated" >> $LOG;
+sendToLog "Battery virtual memory tweaks activated"
 }
 
 virtualMemoryTweaksPerformance() {
-echo "$date Activating performance virtual memory tweaks..." >> $LOG;
+sendToLog "Activating performance virtual memory tweaks..."
 
 sync
 
 leases_enable=/proc/sys/fs/leases-enable
 if [ -e $leases_enable ]; then
-echo "1" > $leases_enable
-echo "$date $leases_enable=1" >> $LOG;
+	write $leases_enable "1"
+	sendToLog "leases_enable=1"
 fi;
 
 # This file specifies the grace period (in seconds) that the kernel grants
@@ -2632,60 +2507,60 @@ fi;
 
 lease_break_time=/proc/sys/fs/lease-break-time
 if [ -e $lease_break_time ]; then
-echo "10" > $lease_break_time
-echo "$date $lease_break_time=10" >> $LOG;
+	write $lease_break_time "10"
+	sendToLog "lease_break_time=10"
 fi;
 
 # dnotify is a signal used to notify a process about file/directory changes.
 dir_notify_enable=/proc/sys/fs/dir-notify-enable
 if [ -e $dir_notify_enable ]; then
-echo "0" > $dir_notify_enable
-echo "$date $dir_notify_enable=0" >> $LOG;
+	write $dir_notify_enable "0"
+	sendToLog "dir_notify_enable=0"
 fi;
 
-echo "$date File system parameters are updated" >> $LOG;
+sendToLog "File system parameters are updated"
 
 enable_process_reclaim=/sys/module/process_reclaim/parameters/enable_process_reclaim
 if [ -e $enable_process_reclaim ]; then
-echo "0" > $enable_process_reclaim
-echo "$date Reclaiming pages of inactive tasks disabled" >> $LOG;
+	write $enable_process_reclaim "0"
+	sendToLog "Reclaiming pages of inactive tasks disabled"
 fi;
 
 # This parameter tells how much of physical RAM to take when swap is full
 overcommit_ratio=/proc/sys/vm/overcommit_ratio
-if [ -e overcommit_ratio ]; then
-echo "0" > $overcommit_ratio
-echo "$date overcommit_ratio=0" >> $LOG;
+if [ -e $overcommit_ratio ]; then
+	write $overcommit_ratio "0"
+	sendToLog "overcommit_ratio=0"
 fi;
 
 oom_dump_tasks=/proc/sys/vm/oom_dump_tasks
 if [ -e $oom_dump_tasks ]; then
-echo "0" > $oom_dump_tasks
-echo "$date OOM dump tasks are disabled" >> $LOG;
+	write $oom_dump_tasks "0"
+	sendToLog "oom_dump_tasks=0"
 fi;
 
 vfs_cache_pressure=/proc/sys/vm/vfs_cache_pressure
 if [ -e $vfs_cache_pressure ]; then
-echo "100" > $vfs_cache_pressure
-echo "$date vfs_cache_pressure=100" >> $LOG;
+	write $vfs_cache_pressure "100"
+	sendToLog "vfs_cache_pressure=100"
 fi;
 
 laptop_mode=/proc/sys/vm/laptop_mode
 if [ -e $laptop_mode ]; then
-echo "0" > $laptop_mode
-echo "$date laptop_mode=0" >> $LOG;
+	write $laptop_mode "0"
+	sendToLog "laptop_mode=0"
 fi;
 
 compact_memory=/proc/sys/vm/compact_memory
 if [ -e $compact_memory ]; then
-echo "1" > $compact_memory
-echo "$date compact_memory=1" >> $LOG;
+	write $compact_memory "1"
+	sendToLog "compact_memory=1"
 fi;
 
 compact_unevictable_allowed=/proc/sys/vm/compact_unevictable_allowed
 if [ -e $compact_unevictable_allowed ]; then
-echo "1" > $compact_unevictable_allowed
-echo "$date laptop_mode=1" >> $LOG;
+	write $compact_unevictable_allowed "1"
+	sendToLog "compact_unevictable_allowed=1"
 fi;
 
 # page-cluster controls the number of pages up to which consecutive pages
@@ -2704,8 +2579,8 @@ fi;
 # that consecutive pages readahead would have brought in.
 page_cluster=/proc/sys/vm/page-cluster
 if [ -e $page_cluster ]; then
-echo "0" > $page_cluster
-echo "$date page_cluster=0" >> $LOG;
+	write $page_cluster "0"
+	sendToLog "page_cluster=0"
 fi;
 
 # vm.dirty_expire_centisecs is how long something can be in cache
@@ -2716,16 +2591,16 @@ fi;
 # unsafe this is also a safeguard against data loss.
 dirty_expire_centisecs=/proc/sys/vm/dirty_expire_centisecs
 if [ -e $dirty_expire_centisecs ]; then
-echo "300" > $dirty_expire_centisecs
-echo "$date dirty_expire_centisecs=300" >> $LOG;
+	write $dirty_expire_centisecs "300"
+	sendToLog "dirty_expire_centisecs=300"
 fi;
 
 # vm.dirty_writeback_centisecs is how often the pdflush/flush/kdmflush processes wake up
 # and check to see if work needs to be done.
 dirty_writeback_centisecs=/proc/sys/vm/dirty_writeback_centisecs
 if [ -e $dirty_writeback_centisecs ]; then
-echo "700" > $dirty_writeback_centisecs
-echo "$date dirty_writeback_centisecs=700" >> $LOG;
+	write $dirty_writeback_centisecs "700"
+	sendToLog "dirty_writeback_centisecs=700"
 fi;
 
 # vm.dirty_background_ratio is the percentage of system memory(RAM)
@@ -2737,8 +2612,8 @@ fi;
 # dirty_background_ratio = dirty_ratio / 2
 dirty_background_ratio=/proc/sys/vm/dirty_background_ratio
 if [ -e $dirty_background_ratio ]; then
-echo "5" > $dirty_background_ratio
-echo "$date dirty_background_ratio=10" >> $LOG;
+	write $dirty_background_ratio "5"
+	sendToLog "dirty_background_ratio=5"
 fi;
 
 # vm.dirty_ratio is the absolute maximum amount of system memory
@@ -2748,18 +2623,18 @@ fi;
 # but is a safeguard against too much data being cached unsafely in memory.
 dirty_ratio=/proc/sys/vm/dirty_ratio
 if [ -e $dirty_ratio ]; then
-echo "20" > $dirty_ratio
-echo "$date dirty_ratio=20" >> $LOG;
+	write $dirty_ratio "20"
+	sendToLog "dirty_ratio=20"
 fi;
 
-echo "$date Performance virtual memory tweaks activated" >> $LOG;
+sendToLog "Performance virtual memory tweaks activated"
 }
 
 zramOptimization() {
 diskSize=$((memTotal*1024*1024/3))
 
 if [ "$1" == "1" ]; then 
-	sendToLog "$date Activating zRam optimization";
+	sendToLog "Activating zRam optimization";
 
 	for i in $(ls -d /dev/block/zram* | grep -Eo '[0-9]+$'); do
 		if [ -e /dev/block/zram"$i" ]; then
@@ -2768,20 +2643,20 @@ if [ "$1" == "1" ]; then
 			fi
 			write /sys/block/zram"$i"/reset "1"
 			swapoff /dev/block/zram"$i"
-			sendToLog "$date Disabling /dev/block/zram"$i"";
+			sendToLog "Disabling /dev/block/zram"$i"";
 		fi
 	done
 
-	sendToLog "$date Creating new zram0";
+	sendToLog "Creating new zram0";
 
 	write /sys/block/zram0/disksize "$diskSize"
 	mkswap /dev/block/zram0
 	swapon /dev/block/zram0
-	sendToLog "$date zRam diskSize=$((diskSize/1024/1024))mb";
-	sendToLog "$date zRam optimization activated";
+	sendToLog "zRam diskSize=$((diskSize/1024/1024))mb";
+	sendToLog "zRam optimization activated";
 		
 elif [ "$1" == "0" ]; then
-	sendToLog "$date Disabling zRam optimization";
+	sendToLog "Disabling zRam optimization";
 
 	for i in $(ls -d /dev/block/zram* | grep -Eo '[0-9]+$'); do
 		if [ -e /dev/block/zram"$i" ]; then
@@ -2790,10 +2665,10 @@ elif [ "$1" == "0" ]; then
 			fi
 			write /sys/block/zram"$i"/reset "1"
 			swapoff /dev/block/zram"$i"
-			sendToLog "$date Disabling /dev/block/zram"$i"";
+			sendToLog "Disabling /dev/block/zram"$i"";
 		fi
 	done
-	sendToLog "$date zRam optimization disabled";
+	sendToLog "zRam optimization disabled";
 fi
 }
 
@@ -2807,33 +2682,33 @@ heapSize=$((memTotal*3/16));
 
 heapGrowthLimit=$((heapSize*5/11));
 
-sendToLog "$date Activating heap optimization";
+sendToLog "Activating heap optimization";
 
 # The ideal ratio of live to free memory. Is clamped to have a value between 0.2 and 0.9.
 # This limit the managed hepSize to heapsize*heaptargetutilization
 setprop dalvik.vm.heaptargetutilization 0.85
-sendToLog "$date heapTargetUtilization=0.85";
+sendToLog "heapTargetUtilization=0.85";
 
 # This is the heap size that Dalvik/ART assigns to every new ‘large’ App.
 # Large Apps are the ones that include the ‘android:largeHeap’ option in their manifest.
 # Note that many apps abuse this option, in an effort to increase their performance.
 setprop dalvik.vm.heapsize "$((heapSize))m"
-sendToLog "$date heapSize=$((heapSize))m";
+sendToLog "heapSize=$((heapSize))m";
 
 # This is the heap size that is assigned to standard Apps.
 # This should typically be no more than half the dalvik.vm.heapsize value.
 setprop dalvik.vm.heapgrowthlimit "$((heapGrowthLimit))m"
-sendToLog "$date heapgrowthlimit=$((heapGrowthLimit))m";
+sendToLog "heapgrowthlimit=$((heapGrowthLimit))m";
 
 # Forces the free memory to never be larger than the given value.
 setprop dalvik.vm.heapmaxfree 8m
-sendToLog "$date heapmaxfree=8m";
+sendToLog "heapmaxfree=8m";
 
 # Forces the free memory to never be smaller than the given value.
 setprop dalvik.vm.heapminfree 2m
-sendToLog "$date heapminfree=2m";
+sendToLog "heapminfree=2m";
 
-sendToLog "$date Heap optimization activated";
+sendToLog "Heap optimization activated";
 }
 
 #
@@ -3029,7 +2904,7 @@ elif [ $# -eq 1 ]; then
 	
 	exit 0;
 else
-sendToLog "$date Starting L Speed";
+sendToLog "Starting L Speed";
 
 # Read current profile
 currentProfile=$(cat $PROFILE 2> /dev/null);
@@ -3058,15 +2933,20 @@ else
 fi
 
 
-# Wait for boot completed
+# Wait for boot completed and then continue with execution, when getprop sys.boot_completed is
+# equal to 1 while loop will be passed
 attempts=10
 while [ "$attempts" -gt 0 ] && [ "$(getprop sys.boot_completed)" != "1" ]; do
    attempts=$((attempts-1));
-   sendToLog "$date Waiting for boot_completed";
+   sendToLog "Waiting for boot_completed";
    sleep 10
 done
 
-sendToLog "$date Applying $profile profile";
+sendToLog "Applying $profile profile";
+
+# Time in seconds when starting with profile applying
+# This will be later used for the time difference
+start=`date +%s`
 
 if [ `cat $USER_PROFILE/battery_improvements` -eq 1 ]; then
 	batteryImprovements;
@@ -3253,7 +3133,15 @@ elif [ `cat $USER_PROFILE/zram_optimization` -eq 1 ]; then
 	zramOptimization 1;
 fi
 
-sendToLog "$date Successfully applied $profile profile";
+# End time of the script
+end=`date +%s`
+
+# Calculate how much took to set up L Speed parameters,
+# everything is calculated in seconds
+runtime=$((end-start))
+
+sendToLog "Applying took $runtime seconds";
+sendToLog "Successfully applied $profile profile";
 
 exit 0
 fi
