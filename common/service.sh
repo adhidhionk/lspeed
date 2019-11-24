@@ -1208,12 +1208,6 @@ for i in $(find /sys -name read_ahead_kb);
 		sendToLog "read_ahead_kb=128 in $i"
 done
 
-for i in $(find /sys -name io_poll);
-	do
-		write "$i" "0"
-		sendToLog "io_poll=0 in $i"
-done
-
 for i in $(find /sys -name write_cache);
 	do
 		write "$i" "write through"
@@ -1275,12 +1269,6 @@ for i in $(find /sys -name read_ahead_kb);
 		sendToLog "read_ahead_kb=128 in $i"
 done
 
-for i in $(find /sys -name io_poll);
-	do
-		write "$i" "0"
-		sendToLog "io_poll=0 in $i"
-done
-
 for i in $(find /sys -name write_cache);
 	do
 		write "$i" "write through"
@@ -1338,14 +1326,8 @@ done
 
 for i in $(find /sys -name read_ahead_kb);
 	do
-		write "$i" "256"
-		sendToLog "read_ahead_kb=256 in $i"
-done
-
-for i in $(find /sys -name io_poll);
-	do
-		write "$i" "0"
-		sendToLog "io_poll=0 in $i"
+		write "$i" "64"
+		sendToLog "read_ahead_kb=64 in $i"
 done
 
 for i in $(find /sys -name write_cache);
@@ -1384,8 +1366,10 @@ sd=`ls -d /sys/block/sd*`;
 
 for i in $mmc $sd
 	do
+	if [ -e $i ]; then
 		write "$i" "512"
 		sendToLog "nr_requests=512 in $i"
+	fi
 done
 
 sendToLog "I/O extend queue is activated"
@@ -1606,7 +1590,7 @@ for i in $(find /sys -name debug); do
 	sendToLog "Disabled debugging for $i"
 done
 
-for i in $(find /sys -name debug_enable); do
+for i in $(find /sys -name debug_enabled); do
 	write "$i" "0"
 	sendToLog "Disabled debugging for $i"
 done
@@ -1622,11 +1606,6 @@ for i in $(find /sys -name edac_mc_log_ce); do
 done
 
 for i in $(find /sys -name edac_mc_log_ue); do
-	write "$i" "0"
-	sendToLog "Disabled debugging for $i"
-done
-
-for i in $(find /sys -name pwrnap); do
 	write "$i" "0"
 	sendToLog "Disabled debugging for $i"
 done
@@ -1815,8 +1794,6 @@ sendToLog "OOM killer enabled"
 
 ramManagerBalanced() {
 
-memTotal=$(free -m | awk '/^Mem:/{print $2}');
-
 fa=$(((memTotal*2/100)*1024/4));
 va=$(((memTotal*3/100)*1024/4));
 ss=$(((memTotal*5/100)*1024/4));
@@ -1931,8 +1908,6 @@ sendToLog "Balanced RAM manager profile for $((memTotal))mb devices successfully
 
 ramManagerGaming() {
 
-memTotal=$(free -m | awk '/^Mem:/{print $2}');
-
 fa=$(((memTotal*3/100)*1024/4));
 va=$(((memTotal*4/100)*1024/4));
 ss=$(((memTotal*5/100)*1024/4));
@@ -2046,8 +2021,6 @@ sendToLog "Gaming RAM manager profile for $((memTotal))mb devices successfully a
 }
 
 ramManagerMultitasking() {
-
-memTotal=$(free -m | awk '/^Mem:/{print $2}');
 
 fa=$(((memTotal*2/100)*1024/4));
 va=$(((memTotal*3/100)*1024/4));
@@ -2745,7 +2718,7 @@ setDefaultProfile() {
 	write $USER_PROFILE/optimize_ril "1"
 
 	# Other
-	write $USER_PROFILE/disable_debugging "1"
+	write $USER_PROFILE/disable_debugging "0"
 	write $USER_PROFILE/disable_kernel_panic "1"
 
 	# RAM manager section
@@ -2790,7 +2763,7 @@ setPowerSavingProfile() {
 	write $USER_PROFILE/optimize_ril "1"
 
 	# Other
-	write $USER_PROFILE/disable_debugging "1"
+	write $USER_PROFILE/disable_debugging "0"
 	write $USER_PROFILE/disable_kernel_panic "1"
 
 	# RAM manager section
@@ -2835,7 +2808,7 @@ setBalancedProfile() {
 	write $USER_PROFILE/optimize_ril "1"
 
 	# Other
-	write $USER_PROFILE/disable_debugging "1"
+	write $USER_PROFILE/disable_debugging "0"
 	write $USER_PROFILE/disable_kernel_panic "1"
 
 	# RAM manager section
@@ -2880,7 +2853,7 @@ setPerformanceProfile() {
 	write $USER_PROFILE/optimize_ril "1"
 
 	# Other
-	write $USER_PROFILE/disable_debugging "1"
+	write $USER_PROFILE/disable_debugging "0"
 	write $USER_PROFILE/disable_kernel_panic "1"
 
 	# RAM manager section
