@@ -1,8 +1,8 @@
 #!/system/bin/sh
 # L Speed tweak
 # Codename : lspeed
-version="v1.0-RC8";
-build_date=24-11-2019;
+version="v1.0-RC9";
+build_date=25-11-2019;
 # Developer : Paget96
 # Paypal : https://paypal.me/Paget96
 
@@ -143,7 +143,6 @@ if [ -d $USER_PROFILE ]; then
 	createFile $USER_PROFILE/swappiness
 	createFile $USER_PROFILE/virtual_memory
 	createFile $USER_PROFILE/heap_optimization
-	createFile $USER_PROFILE/zram_optimization
 
 fi;
 
@@ -716,6 +715,10 @@ sendToLog "Moderate entropy profile activated"
 }
 
 gpuOptimizerBalanced() {
+
+# Variables
+memTotal=$(free -m | awk '/^Mem:/{print $2}');
+
 sendToLog "Optimizing GPU..."
 
 # GPU related tweaks
@@ -832,6 +835,10 @@ sendToLog "GPU is optimized..."
 }
 
 gpuOptimizerPerformance() {
+
+# Variables
+memTotal=$(free -m | awk '/^Mem:/{print $2}');
+
 sendToLog "Optimizing GPU..."
 
 # GPU related tweaks
@@ -948,6 +955,10 @@ sendToLog "GPU is optimized..."
 }
 
 gpuOptimizerPowerSaving() {
+
+# Variables
+memTotal=$(free -m | awk '/^Mem:/{print $2}');
+
 sendToLog "Optimizing GPU..."
 
 # GPU related tweaks
@@ -1794,6 +1805,9 @@ sendToLog "OOM killer enabled"
 
 ramManagerBalanced() {
 
+# Variables
+memTotal=$(free -m | awk '/^Mem:/{print $2}');
+
 fa=$(((memTotal*2/100)*1024/4));
 va=$(((memTotal*3/100)*1024/4));
 ss=$(((memTotal*5/100)*1024/4));
@@ -1908,6 +1922,9 @@ sendToLog "Balanced RAM manager profile for $((memTotal))mb devices successfully
 
 ramManagerGaming() {
 
+# Variables
+memTotal=$(free -m | awk '/^Mem:/{print $2}');
+
 fa=$(((memTotal*3/100)*1024/4));
 va=$(((memTotal*4/100)*1024/4));
 ss=$(((memTotal*5/100)*1024/4));
@@ -2021,6 +2038,9 @@ sendToLog "Gaming RAM manager profile for $((memTotal))mb devices successfully a
 }
 
 ramManagerMultitasking() {
+
+# Variables
+memTotal=$(free -m | awk '/^Mem:/{print $2}');
 
 fa=$(((memTotal*2/100)*1024/4));
 va=$(((memTotal*3/100)*1024/4));
@@ -2603,49 +2623,10 @@ fi;
 sendToLog "Performance virtual memory tweaks activated"
 }
 
-zramOptimization() {
-diskSize=$((memTotal*1024*1024/3))
-
-if [ "$1" == "1" ]; then 
-	sendToLog "Activating zRam optimization";
-
-	for i in $(ls -d /dev/block/zram* | grep -Eo '[0-9]+$'); do
-		if [ -e /dev/block/zram"$i" ]; then
-			if [ -e /sys/class/zram-control/hot_remove ]; then
-				write /sys/class/zram-control/hot_remove "$i"
-			fi
-			write /sys/block/zram"$i"/reset "1"
-			swapoff /dev/block/zram"$i"
-			sendToLog "Disabling /dev/block/zram"$i"";
-		fi
-	done
-
-	sendToLog "Creating new zram0";
-
-	write /sys/block/zram0/disksize "$diskSize"
-	mkswap /dev/block/zram0
-	swapon /dev/block/zram0
-	sendToLog "zRam diskSize=$((diskSize/1024/1024))mb";
-	sendToLog "zRam optimization activated";
-		
-elif [ "$1" == "0" ]; then
-	sendToLog "Disabling zRam optimization";
-
-	for i in $(ls -d /dev/block/zram* | grep -Eo '[0-9]+$'); do
-		if [ -e /dev/block/zram"$i" ]; then
-			if [ -e /sys/class/zram-control/hot_remove ]; then
-				write /sys/class/zram-control/hot_remove "$i"
-			fi
-			write /sys/block/zram"$i"/reset "1"
-			swapoff /dev/block/zram"$i"
-			sendToLog "Disabling /dev/block/zram"$i"";
-		fi
-	done
-	sendToLog "zRam optimization disabled";
-fi
-}
-
 heapOptimization() {
+
+# Variables
+memTotal=$(free -m | awk '/^Mem:/{print $2}');
 
 heapSize=$((memTotal*3/16));
 
@@ -2729,7 +2710,6 @@ setDefaultProfile() {
 	write $USER_PROFILE/swappiness "1"
 	write $USER_PROFILE/virtual_memory "2"
 	write $USER_PROFILE/heap_optimization "0"
-	write $USER_PROFILE/zram_optimization "0"
 }
 
 setPowerSavingProfile() {
@@ -2774,7 +2754,6 @@ setPowerSavingProfile() {
 	write $USER_PROFILE/swappiness "1"
 	write $USER_PROFILE/virtual_memory "1"
 	write $USER_PROFILE/heap_optimization "0"
-	write $USER_PROFILE/zram_optimization "0"
 }
 
 setBalancedProfile() {
@@ -2819,7 +2798,6 @@ setBalancedProfile() {
 	write $USER_PROFILE/swappiness "2"
 	write $USER_PROFILE/virtual_memory "2"
 	write $USER_PROFILE/heap_optimization "0"
-	write $USER_PROFILE/zram_optimization "0"
 }
 
 setPerformanceProfile() {
@@ -2864,7 +2842,6 @@ setPerformanceProfile() {
 	write $USER_PROFILE/swappiness "1"
 	write $USER_PROFILE/virtual_memory "3"
 	write $USER_PROFILE/heap_optimization "0"
-	write $USER_PROFILE/zram_optimization "0"
 }
 
 # Check number of arguments and perform task based on it.
@@ -3099,12 +3076,6 @@ fi
 #if [ `cat $USER_PROFILE/heap_optimization` -eq 1 ]; then
 #	heapOptimization;
 #fi
-
-if [ `cat $USER_PROFILE/zram_optimization` -eq 0 ]; then
-	zramOptimization 0;
-elif [ `cat $USER_PROFILE/zram_optimization` -eq 1 ]; then
-	zramOptimization 1;
-fi
 
 # End time of the script
 end=`date +%s`
