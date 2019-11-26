@@ -1189,39 +1189,26 @@ fi
 ioBlocksOptimizationBalanced() {
 sendToLog "Activating balanced I/O blocks optimization..."
 
-for i in $(find /sys/block -name add_random);
+blocks=$(ls -d /sys/block/*)
+
+for i in $blocks
 	do
-		write "$i" "0"
+		write "$i/queue/add_random" "0"
 		sendToLog "add_random=0 in $i"
-done
-
-for i in $(find /sys/block -name nomerges);
-	do
-		write "$i" "0"
+		
+		write "$i/queue/nomerges" "0"
 		sendToLog "nomerges=0 in $i"
-done
-
-for i in $(find /sys/block -name rq_affinity);
-	do
-		write "$i" "1"
+		
+		write "$i/queue/rq_affinity" "1"
 		sendToLog "rq_affinity=1 in $i"
-done
-
-for i in $(find /sys/block -name nr_requests);
-	do
-		write "$i" "128"
+		
+		write "$i/queue/nr_requests" "128"
 		sendToLog "nr_requests=128 in $i"
-done
-
-for i in $(find /sys/block -name read_ahead_kb);
-	do
-		write "$i" "128"
+		
+		write "$i/queue/read_ahead_kb" "128"
 		sendToLog "read_ahead_kb=128 in $i"
-done
-
-for i in $(find /sys/block -name write_cache);
-	do
-		write "$i" "write through"
+		
+		write "$i/queue/write_cache" "write through"
 		sendToLog "write_cache=write through in $i"
 done
 
@@ -1250,39 +1237,26 @@ sendToLog "Balanced I/O blocks optimization activated"
 ioBlocksOptimizationPerformance() {
 sendToLog "Activating performance I/O blocks optimization..."
 
-for i in $(find /sys/block -name add_random);
+blocks=$(ls -d /sys/block/*)
+
+for i in $blocks
 	do
-		write "$i" "0"
+		write "$i/queue/add_random" "0"
 		sendToLog "add_random=0 in $i"
-done
-
-for i in $(find /sys/block -name nomerges);
-	do
-		write "$i" "0"
+		
+		write "$i/queue/nomerges" "0"
 		sendToLog "nomerges=0 in $i"
-done
-
-for i in $(find /sys/block -name rq_affinity);
-	do
-		write "$i" "2"
+		
+		write "$i/queue/rq_affinity" "2"
 		sendToLog "rq_affinity=2 in $i"
-done
-
-for i in $(find /sys/block -name nr_requests);
-	do
-		write "$i" "128"
+		
+		write "$i/queue/nr_requests" "128"
 		sendToLog "nr_requests=128 in $i"
-done
-
-for i in $(find /sys/block -name read_ahead_kb);
-	do
-		write "$i" "128"
-		sendToLog "read_ahead_kb=128 in $i"
-done
-
-for i in $(find /sys/block -name write_cache);
-	do
-		write "$i" "write through"
+		
+		write "$i/queue/read_ahead_kb" "256"
+		sendToLog "read_ahead_kb=256 in $i"
+		
+		write "$i/queue/write_cache" "write through"
 		sendToLog "write_cache=write through in $i"
 done
 
@@ -1311,39 +1285,26 @@ sendToLog "Performance I/O blocks optimization activated"
 ioBlocksOptimizationPowerSaving() {
 sendToLog "Activating power saving I/O blocks optimization..."
 
-for i in $(find /sys/block -name add_random);
+blocks=$(ls -d /sys/block/*)
+
+for i in $blocks
 	do
-		write "$i" "0"
+		write "$i/queue/add_random" "0"
 		sendToLog "add_random=0 in $i"
-done
-
-for i in $(find /sys/block -name nomerges);
-	do
-		write "$i" "0"
+		
+		write "$i/queue/nomerges" "0"
 		sendToLog "nomerges=0 in $i"
-done
-
-for i in $(find /sys/block -name rq_affinity);
-	do
-		write "$i" "0"
+		
+		write "$i/queue/rq_affinity" "0"
 		sendToLog "rq_affinity=0 in $i"
-done
-
-for i in $(find /sys/block -name nr_requests);
-	do
-		write "$i" "64"
+		
+		write "$i/queue/nr_requests" "64"
 		sendToLog "nr_requests=64 in $i"
-done
-
-for i in $(find /sys/block -name read_ahead_kb);
-	do
-		write "$i" "64"
-		sendToLog "read_ahead_kb=64 in $i"
-done
-
-for i in $(find /sys/block -name write_cache);
-	do
-		write "$i" "write through"
+		
+		write "$i/queue/read_ahead_kb" "128"
+		sendToLog "read_ahead_kb=128 in $i"
+		
+		write "$i/queue/write_cache" "write through"
 		sendToLog "write_cache=write through in $i"
 done
 
