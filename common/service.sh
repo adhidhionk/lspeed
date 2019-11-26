@@ -1103,7 +1103,11 @@ sendToLog "Rendering chaned to skiagl"
 enableIoStats() {
 sendToLog "Enabling I/O Stats..."
 
-for i in $(find /sys -name iostats);
+blocks=$(ls -d /sys/block/*)
+virtual_blocks=$(ls -d /sys/devices/virtual/block/*)
+class_blocks=$(ls -d /sys/class/block/*)
+
+for i in $blocks $virtual_blocks $class_blocks;
 	do
 		write "$i" "1"
 		sendToLog "iostats=1 in $i"
@@ -1115,7 +1119,11 @@ sendToLog "I/O Stats enabled"
 disableIoStats() {
 sendToLog "Disabling I/O Stats..."
 
-for i in $(find /sys -name iostats);
+blocks=$(ls -d /sys/block/*)
+virtual_blocks=$(ls -d /sys/devices/virtual/block/*)
+class_blocks=$(ls -d /sys/class/block/*)
+
+for i in $blocks $virtual_blocks $class_blocks;
 	do
 		write "$i" "0"
 		sendToLog "iostats=0 in $i"
@@ -1191,8 +1199,10 @@ ioBlocksOptimizationBalanced() {
 sendToLog "Activating balanced I/O blocks optimization..."
 
 blocks=$(ls -d /sys/block/*)
+virtual_blocks=$(ls -d /sys/devices/virtual/block/*)
+class_blocks=$(ls -d /sys/class/block/*)
 
-for i in $blocks
+for i in $blocks $virtual_blocks $class_blocks;
 	do
 		write "$i/queue/add_random" "0"
 		sendToLog "add_random=0 in $i"
@@ -1239,8 +1249,10 @@ ioBlocksOptimizationPerformance() {
 sendToLog "Activating performance I/O blocks optimization..."
 
 blocks=$(ls -d /sys/block/*)
+virtual_blocks=$(ls -d /sys/devices/virtual/block/*)
+class_blocks=$(ls -d /sys/class/block/*)
 
-for i in $blocks
+for i in $blocks $virtual_blocks $class_blocks;
 	do
 		write "$i/queue/add_random" "0"
 		sendToLog "add_random=0 in $i"
@@ -1287,8 +1299,10 @@ ioBlocksOptimizationPowerSaving() {
 sendToLog "Activating power saving I/O blocks optimization..."
 
 blocks=$(ls -d /sys/block/*)
+virtual_blocks=$(ls -d /sys/devices/virtual/block/*)
+class_blocks=$(ls -d /sys/class/block/*)
 
-for i in $blocks
+for i in $blocks $virtual_blocks $class_blocks;
 	do
 		write "$i/queue/add_random" "0"
 		sendToLog "add_random=0 in $i"
@@ -1334,8 +1348,8 @@ sendToLog "Power saving I/O blocks optimization activated"
 ioExtendedQueue() {
 sendToLog "Activating I/O extend queue..."
 
-mmc=`ls -d /sys/block/mmc*`;
-sd=`ls -d /sys/block/sd*`;
+mmc=$(ls -d /sys/block/mmc*);
+sd=$(ls -d /sys/block/sd*);
 
 for i in $mmc $sd
 	do
@@ -2262,16 +2276,16 @@ fi;
 # unsafe this is also a safeguard against data loss.
 dirty_expire_centisecs=/proc/sys/vm/dirty_expire_centisecs
 if [ -e $dirty_expire_centisecs ]; then
-	write $dirty_expire_centisecs "300"		
-	sendToLog "dirty_expire_centisecs=300"
+	write $dirty_expire_centisecs "500"		
+	sendToLog "dirty_expire_centisecs=500"
 fi;
 
 # vm.dirty_writeback_centisecs is how often the pdflush/flush/kdmflush processes wake up
 # and check to see if work needs to be done.
 dirty_writeback_centisecs=/proc/sys/vm/dirty_writeback_centisecs
 if [ -e $dirty_writeback_centisecs ]; then
-	write $dirty_writeback_centisecs "800"		
-	sendToLog "dirty_writeback_centisecs=800"
+	write $dirty_writeback_centisecs "1000"		
+	sendToLog "dirty_writeback_centisecs=1000"
 fi;
 
 # vm.dirty_background_ratio is the percentage of system memory(RAM)
@@ -2546,16 +2560,16 @@ fi;
 # unsafe this is also a safeguard against data loss.
 dirty_expire_centisecs=/proc/sys/vm/dirty_expire_centisecs
 if [ -e $dirty_expire_centisecs ]; then
-	write $dirty_expire_centisecs "300"
-	sendToLog "dirty_expire_centisecs=300"
+	write $dirty_expire_centisecs "500"
+	sendToLog "dirty_expire_centisecs=500"
 fi;
 
 # vm.dirty_writeback_centisecs is how often the pdflush/flush/kdmflush processes wake up
 # and check to see if work needs to be done.
 dirty_writeback_centisecs=/proc/sys/vm/dirty_writeback_centisecs
 if [ -e $dirty_writeback_centisecs ]; then
-	write $dirty_writeback_centisecs "700"
-	sendToLog "dirty_writeback_centisecs=700"
+	write $dirty_writeback_centisecs "1200"
+	sendToLog "dirty_writeback_centisecs=1200"
 fi;
 
 # vm.dirty_background_ratio is the percentage of system memory(RAM)
@@ -2567,8 +2581,8 @@ fi;
 # dirty_background_ratio = dirty_ratio / 2
 dirty_background_ratio=/proc/sys/vm/dirty_background_ratio
 if [ -e $dirty_background_ratio ]; then
-	write $dirty_background_ratio "5"
-	sendToLog "dirty_background_ratio=5"
+	write $dirty_background_ratio "15"
+	sendToLog "dirty_background_ratio=15"
 fi;
 
 # vm.dirty_ratio is the absolute maximum amount of system memory
@@ -2578,8 +2592,8 @@ fi;
 # but is a safeguard against too much data being cached unsafely in memory.
 dirty_ratio=/proc/sys/vm/dirty_ratio
 if [ -e $dirty_ratio ]; then
-	write $dirty_ratio "20"
-	sendToLog "dirty_ratio=20"
+	write $dirty_ratio "60"
+	sendToLog "dirty_ratio=60"
 fi;
 
 sendToLog "Performance virtual memory tweaks activated"
