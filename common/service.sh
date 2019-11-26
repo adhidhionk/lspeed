@@ -195,9 +195,9 @@ sendToLog "Activating battery improvements...";
 	resetprop ro.audio.flinger_standbytime_ms 300
 	sendToLog "Set low audio flinger standby delay to 300ms for reducing power consumption";
 
-	scsi_disk=$(ls /sys/class/scsi_disk);
+	scsi_disk=$(ls -d /sys/class/scsi_disk/*);
 	for i in $scsi_disk; do
- 		write /sys/class/scsi_disk/"$i"/cache_type "temporary none"
+ 		write "$i"/cache_type "temporary none"
  		sendToLog "Set cache type to temporary none in $i";
  	done
 
