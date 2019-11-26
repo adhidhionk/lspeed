@@ -1340,7 +1340,7 @@ sd=`ls -d /sys/block/sd*`;
 for i in $mmc $sd
 	do
 	if [ -e $i ]; then
-		write "$i" "512"
+		write "$i/queue/nr_requests" "512"
 		sendToLog "nr_requests=512 in $i"
 	fi
 done
