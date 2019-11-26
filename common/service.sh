@@ -340,15 +340,15 @@ cpuOptimizationBattery() {
 	fi;
 
 	# CPU CTL
-	for i in $(find /dev/cpuctl -name cpu.rt_period_us); do
-		write "$i" "1000000"
-		sendToLog "1000000 to $i"
-	done
+	if [ -e /dev/cpuctl/cpu.rt_period_us]; then
+		write /dev/cpuctl/cpu.rt_period_us "1000000"
+		sendToLog "cpu.rt_period_us=1000000"
+	fi;
 
-	for i in $(find /dev/cpuctl -name cpu.rt_runtime_us); do
-		write "$i" "950000"
-		sendToLog "950000 to $i"
-	done
+	if [ -e /dev/cpuctl/cpu.rt_runtime_us]; then
+		write /dev/cpuctl/cpu.rt_period_us "950000"
+		sendToLog "cpu.rt_runtime_us=950000"
+	fi;
 
 	sched_rt_period_us=/proc/sys/kernel/sched_rt_period_us
 	if [ -e $sched_rt_period_us ]; then
@@ -478,15 +478,15 @@ if [ -e /sys/module/dsboost/parameters/cooldown_stune_boost ]; then
 fi;
 
 # CPU CTL
-for i in $(find /dev/cpuctl -name cpu.rt_period_us); do
-	write "$i" "1000000"
-	sendToLog "1000000 to $i"
-done
+if [ -e /dev/cpuctl/cpu.rt_period_us]; then
+	write /dev/cpuctl/cpu.rt_period_us "1000000"
+	sendToLog "cpu.rt_period_us=1000000"
+fi;
 
-for i in $(find /dev/cpuctl -name cpu.rt_runtime_us); do
-	write "$i" "950000"
-	sendToLog "950000 to $i"
-done
+if [ -e /dev/cpuctl/cpu.rt_runtime_us]; then
+	write /dev/cpuctl/cpu.rt_period_us "950000"
+	sendToLog "cpu.rt_runtime_us=950000"
+fi;
 
 sched_rt_period_us=/proc/sys/kernel/sched_rt_period_us
 if [ -e $sched_rt_period_us ]; then
@@ -617,15 +617,15 @@ fi;
 
 
 # CPU CTL
-for i in $(find /dev/cpuctl -name cpu.rt_period_us); do
-	write "$i" "1000000"
-	sendToLog "1000000 to $i"
-done
+if [ -e /dev/cpuctl/cpu.rt_period_us]; then
+	write /dev/cpuctl/cpu.rt_period_us "1000000"
+	sendToLog "cpu.rt_period_us=1000000"
+fi;
 
-for i in $(find /dev/cpuctl -name cpu.rt_runtime_us); do
-	write "$i" "950000"
-	sendToLog "950000 to $i"
-done
+if [ -e /dev/cpuctl/cpu.rt_runtime_us]; then
+	write /dev/cpuctl/cpu.rt_period_us "950000"
+	sendToLog "cpu.rt_runtime_us=950000"
+fi;
 
 sched_rt_period_us=/proc/sys/kernel/sched_rt_period_us
 if [ -e $sched_rt_period_us ]; then
@@ -638,6 +638,7 @@ if [ -e $sched_rt_runtime_us ]; then
 	write $sched_rt_runtime_us "950000"
 	sendToLog "$sched_rt_runtime_us=950000"
 fi;
+
 
 sched_wake_to_idle=/proc/sys/kernel/sched_wake_to_idle
 if [ -e $sched_wake_to_idle ]; then
