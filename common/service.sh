@@ -1104,10 +1104,9 @@ enableIoStats() {
 sendToLog "Enabling I/O Stats..."
 
 blocks=$(ls -d /sys/block/*)
-virtual_blocks=$(ls -d /sys/devices/virtual/block/*)
 class_blocks=$(ls -d /sys/class/block/*)
 
-for i in $blocks $virtual_blocks $class_blocks;
+for i in $blocks $class_blocks;
 	do
 		write "$i" "1"
 		sendToLog "iostats=1 in $i"
@@ -1120,10 +1119,9 @@ disableIoStats() {
 sendToLog "Disabling I/O Stats..."
 
 blocks=$(ls -d /sys/block/*)
-virtual_blocks=$(ls -d /sys/devices/virtual/block/*)
 class_blocks=$(ls -d /sys/class/block/*)
 
-for i in $blocks $virtual_blocks $class_blocks;
+for i in $blocks $class_blocks;
 	do
 		write "$i" "0"
 		sendToLog "iostats=0 in $i"
@@ -1199,10 +1197,9 @@ ioBlocksOptimizationBalanced() {
 sendToLog "Activating balanced I/O blocks optimization..."
 
 blocks=$(ls -d /sys/block/*)
-virtual_blocks=$(ls -d /sys/devices/virtual/block/*)
 class_blocks=$(ls -d /sys/class/block/*)
 
-for i in $blocks $virtual_blocks $class_blocks;
+for i in $blocks $class_blocks;
 	do
 		write "$i/queue/add_random" "0"
 		sendToLog "add_random=0 in $i"
@@ -1249,10 +1246,9 @@ ioBlocksOptimizationPerformance() {
 sendToLog "Activating performance I/O blocks optimization..."
 
 blocks=$(ls -d /sys/block/*)
-virtual_blocks=$(ls -d /sys/devices/virtual/block/*)
 class_blocks=$(ls -d /sys/class/block/*)
 
-for i in $blocks $virtual_blocks $class_blocks;
+for i in $blocks $class_blocks;
 	do
 		write "$i/queue/add_random" "0"
 		sendToLog "add_random=0 in $i"
@@ -1299,10 +1295,9 @@ ioBlocksOptimizationPowerSaving() {
 sendToLog "Activating power saving I/O blocks optimization..."
 
 blocks=$(ls -d /sys/block/*)
-virtual_blocks=$(ls -d /sys/devices/virtual/block/*)
 class_blocks=$(ls -d /sys/class/block/*)
 
-for i in $blocks $virtual_blocks $class_blocks;
+for i in $blocks $class_blocks;
 	do
 		write "$i/queue/add_random" "0"
 		sendToLog "add_random=0 in $i"
