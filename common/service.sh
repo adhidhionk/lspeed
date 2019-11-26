@@ -1,7 +1,7 @@
 #!/system/bin/sh
 # L Speed tweak
 # Codename : lspeed
-version="v1.0-RC9";
+version="v1.0";
 build_date=25-11-2019;
 # Developer : Paget96
 # Paypal : https://paypal.me/Paget96
@@ -1108,7 +1108,7 @@ class_blocks=$(ls -d /sys/class/block/*)
 
 for i in $blocks $class_blocks;
 	do
-		write "$i" "1"
+		write "$i/queue/iostats" "1"
 		sendToLog "iostats=1 in $i"
 done
 
@@ -1123,7 +1123,7 @@ class_blocks=$(ls -d /sys/class/block/*)
 
 for i in $blocks $class_blocks;
 	do
-		write "$i" "0"
+		write "$i/queue/iostats" "0"
 		sendToLog "iostats=0 in $i"
 done
 
@@ -1201,23 +1201,35 @@ class_blocks=$(ls -d /sys/class/block/*)
 
 for i in $blocks $class_blocks;
 	do
+	if [ -e "$i/queue/add_random" ]; then
 		write "$i/queue/add_random" "0"
 		sendToLog "add_random=0 in $i"
-		
+	fi
+	
+	if [ -e "$i/queue/nomerges" ]; then
 		write "$i/queue/nomerges" "0"
 		sendToLog "nomerges=0 in $i"
+	fi
 		
+	if [ -e "$i/queue/rq_affinity" ]; then
 		write "$i/queue/rq_affinity" "1"
 		sendToLog "rq_affinity=1 in $i"
-		
+	fi
+	
+	if [ -e "$i/queue/nr_requests" ]; then
 		write "$i/queue/nr_requests" "128"
 		sendToLog "nr_requests=128 in $i"
-		
+	fi
+	
+	if [ -e "$i/queue/read_ahead_kb" ]; then
 		write "$i/queue/read_ahead_kb" "128"
 		sendToLog "read_ahead_kb=128 in $i"
-		
+	fi
+	
+	if [ -e "$i/queue/write_cache" ]; then
 		write "$i/queue/write_cache" "write through"
 		sendToLog "write_cache=write through in $i"
+	fi
 done
 
 # MMC CRC disabled
@@ -1250,23 +1262,35 @@ class_blocks=$(ls -d /sys/class/block/*)
 
 for i in $blocks $class_blocks;
 	do
+	if [ -e "$i/queue/add_random" ]; then
 		write "$i/queue/add_random" "0"
 		sendToLog "add_random=0 in $i"
-		
+	fi
+	
+	if [ -e "$i/queue/nomerges" ]; then
 		write "$i/queue/nomerges" "0"
 		sendToLog "nomerges=0 in $i"
+	fi
 		
+	if [ -e "$i/queue/rq_affinity" ]; then
 		write "$i/queue/rq_affinity" "2"
 		sendToLog "rq_affinity=2 in $i"
-		
+	fi
+	
+	if [ -e "$i/queue/nr_requests" ]; then
 		write "$i/queue/nr_requests" "128"
 		sendToLog "nr_requests=128 in $i"
-		
+	fi
+	
+	if [ -e "$i/queue/read_ahead_kb" ]; then
 		write "$i/queue/read_ahead_kb" "256"
 		sendToLog "read_ahead_kb=256 in $i"
-		
+	fi
+	
+	if [ -e "$i/queue/write_cache" ]; then
 		write "$i/queue/write_cache" "write through"
 		sendToLog "write_cache=write through in $i"
+	fi
 done
 
 # MMC CRC disabled
@@ -1299,23 +1323,35 @@ class_blocks=$(ls -d /sys/class/block/*)
 
 for i in $blocks $class_blocks;
 	do
+	if [ -e "$i/queue/add_random" ]; then
 		write "$i/queue/add_random" "0"
 		sendToLog "add_random=0 in $i"
-		
+	fi
+	
+	if [ -e "$i/queue/nomerges" ]; then
 		write "$i/queue/nomerges" "0"
 		sendToLog "nomerges=0 in $i"
+	fi
 		
+	if [ -e "$i/queue/rq_affinity" ]; then
 		write "$i/queue/rq_affinity" "0"
 		sendToLog "rq_affinity=0 in $i"
-		
+	fi
+	
+	if [ -e "$i/queue/nr_requests" ]; then
 		write "$i/queue/nr_requests" "64"
 		sendToLog "nr_requests=64 in $i"
-		
+	fi
+	
+	if [ -e "$i/queue/read_ahead_kb" ]; then
 		write "$i/queue/read_ahead_kb" "128"
 		sendToLog "read_ahead_kb=128 in $i"
-		
+	fi
+	
+	if [ -e "$i/queue/write_cache" ]; then
 		write "$i/queue/write_cache" "write through"
 		sendToLog "write_cache=write through in $i"
+	fi
 done
 
 # MMC CRC disabled
