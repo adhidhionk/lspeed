@@ -29,7 +29,7 @@ androidRelease=$(getprop ro.build.version.release)
 androidCodeNumber=$(getprop ro.build.version.sdk) 2>/dev/null
 kernel=$(uname -r) 2>/dev/null
 root=$(magisk -c) 2>/dev/null
-divider="******************************************"
+divider="==============================================="
 
 #PATHS
 LSPEED=/data/lspeed
@@ -156,23 +156,25 @@ if [ -d $USER_PROFILE ]; then
 
 fi;
 
-sendToLog "L Speed finished with base setup";
+if [ $# -eq 0 ]; then
+	sendToLog "L Speed finished with base setup";
 
-sendToLog "Starting with logging...";
-sendToLog $divider;
-sendToLog "Getting module info"
-sendToLog "Version: $version ($build_date)";
-sendToLog $divider;
-sendToLog "Getting device info"
-sendToLog "Brand = $brand"
-sendToLog "Model = $model"
-sendToLog "Arch = $arch"
-sendToLog "Busybox = $busyboxVersion"
-sendToLog "ROM = $rom ($androidRelease|$androidCodeNumber)"
-sendToLog "Kernel = $kernel"
-sendToLog "Root = $root"
-sendToLog "RAM = $memTotal"
-sendToLog $divider;
+	sendToLog "Starting with logging...";
+	sendToLog $divider;
+	sendToLog "Getting module info"
+	sendToLog "Version: $version ($build_date)";
+	sendToLog $divider;
+	sendToLog "Getting device info"
+	sendToLog "Brand: $brand"
+	sendToLog "Model: $model"
+	sendToLog "Arch: $arch"
+	sendToLog "Busybox: $busyboxVersion"
+	sendToLog "ROM: $rom ($androidRelease|$androidCodeNumber)"
+	sendToLog "Kernel: $kernel"
+	sendToLog "Root: $root"
+	sendToLog "RAM: $((memTotal))mb"
+	sendToLog $divider;
+fi
 
 #
 # Battery improvements
@@ -2884,7 +2886,7 @@ sendToLog "Starting L Speed";
 
 # Read current profile
 currentProfile=$(cat $PROFILE 2> /dev/null);
-sendToLog "Getting profile";
+sendToLog "Getting profile...";
 
 if [ "$currentProfile" == "-1" ]; then
 	profile="user defined";
