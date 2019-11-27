@@ -370,12 +370,12 @@ cpuOptimizationBattery() {
 	fi;
 
 	# CPU CTL
-	if [ -e /dev/cpuctl/cpu.rt_period_us]; then
+	if [ -e /dev/cpuctl/cpu.rt_period_us ]; then
 		write /dev/cpuctl/cpu.rt_period_us "1000000"
 		sendToLog "cpu.rt_period_us=1000000"
 	fi;
 
-	if [ -e /dev/cpuctl/cpu.rt_runtime_us]; then
+	if [ -e /dev/cpuctl/cpu.rt_runtime_us ]; then
 		write /dev/cpuctl/cpu.rt_period_us "950000"
 		sendToLog "cpu.rt_runtime_us=950000"
 	fi;
@@ -508,12 +508,12 @@ if [ -e /sys/module/dsboost/parameters/cooldown_stune_boost ]; then
 fi;
 
 # CPU CTL
-if [ -e /dev/cpuctl/cpu.rt_period_us]; then
+if [ -e /dev/cpuctl/cpu.rt_period_us ]; then
 	write /dev/cpuctl/cpu.rt_period_us "1000000"
 	sendToLog "cpu.rt_period_us=1000000"
 fi;
 
-if [ -e /dev/cpuctl/cpu.rt_runtime_us]; then
+if [ -e /dev/cpuctl/cpu.rt_runtime_us ]; then
 	write /dev/cpuctl/cpu.rt_period_us "950000"
 	sendToLog "cpu.rt_runtime_us=950000"
 fi;
@@ -647,12 +647,12 @@ fi;
 
 
 # CPU CTL
-if [ -e /dev/cpuctl/cpu.rt_period_us]; then
+if [ -e /dev/cpuctl/cpu.rt_period_us ]; then
 	write /dev/cpuctl/cpu.rt_period_us "1000000"
 	sendToLog "cpu.rt_period_us=1000000"
 fi;
 
-if [ -e /dev/cpuctl/cpu.rt_runtime_us]; then
+if [ -e /dev/cpuctl/cpu.rt_runtime_us ]; then
 	write /dev/cpuctl/cpu.rt_period_us "950000"
 	sendToLog "cpu.rt_runtime_us=950000"
 fi;
