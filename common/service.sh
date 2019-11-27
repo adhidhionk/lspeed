@@ -146,6 +146,7 @@ if [ -d $USER_PROFILE ]; then
 
 fi;
 
+
 #
 # Battery improvements
 #
@@ -1104,9 +1105,8 @@ enableIoStats() {
 sendToLog "Enabling I/O Stats..."
 
 blocks=$(ls -d /sys/block/*)
-class_blocks=$(ls -d /sys/class/block/*)
 
-for i in $blocks $class_blocks;
+for i in $blocks;
 	do
 		write "$i/queue/iostats" "1"
 		sendToLog "iostats=1 in $i"
@@ -1119,9 +1119,8 @@ disableIoStats() {
 sendToLog "Disabling I/O Stats..."
 
 blocks=$(ls -d /sys/block/*)
-class_blocks=$(ls -d /sys/class/block/*)
 
-for i in $blocks $class_blocks;
+for i in $blocks;
 	do
 		write "$i/queue/iostats" "0"
 		sendToLog "iostats=0 in $i"
@@ -1197,9 +1196,8 @@ ioBlocksOptimizationBalanced() {
 sendToLog "Activating balanced I/O blocks optimization..."
 
 blocks=$(ls -d /sys/block/*)
-class_blocks=$(ls -d /sys/class/block/*)
 
-for i in $blocks $class_blocks;
+for i in $blocks;
 	do
 	if [ -e "$i/queue/add_random" ]; then
 		write "$i/queue/add_random" "0"
@@ -1258,9 +1256,8 @@ ioBlocksOptimizationPerformance() {
 sendToLog "Activating performance I/O blocks optimization..."
 
 blocks=$(ls -d /sys/block/*)
-class_blocks=$(ls -d /sys/class/block/*)
 
-for i in $blocks $class_blocks;
+for i in $blocks;
 	do
 	if [ -e "$i/queue/add_random" ]; then
 		write "$i/queue/add_random" "0"
@@ -1319,9 +1316,8 @@ ioBlocksOptimizationPowerSaving() {
 sendToLog "Activating power saving I/O blocks optimization..."
 
 blocks=$(ls -d /sys/block/*)
-class_blocks=$(ls -d /sys/class/block/*)
 
-for i in $blocks $class_blocks;
+for i in $blocks;
 	do
 	if [ -e "$i/queue/add_random" ]; then
 		write "$i/queue/add_random" "0"
