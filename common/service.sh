@@ -1643,10 +1643,6 @@ for i in $(find /sys -name snapshot_crashdumper); do
 	sendToLog "Disabled debugging for $i"
 done
 
-resetprop ro.config.nocheckin 1
-setprop profiler.force_disable_err_rpt 1
-sendToLog "Force disabled error reporting"
-
 console_suspend=/sys/module/printk/parameters/console_suspend
 if [ -e $console_suspend ]; then
 	write $console_suspend "Y"
