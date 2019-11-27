@@ -310,7 +310,7 @@ cpuOptimizationBattery() {
 	fi;
 
 	if [ -e "/sys/module/workqueue/parameters/power_efficient" ]; then
-		write /sys/module/workqueue/parameters/power_efficient "Y"
+		lockFile /sys/module/workqueue/parameters/power_efficient "Y"
 		sendToLog "Power-save workqueues enabled, scheduling workqueues on awake CPUs to save power."
 	fi;
 
@@ -448,7 +448,7 @@ if [ -e "/sys/module/acpuclock_krait/parameters/boost" ];  then
 fi;
 
 if [ -e "/sys/module/workqueue/parameters/power_efficient" ]; then
-	write /sys/module/workqueue/parameters/power_efficient "N"
+	lockFile /sys/module/workqueue/parameters/power_efficient "N"
 	sendToLog "Power-save workqueues disabled, scheduling workqueues on awake CPUs to save power."
 fi;
 
@@ -586,7 +586,7 @@ if [ -e "/sys/module/acpuclock_krait/parameters/boost" ];  then
 fi;
 
 if [ -e "/sys/module/workqueue/parameters/power_efficient" ]; then
-	write /sys/module/workqueue/parameters/power_efficient "N"
+	lockFile /sys/module/workqueue/parameters/power_efficient "N"
 	sendToLog "Power-save workqueues disabled, scheduling workqueues on awake CPUs to save power."
 fi;
 
