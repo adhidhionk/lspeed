@@ -225,7 +225,7 @@ sendToLog "Activating battery improvements...";
 	resetprop ro.audio.flinger_standbytime_ms 300
 	sendToLog "Set low audio flinger standby delay to 300ms for reducing power consumption";
 
-	scsi_disk=$(ls -d /sys/class/scsi_disk/*);
+	scsi_disk=$(ls -d /sys/class/scsi_disk/*) 2>/dev/null
 	for i in $scsi_disk; do
  		write "$i"/cache_type "temporary none"
  		sendToLog "Set cache type to temporary none in $i";
@@ -287,6 +287,7 @@ sendToLog "Activating battery improvements...";
 	fi;
 
 	sendToLog "Battery improvements are enabled";
+	sendToLog $divider;
 }
 
 #
@@ -425,6 +426,7 @@ cpuOptimizationBattery() {
 	fi;
 
 	sendToLog "CPU is optimized..."
+	sendToLog $divider;
 }
 
 #
@@ -563,6 +565,7 @@ if [ -e $sched_boost_on_input ]; then
 fi;
 
 sendToLog "CPU is optimized..."
+sendToLog $divider;
 }
 
 #
@@ -703,6 +706,7 @@ if [ -e $sched_boost_on_input ]; then
 fi;
 
 sendToLog "CPU is optimized..."
+sendToLog $divider;
 }
 
 entropyAggressive() {
@@ -713,6 +717,7 @@ sysctl -e -w kernel.random.write_wakeup_threshold=1024
 sysctl -e -w kernel.random.urandom_min_reseed_secs=90
 
 sendToLog "Aggressive entropy profile activated"
+sendToLog $divider;
 }
 
 entropyEnlarger() {
@@ -723,6 +728,7 @@ sysctl -e -w kernel.random.write_wakeup_threshold=896
 sysctl -e -w kernel.random.urandom_min_reseed_secs=90
 
 sendToLog "Enlarger entropy profile activated"
+sendToLog $divider;
 }
 
 entropyLight() {
@@ -733,6 +739,7 @@ sysctl -e -w kernel.random.write_wakeup_threshold=128
 sysctl -e -w kernel.random.urandom_min_reseed_secs=90
 
 sendToLog "Light entropy profile activated"
+sendToLog $divider;
 }
 
 entropyModerate() {
@@ -743,6 +750,7 @@ sysctl -e -w kernel.random.write_wakeup_threshold=512
 sysctl -e -w kernel.random.urandom_min_reseed_secs=90
 
 sendToLog "Moderate entropy profile activated"
+sendToLog $divider;
 }
 
 gpuOptimizerBalanced() {
@@ -863,6 +871,7 @@ if [ -e $gpu/force_rail_on ]; then
 fi;
 
 sendToLog "GPU is optimized..."
+sendToLog $divider;
 }
 
 gpuOptimizerPerformance() {
@@ -983,6 +992,7 @@ if [ -e $gpu/force_rail_on ]; then
 fi;
 
 sendToLog "GPU is optimized..."
+sendToLog $divider;
 }
 
 gpuOptimizerPowerSaving() {
@@ -1104,6 +1114,7 @@ if [ -e $gpu/force_rail_on ]; then
 fi;
 
 sendToLog "GPU is optimized..."
+sendToLog $divider;
 }
 
 optimizeBuffers() {
@@ -1112,6 +1123,7 @@ sendToLog "Changing GPU buffer count"
 setprop debug.egl.buffcount 4
 
 sendToLog "GPU buffer count set to 4"
+sendToLog $divider;
 }
 
 renderOpenglesUsingGpu() {
@@ -1120,6 +1132,7 @@ sendToLog "Setting GPU to render OpenGLES..."
 setprop debug.egl.hw 1
 
 sendToLog "GPU successfully set up to render OpenGLES"
+sendToLog $divider;
 }
 
 useOpenglSkia() {
@@ -1128,6 +1141,7 @@ sendToLog "Changing app rendering to skiagl..."
 setprop debug.hwui.renderer skiagl
 
 sendToLog "Rendering chaned to skiagl"
+sendToLog $divider;
 }
 
 enableIoStats() {
@@ -1142,6 +1156,7 @@ for i in $blocks;
 done
 
 sendToLog "I/O Stats enabled"
+sendToLog $divider;
 }
 
 disableIoStats() {
@@ -1156,6 +1171,7 @@ for i in $blocks;
 done
 
 sendToLog "I/O Stats disabled"
+sendToLog $divider;
 }
 
 sdTweak() {
@@ -1219,6 +1235,7 @@ else
 	sendToLog "SD card not available or not supported...";
 
 fi
+sendToLog $divider;
 }
  
 ioBlocksOptimizationBalanced() {
@@ -1249,8 +1266,8 @@ for i in $blocks;
 	fi
 	
 	if [ -e "$i/queue/read_ahead_kb" ]; then
-		write "$i/queue/read_ahead_kb" "128"
-		sendToLog "read_ahead_kb=128 in $i"
+		write "$i/queue/read_ahead_kb" "1024"
+		sendToLog "read_ahead_kb=1024 in $i"
 	fi
 	
 	if [ -e "$i/queue/write_cache" ]; then
@@ -1279,6 +1296,7 @@ if [ -e $use_spi_crc ]; then
 fi;
 
 sendToLog "Balanced I/O blocks optimization activated"
+sendToLog $divider;
 }
 
 ioBlocksOptimizationPerformance() {
@@ -1304,8 +1322,69 @@ for i in $blocks;
 	fi
 	
 	if [ -e "$i/queue/nr_requests" ]; then
-		write "$i/queue/nr_requests" "128"
-		sendToLog "nr_requests=128 in $i"
+		write "$i/queue/nr_requests" "256"
+		sendToLog "nr_requests=256 in $i"
+	fi
+	
+	if [ -e "$i/queue/read_ahead_kb" ]; then
+		write "$i/queue/read_ahead_kb" "2048"
+		sendToLog "read_ahead_kb=2048 in $i"
+	fi
+	
+	if [ -e "$i/queue/write_cache" ]; then
+		write "$i/queue/write_cache" "write through"
+		sendToLog "write_cache=write through in $i"
+	fi
+done
+
+# MMC CRC disabled
+removable=/sys/module/mmc_core/parameters/removable
+if [ -e $removable ]; then
+	write $removable "N"
+	sendToLog "CRC Checks disabled $removable"
+fi;
+
+crc=/sys/module/mmc_core/parameters/crc
+if [ -e $crc ]; then
+	write $crc "N"
+	sendToLog "CRC Checks disabled $crc"
+fi;
+
+use_spi_crc=/sys/module/mmc_core/parameters/use_spi_crc
+if [ -e $use_spi_crc ]; then
+	write $use_spi_crc "N"
+	sendToLog "CRC Checks disabled $use_spi_crc"
+fi;
+
+sendToLog "Performance I/O blocks optimization activated"
+sendToLog $divider;
+}
+
+ioBlocksOptimizationPowerSaving() {
+sendToLog "Activating power saving I/O blocks optimization..."
+
+blocks=$(ls -d /sys/block/*)
+
+for i in $blocks;
+	do
+	if [ -e "$i/queue/add_random" ]; then
+		write "$i/queue/add_random" "0"
+		sendToLog "add_random=0 in $i"
+	fi
+	
+	if [ -e "$i/queue/nomerges" ]; then
+		write "$i/queue/nomerges" "0"
+		sendToLog "nomerges=0 in $i"
+	fi
+		
+	if [ -e "$i/queue/rq_affinity" ]; then
+		write "$i/queue/rq_affinity" "0"
+		sendToLog "rq_affinity=0 in $i"
+	fi
+	
+	if [ -e "$i/queue/nr_requests" ]; then
+		write "$i/queue/nr_requests" "64"
+		sendToLog "nr_requests=64 in $i"
 	fi
 	
 	if [ -e "$i/queue/read_ahead_kb" ]; then
@@ -1338,67 +1417,8 @@ if [ -e $use_spi_crc ]; then
 	sendToLog "CRC Checks disabled $use_spi_crc"
 fi;
 
-sendToLog "Performance I/O blocks optimization activated"
-}
-
-ioBlocksOptimizationPowerSaving() {
-sendToLog "Activating power saving I/O blocks optimization..."
-
-blocks=$(ls -d /sys/block/*)
-
-for i in $blocks;
-	do
-	if [ -e "$i/queue/add_random" ]; then
-		write "$i/queue/add_random" "0"
-		sendToLog "add_random=0 in $i"
-	fi
-	
-	if [ -e "$i/queue/nomerges" ]; then
-		write "$i/queue/nomerges" "0"
-		sendToLog "nomerges=0 in $i"
-	fi
-		
-	if [ -e "$i/queue/rq_affinity" ]; then
-		write "$i/queue/rq_affinity" "0"
-		sendToLog "rq_affinity=0 in $i"
-	fi
-	
-	if [ -e "$i/queue/nr_requests" ]; then
-		write "$i/queue/nr_requests" "64"
-		sendToLog "nr_requests=64 in $i"
-	fi
-	
-	if [ -e "$i/queue/read_ahead_kb" ]; then
-		write "$i/queue/read_ahead_kb" "128"
-		sendToLog "read_ahead_kb=128 in $i"
-	fi
-	
-	if [ -e "$i/queue/write_cache" ]; then
-		write "$i/queue/write_cache" "write through"
-		sendToLog "write_cache=write through in $i"
-	fi
-done
-
-# MMC CRC disabled
-removable=/sys/module/mmc_core/parameters/removable
-if [ -e $removable ]; then
-	write $removable "N"
-	sendToLog "CRC Checks disabled $removable"
-fi;
-
-crc=/sys/module/mmc_core/parameters/crc
-if [ -e $crc ]; then
-	write $crc "N"
-	sendToLog "CRC Checks disabled $crc"
-fi;
-
-use_spi_crc=/sys/module/mmc_core/parameters/use_spi_crc
-if [ -e $use_spi_crc ]; then
-	write $use_spi_crc "N"
-	sendToLog "CRC Checks disabled $use_spi_crc"
-fi;
-
 sendToLog "Power saving I/O blocks optimization activated"
+sendToLog $divider;
 }
 
 ioExtendedQueue() {
@@ -1416,6 +1436,7 @@ for i in $mmc $sd
 done
 
 sendToLog "I/O extend queue is activated"
+sendToLog $divider;
 }
 
 dnsOptimizationCloudFlare() {
@@ -1452,6 +1473,7 @@ setprop 2606:4700:4700::1001
 sendToLog "Changing DNS to CloudFlare"
 
 sendToLog "DNS optimization is activated"
+sendToLog $divider;
 }
 
 dnsOptimizationGooglePublic() {
@@ -1488,6 +1510,7 @@ setprop 2001:4860:4860::8844
 sendToLog "Changing DNS to Google Public"
 
 sendToLog "DNS optimization is activated"
+sendToLog $divider;
 }
 
 netBuffersBig() {
@@ -1506,6 +1529,7 @@ setprop net.tcp.buffersize.hsdpa 6144,87380,1048576,6144,87380,1048576
 setprop net.tcp.buffersize.evdo_b 6144,87380,1048576,6144,87380,1048576
 
 sendToLog "Big net buffers activated"
+sendToLog $divider;
 }
 
 netBuffersSmall() {
@@ -1524,6 +1548,7 @@ setprop net.tcp.buffersize.lte 4096,32768,65536,4096,32768,65536
 setprop net.tcp.buffersize.default 4096,32768,12582912,4096,32768,12582912
 
 sendToLog "Small net buffers activated"
+sendToLog $divider;
 }
 
 netSpeedPlus() {
@@ -1544,6 +1569,7 @@ done
 #done
 
 sendToLog "Net Speed+ activated"
+sendToLog $divider;
 }
 
 netTcpTweaks() {
@@ -1597,6 +1623,7 @@ echo "261120" > /proc/sys/net/core/rmem_default
 echo "261120" > /proc/sys/net/core/wmem_default
 
 sendToLog "TCP tweak activated"
+sendToLog $divider;
 }
 
 rilTweaks() {
@@ -1618,6 +1645,7 @@ resetprop ro.telephony.call_ring.multiple false
 sendToLog "Ril sends only one RIL_UNSOL_CALL_RING, so set call_ring.multiple to false"
 
 sendToLog "Ril tweaks are activated"
+sendToLog $divider;
 }
 
 disableDebugging() {
@@ -1747,6 +1775,7 @@ if [ -e $disable_esco ]; then
 fi;
 
 sendToLog "Logging disabled..."
+sendToLog $divider;
 }
 
 disableKernelPanic() {
@@ -1758,6 +1787,7 @@ sendToLog "Disabling kernel panic..."
 	sysctl -e -w kernel.panic_on_warn=0
 
 sendToLog "Kernel panic disabled"
+sendToLog $divider;
 }
 
 disableMultitaskingLimitations() {
@@ -1791,6 +1821,7 @@ setprop ENFORCE_PROCESS_LIMIT false
 sendToLog "ENFORCE_PROCESS_LIMIT=false"
 
 sendToLog "Multitasking limitations disabled"
+sendToLog $divider;
 }
 
 lowRamFlagDisabled() {
@@ -1799,6 +1830,7 @@ sendToLog "Disabling low RAM flag..."
 resetprop ro.config.low_ram false
 
 sendToLog "Low RAM flag disabled"
+sendToLog $divider;
 }
 
 lowRamFlagEnabled() {
@@ -1807,6 +1839,7 @@ sendToLog "Enabling low RAM flag..."
 resetprop ro.config.low_ram true
 
 sendToLog "Low RAM flag enabled"
+sendToLog $divider;
 }
 
 oomKillerDisabled() {
@@ -1818,6 +1851,7 @@ if [ -e $oom_kill_allocating_task ]; then
 fi;
 
 sendToLog "OOM killer disabled"
+sendToLog $divider;
 }
 
 oomKillerEnabled() {
@@ -1829,6 +1863,7 @@ if [ -e $oom_kill_allocating_task ]; then
 fi;
 
 sendToLog "OOM killer enabled"
+sendToLog $divider;
 }
 
 ramManagerBalanced() {
@@ -1839,7 +1874,7 @@ memTotal=$(free -m | awk '/^Mem:/{print $2}');
 fa=$(((memTotal*2/100)*1024/4));
 va=$(((memTotal*3/100)*1024/4));
 ss=$(((memTotal*5/100)*1024/4));
-ha=$(((memTotal*6/100)*1024/4));
+ha=$(((memTotal*7/100)*1024/4));
 cp=$(((memTotal*9/100)*1024/4));
 ea=$(((memTotal*11/100)*1024/4));
 minFree="$fa,$va,$ss,$ha,$cp,$ea";
@@ -1851,30 +1886,30 @@ adj="0,112,224,408,824,1000";
 
 # If you set this to lower than 1024KB, your system will
 # become subtly broken, and prone to deadlock under high loads, we don't allow it below 2048kb
-mfk=$((memTotal*3));
+mfk=$((memTotal*4));
 
 if [ "$mfk" -le "4096" ]; then
-mfk=4096;
+	mfk=4096;
 fi;
 
 # Extra free kbytes should not be bigger than min free kbytes
 efk=$((mfk/2));
 
 if [ "$efk" -le "2048" ]; then
-efk=2048;
+	efk=2048;
 fi;
 
 # Background app limit per ram size
 if [ "$memTotal" -le "1024" ]; then
-backgroundAppLimit="24";
+	backgroundAppLimit="24";
 elif [ "$memTotal" -le "2048" ]; then
-backgroundAppLimit="28";
+	backgroundAppLimit="28";
 elif [ "$memTotal" -le "3072" ]; then
-backgroundAppLimit="30";
+	backgroundAppLimit="30";
 elif [ "$memTotal" -le "4096" ]; then
-backgroundAppLimit="36";
+	backgroundAppLimit="36";
 else
-backgroundAppLimit="42";
+	backgroundAppLimit="42";
 fi;
 
 # Set 1 to reclaim resources quickly when needed.
@@ -1946,6 +1981,7 @@ if [ -e $parameter_extra_free_kbytes ]; then
 fi;
 
 sendToLog "Balanced RAM manager profile for $((memTotal))mb devices successfully applied"
+sendToLog $divider;
 }
 
 ramManagerGaming() {
@@ -1955,10 +1991,10 @@ memTotal=$(free -m | awk '/^Mem:/{print $2}');
 
 fa=$(((memTotal*3/100)*1024/4));
 va=$(((memTotal*4/100)*1024/4));
-ss=$(((memTotal*5/100)*1024/4));
+ss=$(((memTotal*6/100)*1024/4));
 ha=$(((memTotal*7/100)*1024/4));
-cp=$(((memTotal*10/100)*1024/4));
-ea=$(((memTotal*14/100)*1024/4));
+cp=$(((memTotal*11/100)*1024/4));
+ea=$(((memTotal*15/100)*1024/4));
 minFree="$fa,$va,$ss,$ha,$cp,$ea";
 
 # Higher values of oom_adj are more likely
@@ -1968,7 +2004,7 @@ adj="0,112,224,408,824,1000";
 
 # If you set this to lower than 1024KB, your system will
 # become subtly broken, and prone to deadlock under high loads, we don't allow it below 2048kb
-mfk=$((memTotal*3));
+mfk=$((memTotal*4));
 
 if [ "$mfk" -le "4096" ]; then
 mfk=4096;
@@ -1978,20 +2014,20 @@ fi;
 efk=$((mfk/2));
 
 if [ "$efk" -le "2048" ]; then
-efk=2048;
+	efk=2048;
 fi;
 
 # Background app limit per ram size
 if [ "$memTotal" -le "1024" ]; then
-backgroundAppLimit="18";
+	backgroundAppLimit="18";
 elif [ "$memTotal" -le "2048" ]; then
-backgroundAppLimit="22";
+	backgroundAppLimit="22";
 elif [ "$memTotal" -le "3072" ]; then
-backgroundAppLimit="26";
+	backgroundAppLimit="26";
 elif [ "$memTotal" -le "4096" ]; then
-backgroundAppLimit="30";
+	backgroundAppLimit="30";
 else
-backgroundAppLimit="42";
+	backgroundAppLimit="42";
 fi;
 
 # Set 1 to reclaim resources quickly when needed.
@@ -2063,6 +2099,7 @@ if [ -e $parameter_extra_free_kbytes ]; then
 fi;
 
 sendToLog "Gaming RAM manager profile for $((memTotal))mb devices successfully applied"
+sendToLog $divider;
 }
 
 ramManagerMultitasking() {
@@ -2085,7 +2122,7 @@ adj="0,112,224,408,824,1000";
 
 # If you set this to lower than 1024KB, your system will
 # become subtly broken, and prone to deadlock under high loads, we don't allow it below 2048kb
-mfk=$((memTotal*3));
+mfk=$((memTotal*4));
 
 if [ "$mfk" -le "4096" ]; then
 mfk=4096;
@@ -2095,20 +2132,20 @@ fi;
 efk=$((mfk/2));
 
 if [ "$efk" -le "2048" ]; then
-efk=2048;
+	efk=2048;
 fi;
 
 # Background app limit per ram size
 if [ "$memTotal" -le "1024" ]; then
-backgroundAppLimit="25";
+	backgroundAppLimit="25";
 elif [ "$memTotal" -le "2048" ]; then
-backgroundAppLimit="30";
+	backgroundAppLimit="30";
 elif [ "$memTotal" -le "3072" ]; then
-backgroundAppLimit="36";
+	backgroundAppLimit="36";
 elif [ "$memTotal" -le "4096" ]; then
-backgroundAppLimit="42";
+	backgroundAppLimit="42";
 else
-backgroundAppLimit="44";
+	backgroundAppLimit="44";
 fi;
 
 # Set 1 to reclaim resources quickly when needed.
@@ -2180,6 +2217,7 @@ if [ -e $parameter_extra_free_kbytes ]; then
 fi;
 
 sendToLog "Multitasking RAM manager profile for $((memTotal))mb devices successfully applied"
+sendToLog $divider;
 }
 
 swappinessTendency() {
@@ -2223,6 +2261,7 @@ swappinessTendency() {
 			sendToLog "Swappiness tendency set to 100";			
 		fi
 	fi;
+	sendToLog $divider;
 }
 
 virtualMemoryTweaksBalanced() {
@@ -2365,6 +2404,7 @@ if [ -e $dirty_ratio ]; then
 fi;
 
 sendToLog "Balanced virtual memory tweaks activated"
+sendToLog $divider;
 }
 
 virtualMemoryTweaksBattery() {
@@ -2507,6 +2547,7 @@ if [ -e $dirty_ratio ]; then
 fi;
 
 sendToLog "Battery virtual memory tweaks activated"
+sendToLog $divider;
 }
 
 virtualMemoryTweaksPerformance() {
@@ -2649,6 +2690,7 @@ if [ -e $dirty_ratio ]; then
 fi;
 
 sendToLog "Performance virtual memory tweaks activated"
+sendToLog $divider;
 }
 
 heapOptimization() {
@@ -2691,53 +2733,54 @@ setprop dalvik.vm.heapminfree 2m
 sendToLog "heapminfree=2m";
 
 sendToLog "Heap optimization activated";
+sendToLog $divider;
 }
 
 #
 # Profile presets
 #
 setDefaultProfile() {
-	write $USER_PROFILE/battery_improvements "1"
+	write $USER_PROFILE/battery_improvements "-1"
 
 	# CPU section
-	write $USER_PROFILE/cpu_optimization "2"
-	write $USER_PROFILE/gov_tuner "2"
+	write $USER_PROFILE/cpu_optimization "-1"
+	write $USER_PROFILE/gov_tuner "-1"
 
 	# Entropy section
-	write $USER_PROFILE/entropy "0"
+	write $USER_PROFILE/entropy "-1"
 
 	# GPU section
-	write $USER_PROFILE/gpu_optimizer "2"
-	write $USER_PROFILE/optimize_buffers "0"
-	write $USER_PROFILE/render_opengles_using_gpu "0"
-	write $USER_PROFILE/use_opengl_skia "0"
+	write $USER_PROFILE/gpu_optimizer "-1"
+	write $USER_PROFILE/optimize_buffers "-1"
+	write $USER_PROFILE/render_opengles_using_gpu "-1"
+	write $USER_PROFILE/use_opengl_skia "-1"
 
 	# I/O tweaks section
-	write $USER_PROFILE/disable_io_stats "1"
-	write $USER_PROFILE/io_blocks_optimization "2"
-	write $USER_PROFILE/io_extended_queue "0"
-	write $USER_PROFILE/scheduler_tuner "1"
-	write $USER_PROFILE/sd_tweak "0"
+	write $USER_PROFILE/disable_io_stats "-1"
+	write $USER_PROFILE/io_blocks_optimization "-1"
+	write $USER_PROFILE/io_extended_queue "-1"
+	write $USER_PROFILE/scheduler_tuner "-1"
+	write $USER_PROFILE/sd_tweak "-1"
 
 	# LNET tweaks section
-	write $USER_PROFILE/dns "0"
-	write $USER_PROFILE/net_buffers "0"
-	write $USER_PROFILE/net_speed_plus "0"
-	write $USER_PROFILE/net_tcp "1"
-	write $USER_PROFILE/optimize_ril "1"
+	write $USER_PROFILE/dns "-1"
+	write $USER_PROFILE/net_buffers "-1"
+	write $USER_PROFILE/net_speed_plus "-1"
+	write $USER_PROFILE/net_tcp "-1"
+	write $USER_PROFILE/optimize_ril "-1"
 
 	# Other
-	write $USER_PROFILE/disable_debugging "0"
-	write $USER_PROFILE/disable_kernel_panic "1"
+	write $USER_PROFILE/disable_debugging "-1"
+	write $USER_PROFILE/disable_kernel_panic "-1"
 
 	# RAM manager section
-	write $USER_PROFILE/ram_manager "2"
-	write $USER_PROFILE/disable_multitasking_limitations "0"
-	write $USER_PROFILE/low_ram_flag "0"
-	write $USER_PROFILE/oom_killer "0"
-	write $USER_PROFILE/swappiness "1"
-	write $USER_PROFILE/virtual_memory "2"
-	write $USER_PROFILE/heap_optimization "0"
+	write $USER_PROFILE/ram_manager "-1"
+	write $USER_PROFILE/disable_multitasking_limitations "-1"
+	write $USER_PROFILE/low_ram_flag "-1"
+	write $USER_PROFILE/oom_killer "-1"
+	write $USER_PROFILE/swappiness "-1"
+	write $USER_PROFILE/virtual_memory "-1"
+	write $USER_PROFILE/heap_optimization "-1"
 }
 
 setPowerSavingProfile() {
@@ -2823,7 +2866,7 @@ setBalancedProfile() {
 	write $USER_PROFILE/disable_multitasking_limitations "1"
 	write $USER_PROFILE/low_ram_flag "0"
 	write $USER_PROFILE/oom_killer "0"
-	write $USER_PROFILE/swappiness "2"
+	write $USER_PROFILE/swappiness "3"
 	write $USER_PROFILE/virtual_memory "2"
 	write $USER_PROFILE/heap_optimization "0"
 }
