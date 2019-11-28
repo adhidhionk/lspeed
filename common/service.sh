@@ -18,6 +18,7 @@ build_date=28-11-2019;
 # that's main output after executing service.sh
 #
 
+
 # Variables
 memTotal=$(free -m | awk '/^Mem:/{print $2}');
 brand=$(getprop ro.product.brand) 2>/dev/null
@@ -26,7 +27,7 @@ arch="Soon!" 2>/dev/null
 busyboxVersion=$(busybox | awk 'NR==1{print $2}') 2>/dev/null
 rom=$(getprop ro.build.display.id) 2>/dev/null
 androidRelease=$(getprop ro.build.version.release)
-androidCodeNumber=$(getprop ro.build.version.sdk) 2>/dev/null
+api=$(getprop ro.build.version.sdk) 2>/dev/null
 kernel=$(uname -r) 2>/dev/null
 root=$(magisk -c) 2>/dev/null
 divider="==============================================="
@@ -36,6 +37,7 @@ LSPEED=/data/lspeed
 
 LOG_DIR=$LSPEED/logs
 LOG=$LOG_DIR/main_log.log
+OPTIMIZATION_LOG=$LOG_DIR/optimization_log.log
 
 SETUP_DIR=$LSPEED/setup
 PROFILE=$SETUP_DIR/profile
@@ -169,7 +171,7 @@ if [ $# -eq 0 ]; then
 	sendToLog "Model: $model"
 	sendToLog "Arch: $arch"
 	sendToLog "Busybox: $busyboxVersion"
-	sendToLog "ROM: $rom ($androidRelease|$androidCodeNumber)"
+	sendToLog "ROM: $rom (Android: $androidRelease|API: $api)"
 	sendToLog "Kernel: $kernel"
 	sendToLog "Root: $root"
 	sendToLog "RAM: $((memTotal))mb"

@@ -3,5 +3,9 @@
 <permissions>
     <privapp-permissions package="com.paget96.lspeedmanager">
 		<permission name="android.permission.INTERNET"/>
+		
+		<permission name="android.permission.READ_EXTERNAL_STORAGE"/>
+		<permission name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+		
     </privapp-permissions>
 </permissions>
