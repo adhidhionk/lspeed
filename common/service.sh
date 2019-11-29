@@ -1,8 +1,8 @@
 #!/system/bin/sh
 # L Speed tweak
 # Codename : lspeed
-version="v1.1-Canary-1";
-build_date=28-11-2019;
+version="v1.1";
+build_date=29-11-2019;
 # Developer : Paget96
 # Paypal : https://paypal.me/Paget96
 
@@ -748,7 +748,7 @@ entropyModerate() {
 sendToLog "Activating moderate entropy profile..."
 
 sysctl -e -w kernel.random.read_wakeup_threshold=128
-sysctl -e -w kernel.random.write_wakeup_threshold=512
+sysctl -e -w kernel.random.write_wakeup_threshold=256
 sysctl -e -w kernel.random.urandom_min_reseed_secs=90
 
 sendToLog "Moderate entropy profile activated"
@@ -2329,15 +2329,24 @@ if [ -e $laptop_mode ]; then
 	sendToLog "laptop_mode=0"
 fi;
 
+#Available only when CONFIG_COMPACTION is set. When 1 is written to the file,
+#all zones are compacted such that free memory is available in contiguous
+#blocks where possible. This can be important for example in the allocation of
+#huge pages although processes will also directly compact memory as required.
 compact_memory=/proc/sys/vm/compact_memory
 if [ -e $compact_memory ]; then
 	write $compact_memory "1"		
 	sendToLog "compact_memory=1"
 fi;
 
+#Available only when CONFIG_COMPACTION is set. When set to 1, compaction is
+#allowed to examine the unevictable lru (mlocked pages) for pages to compact.
+#This should be used on systems where stalls for minor page faults are an
+#acceptable trade for large contiguous free memory.  Set to 0 to prevent
+#compaction from moving pages that are unevictable.  Default value is 1.
 compact_unevictable_allowed=/proc/sys/vm/compact_unevictable_allowed
 if [ -e $compact_unevictable_allowed ]; then
-	write $compact_unevictable_allowed "1"		
+	write $compact_unevictable_allowed "1"
 	sendToLog "compact_unevictable_allowed=1"
 fi;
 
@@ -2472,15 +2481,24 @@ if [ -e $laptop_mode ]; then
 	sendToLog "laptop_mode=0"
 fi;
 
+#Available only when CONFIG_COMPACTION is set. When 1 is written to the file,
+#all zones are compacted such that free memory is available in contiguous
+#blocks where possible. This can be important for example in the allocation of
+#huge pages although processes will also directly compact memory as required.
 compact_memory=/proc/sys/vm/compact_memory
 if [ -e $compact_memory ]; then
 	write $compact_memory "1"		
 	sendToLog "compact_memory=1"
 fi;
 
+#Available only when CONFIG_COMPACTION is set. When set to 1, compaction is
+#allowed to examine the unevictable lru (mlocked pages) for pages to compact.
+#This should be used on systems where stalls for minor page faults are an
+#acceptable trade for large contiguous free memory.  Set to 0 to prevent
+#compaction from moving pages that are unevictable.  Default value is 1.
 compact_unevictable_allowed=/proc/sys/vm/compact_unevictable_allowed
 if [ -e $compact_unevictable_allowed ]; then
-	write $compact_unevictable_allowed "1"		
+	write $compact_unevictable_allowed "1"
 	sendToLog "compact_unevictable_allowed=1"
 fi;
 
@@ -2615,12 +2633,21 @@ if [ -e $laptop_mode ]; then
 	sendToLog "laptop_mode=0"
 fi;
 
+#Available only when CONFIG_COMPACTION is set. When 1 is written to the file,
+#all zones are compacted such that free memory is available in contiguous
+#blocks where possible. This can be important for example in the allocation of
+#huge pages although processes will also directly compact memory as required.
 compact_memory=/proc/sys/vm/compact_memory
 if [ -e $compact_memory ]; then
-	write $compact_memory "1"
+	write $compact_memory "1"		
 	sendToLog "compact_memory=1"
 fi;
 
+#Available only when CONFIG_COMPACTION is set. When set to 1, compaction is
+#allowed to examine the unevictable lru (mlocked pages) for pages to compact.
+#This should be used on systems where stalls for minor page faults are an
+#acceptable trade for large contiguous free memory.  Set to 0 to prevent
+#compaction from moving pages that are unevictable.  Default value is 1.
 compact_unevictable_allowed=/proc/sys/vm/compact_unevictable_allowed
 if [ -e $compact_unevictable_allowed ]; then
 	write $compact_unevictable_allowed "1"
@@ -2742,47 +2769,47 @@ sendToLog $divider;
 # Profile presets
 #
 setDefaultProfile() {
-	write $USER_PROFILE/battery_improvements "-1"
+	write $USER_PROFILE/battery_improvements "1"
 
 	# CPU section
-	write $USER_PROFILE/cpu_optimization "-1"
-	write $USER_PROFILE/gov_tuner "-1"
+	write $USER_PROFILE/cpu_optimization "2"
+	write $USER_PROFILE/gov_tuner "2"
 
 	# Entropy section
-	write $USER_PROFILE/entropy "-1"
+	write $USER_PROFILE/entropy "0"
 
 	# GPU section
-	write $USER_PROFILE/gpu_optimizer "-1"
-	write $USER_PROFILE/optimize_buffers "-1"
-	write $USER_PROFILE/render_opengles_using_gpu "-1"
-	write $USER_PROFILE/use_opengl_skia "-1"
+	write $USER_PROFILE/gpu_optimizer "2"
+	write $USER_PROFILE/optimize_buffers "0"
+	write $USER_PROFILE/render_opengles_using_gpu "0"
+	write $USER_PROFILE/use_opengl_skia "0"
 
 	# I/O tweaks section
-	write $USER_PROFILE/disable_io_stats "-1"
-	write $USER_PROFILE/io_blocks_optimization "-1"
-	write $USER_PROFILE/io_extended_queue "-1"
-	write $USER_PROFILE/scheduler_tuner "-1"
-	write $USER_PROFILE/sd_tweak "-1"
+	write $USER_PROFILE/disable_io_stats "1"
+	write $USER_PROFILE/io_blocks_optimization "2"
+	write $USER_PROFILE/io_extended_queue "0"
+	write $USER_PROFILE/scheduler_tuner "1"
+	write $USER_PROFILE/sd_tweak "0"
 
 	# LNET tweaks section
-	write $USER_PROFILE/dns "-1"
-	write $USER_PROFILE/net_buffers "-1"
-	write $USER_PROFILE/net_speed_plus "-1"
-	write $USER_PROFILE/net_tcp "-1"
-	write $USER_PROFILE/optimize_ril "-1"
+	write $USER_PROFILE/dns "0"
+	write $USER_PROFILE/net_buffers "0"
+	write $USER_PROFILE/net_speed_plus "0"
+	write $USER_PROFILE/net_tcp "1"
+	write $USER_PROFILE/optimize_ril "0"
 
 	# Other
-	write $USER_PROFILE/disable_debugging "-1"
-	write $USER_PROFILE/disable_kernel_panic "-1"
+	write $USER_PROFILE/disable_debugging "0"
+	write $USER_PROFILE/disable_kernel_panic "0"
 
 	# RAM manager section
-	write $USER_PROFILE/ram_manager "-1"
-	write $USER_PROFILE/disable_multitasking_limitations "-1"
-	write $USER_PROFILE/low_ram_flag "-1"
-	write $USER_PROFILE/oom_killer "-1"
-	write $USER_PROFILE/swappiness "-1"
-	write $USER_PROFILE/virtual_memory "-1"
-	write $USER_PROFILE/heap_optimization "-1"
+	write $USER_PROFILE/ram_manager "2"
+	write $USER_PROFILE/disable_multitasking_limitations "1"
+	write $USER_PROFILE/low_ram_flag "0"
+	write $USER_PROFILE/oom_killer "0"
+	write $USER_PROFILE/swappiness "3"
+	write $USER_PROFILE/virtual_memory "2"
+	write $USER_PROFILE/heap_optimization "0"
 }
 
 setPowerSavingProfile() {
@@ -2817,7 +2844,7 @@ setPowerSavingProfile() {
 
 	# Other
 	write $USER_PROFILE/disable_debugging "0"
-	write $USER_PROFILE/disable_kernel_panic "1"
+	write $USER_PROFILE/disable_kernel_panic "0"
 
 	# RAM manager section
 	write $USER_PROFILE/ram_manager "2"
@@ -2861,7 +2888,7 @@ setBalancedProfile() {
 
 	# Other
 	write $USER_PROFILE/disable_debugging "0"
-	write $USER_PROFILE/disable_kernel_panic "1"
+	write $USER_PROFILE/disable_kernel_panic "0"
 
 	# RAM manager section
 	write $USER_PROFILE/ram_manager "2"
@@ -2905,7 +2932,7 @@ setPerformanceProfile() {
 
 	# Other
 	write $USER_PROFILE/disable_debugging "0"
-	write $USER_PROFILE/disable_kernel_panic "1"
+	write $USER_PROFILE/disable_kernel_panic "0"
 
 	# RAM manager section
 	write $USER_PROFILE/ram_manager "3"
@@ -2919,10 +2946,12 @@ setPerformanceProfile() {
 
 # Check number of arguments and perform task based on it.
 if [ $# -eq 2 ]; then
+	sleep 1;
 	$1 $2;
 	
 	exit 0;
 elif [ $# -eq 1 ]; then
+	sleep 1;
 	$1
 	
 	exit 0;
@@ -2960,10 +2989,12 @@ sendToLog "Current profile is $profile";
 # Wait for boot completed and then continue with execution, when getprop sys.boot_completed is
 # equal to 1 while loop will be passed
 attempts=10
+# Time in seconds
+wait=60
 while [ "$attempts" -gt 0 ] && [ "$(getprop sys.boot_completed)" != "1" ]; do
    attempts=$((attempts-1));
    sendToLog "Waiting for boot_completed";
-   sleep 10
+   sleep $wait
 done
 
 sendToLog "Applying $profile profile";
