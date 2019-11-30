@@ -1,4 +1,5 @@
 #!/system/bin/sh
+
 # L Speed tweak
 # Codename : lspeed
 version="v1.1";
@@ -25,7 +26,7 @@ brand=$(getprop ro.product.brand) 2>/dev/null
 model=$(getprop ro.product.model) 2>/dev/null
 arch="Soon!" 2>/dev/null
 busyboxVersion=$(busybox | awk 'NR==1{print $2}') 2>/dev/null
-if [ -z ${busyboxVersion} ]; then
+if [ -z "${busyboxVersion}" ]; then
 	busyboxVersion="Busybox not found"
 fi
 rom=$(getprop ro.build.display.id) 2>/dev/null
@@ -67,12 +68,12 @@ sendToLog() {
 
 write() {
 	#chmod 0644 "$1" 2> /dev/null
-    echo -n "$2" > "$1" 2> /dev/null
+    echo "$2" > "$1" 2> /dev/null
 }
 
 lockFile() {
 	chmod 0644 "$1" 2> /dev/null
-    echo -n "$2" > "$1" 2> /dev/null
+    echo "$2" > "$1" 2> /dev/null
 	chmod 0444 "$1" 2> /dev/null
 }
 
@@ -292,7 +293,7 @@ sendToLog "Activating battery improvements...";
 	fi;
 
 	sendToLog "Battery improvements are enabled";
-	sendToLog $divider;
+	sendToLog "$divider";
 }
 
 #
@@ -431,7 +432,7 @@ cpuOptimizationBattery() {
 	fi;
 
 	sendToLog "CPU is optimized..."
-	sendToLog $divider;
+	sendToLog "$divider";
 }
 
 #
@@ -570,7 +571,7 @@ if [ -e $sched_boost_on_input ]; then
 fi;
 
 sendToLog "CPU is optimized..."
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 #
@@ -711,7 +712,7 @@ if [ -e $sched_boost_on_input ]; then
 fi;
 
 sendToLog "CPU is optimized..."
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 entropyAggressive() {
@@ -722,7 +723,7 @@ sysctl -e -w kernel.random.write_wakeup_threshold=1024
 sysctl -e -w kernel.random.urandom_min_reseed_secs=90
 
 sendToLog "Aggressive entropy profile activated"
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 entropyEnlarger() {
@@ -733,7 +734,7 @@ sysctl -e -w kernel.random.write_wakeup_threshold=896
 sysctl -e -w kernel.random.urandom_min_reseed_secs=90
 
 sendToLog "Enlarger entropy profile activated"
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 entropyLight() {
@@ -744,7 +745,7 @@ sysctl -e -w kernel.random.write_wakeup_threshold=128
 sysctl -e -w kernel.random.urandom_min_reseed_secs=90
 
 sendToLog "Light entropy profile activated"
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 entropyModerate() {
@@ -755,7 +756,7 @@ sysctl -e -w kernel.random.write_wakeup_threshold=256
 sysctl -e -w kernel.random.urandom_min_reseed_secs=90
 
 sendToLog "Moderate entropy profile activated"
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 gpuOptimizerBalanced() {
@@ -794,7 +795,7 @@ elif [ -d "/sys/kernel/gpu" ]; then
 	gpu="/sys/kernel/gpu"
 fi
 
-if [ $memTotal -lt 3072 ]; then
+if [ "$memTotal" -lt 3072 ]; then
 	resetprop ro.hwui.texture_cache_size $((memTotal*10/100/2));
 	resetprop ro.hwui.layer_cache_size $((memTotal*5/100/2));
 	resetprop ro.hwui.path_cache_size $((memTotal*2/100/2));
@@ -876,7 +877,7 @@ if [ -e $gpu/force_rail_on ]; then
 fi;
 
 sendToLog "GPU is optimized..."
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 gpuOptimizerPerformance() {
@@ -915,7 +916,7 @@ elif [ -d "/sys/kernel/gpu" ]; then
 	gpu="/sys/kernel/gpu"
 fi
 
-if [ $memTotal -lt 3072 ]; then
+if [ "$memTotal" -lt 3072 ]; then
 	resetprop ro.hwui.texture_cache_size $((memTotal*10/100/2));
 	resetprop ro.hwui.layer_cache_size $((memTotal*5/100/2));
 	resetprop ro.hwui.path_cache_size $((memTotal*2/100/2));
@@ -997,7 +998,7 @@ if [ -e $gpu/force_rail_on ]; then
 fi;
 
 sendToLog "GPU is optimized..."
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 gpuOptimizerPowerSaving() {
@@ -1036,7 +1037,7 @@ elif [ -d "/sys/kernel/gpu" ]; then
 	gpu="/sys/kernel/gpu"
 fi
 
-if [ $memTotal -lt 3072 ]; then
+if [ "$memTotal" -lt 3072 ]; then
 	resetprop ro.hwui.texture_cache_size $((memTotal*10/100/2));
 	resetprop ro.hwui.layer_cache_size $((memTotal*5/100/2));
 	resetprop ro.hwui.path_cache_size $((memTotal*2/100/2));
@@ -1119,7 +1120,7 @@ if [ -e $gpu/force_rail_on ]; then
 fi;
 
 sendToLog "GPU is optimized..."
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 optimizeBuffers() {
@@ -1128,7 +1129,7 @@ sendToLog "Changing GPU buffer count"
 setprop debug.egl.buffcount 4
 
 sendToLog "GPU buffer count set to 4"
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 renderOpenglesUsingGpu() {
@@ -1137,7 +1138,7 @@ sendToLog "Setting GPU to render OpenGLES..."
 setprop debug.egl.hw 1
 
 sendToLog "GPU successfully set up to render OpenGLES"
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 useOpenglSkia() {
@@ -1146,7 +1147,7 @@ sendToLog "Changing app rendering to skiagl..."
 setprop debug.hwui.renderer skiagl
 
 sendToLog "Rendering chaned to skiagl"
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 enableIoStats() {
@@ -1161,7 +1162,7 @@ for i in $blocks;
 done
 
 sendToLog "I/O Stats enabled"
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 disableIoStats() {
@@ -1176,7 +1177,7 @@ for i in $blocks;
 done
 
 sendToLog "I/O Stats disabled"
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 sdTweak() {
@@ -1240,7 +1241,7 @@ else
 	sendToLog "SD card not available or not supported...";
 
 fi
-sendToLog $divider;
+sendToLog "$divider";
 }
  
 ioBlocksOptimizationBalanced() {
@@ -1301,7 +1302,7 @@ if [ -e $use_spi_crc ]; then
 fi;
 
 sendToLog "Balanced I/O blocks optimization activated"
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 ioBlocksOptimizationPerformance() {
@@ -1362,7 +1363,7 @@ if [ -e $use_spi_crc ]; then
 fi;
 
 sendToLog "Performance I/O blocks optimization activated"
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 ioBlocksOptimizationPowerSaving() {
@@ -1423,7 +1424,7 @@ if [ -e $use_spi_crc ]; then
 fi;
 
 sendToLog "Power saving I/O blocks optimization activated"
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 ioExtendedQueue() {
@@ -1434,14 +1435,14 @@ sd=$(ls -d /sys/block/sd*);
 
 for i in $mmc $sd
 	do
-	if [ -e $i ]; then
+	if [ -e "$i" ]; then
 		write "$i/queue/nr_requests" "512"
 		sendToLog "nr_requests=512 in $i"
 	fi
 done
 
 sendToLog "I/O extend queue is activated"
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 dnsOptimizationCloudFlare() {
@@ -1478,7 +1479,7 @@ setprop 2606:4700:4700::1001
 sendToLog "Changing DNS to CloudFlare"
 
 sendToLog "DNS optimization is activated"
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 dnsOptimizationGooglePublic() {
@@ -1515,7 +1516,7 @@ setprop 2001:4860:4860::8844
 sendToLog "Changing DNS to Google Public"
 
 sendToLog "DNS optimization is activated"
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 netBuffersBig() {
@@ -1534,7 +1535,7 @@ setprop net.tcp.buffersize.hsdpa 6144,87380,1048576,6144,87380,1048576
 setprop net.tcp.buffersize.evdo_b 6144,87380,1048576,6144,87380,1048576
 
 sendToLog "Big net buffers activated"
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 netBuffersSmall() {
@@ -1553,7 +1554,7 @@ setprop net.tcp.buffersize.lte 4096,32768,65536,4096,32768,65536
 setprop net.tcp.buffersize.default 4096,32768,12582912,4096,32768,12582912
 
 sendToLog "Small net buffers activated"
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 netSpeedPlus() {
@@ -1574,7 +1575,7 @@ done
 #done
 
 sendToLog "Net Speed+ activated"
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 netTcpTweaks() {
@@ -1628,7 +1629,7 @@ echo "261120" > /proc/sys/net/core/rmem_default
 echo "261120" > /proc/sys/net/core/wmem_default
 
 sendToLog "TCP tweak activated"
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 rilTweaks() {
@@ -1650,55 +1651,73 @@ resetprop ro.telephony.call_ring.multiple false
 sendToLog "Ril sends only one RIL_UNSOL_CALL_RING, so set call_ring.multiple to false"
 
 sendToLog "Ril tweaks are activated"
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 disableDebugging() {
 sendToLog "Powerful logging disable started..."
 
-for i in $(find /sys -name debug_mask); do
-	write "$i" "0"
-	sendToLog "Disabled debugging for $i"
+find /sys -name debug_mask |
+while read -r fileName
+	do
+		write "$fileName" "0"
+		sendToLog "Disabled debugging for $fileName"  
 done
 
-for i in $(find /sys -name debug); do
-	write "$i" "0"
-	sendToLog "Disabled debugging for $i"
+find /sys -name debug |
+while read -r fileName
+	do
+		write "$fileName" "0"
+		sendToLog "Disabled debugging for $fileName"  
 done
 
-for i in $(find /sys -name debug_enabled); do
-	write "$i" "0"
-	sendToLog "Disabled debugging for $i"
+find /sys -name debug_enabled |
+while read -r fileName
+	do
+		write "$fileName" "0"
+		sendToLog "Disabled debugging for $fileName"  
 done
 
-for i in $(find /sys -name debug_level); do
-	write "$i" "0"
-	sendToLog "Disabled debugging for $i"
+find /sys -name debug_level |
+while read -r fileName
+	do
+		write "$fileName" "0"
+		sendToLog "Disabled debugging for $fileName"  
 done
 
-for i in $(find /sys -name edac_mc_log_ce); do
-	write "$i" "0"
-	sendToLog "Disabled debugging for $i"
+find /sys -name edac_mc_log_ce |
+while read -r fileName
+	do
+		write "$fileName" "0"
+		sendToLog "Disabled debugging for $fileName"  
 done
 
-for i in $(find /sys -name edac_mc_log_ue); do
-	write "$i" "0"
-	sendToLog "Disabled debugging for $i"
+find /sys -name edac_mc_log_ue |
+while read -r fileName
+	do
+		write "$fileName" "0"
+		sendToLog "Disabled debugging for $fileName"  
 done
 
-for i in $(find /sys -name enable_event_log); do
-	write "$i" "0"
-	sendToLog "Disabled debugging for $i"
+find /sys -name enable_event_log |
+while read -r fileName
+	do
+		write "$fileName" "0"
+		sendToLog "Disabled debugging for $fileName"  
 done
 
-for i in $(find /sys -name log_ecn_error); do
-	write "$i" "0"
-	sendToLog "Disabled debugging for $i"
+find /sys -name log_ecn_error |
+while read -r fileName
+	do
+		write "$fileName" "0"
+		sendToLog "Disabled debugging for $fileName"  
 done
 
-for i in $(find /sys -name snapshot_crashdumper); do
-	write "$i" "0"
-	sendToLog "Disabled debugging for $i"
+find /sys -name snapshot_crashdumper |
+while read -r fileName
+	do
+		write "$fileName" "0"
+		sendToLog "Disabled debugging for $fileName"  
 done
 
 console_suspend=/sys/module/printk/parameters/console_suspend
@@ -1780,7 +1799,7 @@ if [ -e $disable_esco ]; then
 fi;
 
 sendToLog "Logging disabled..."
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 disableKernelPanic() {
@@ -1792,7 +1811,7 @@ sendToLog "Disabling kernel panic..."
 	sysctl -e -w kernel.panic_on_warn=0
 
 sendToLog "Kernel panic disabled"
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 disableMultitaskingLimitations() {
@@ -1826,7 +1845,7 @@ setprop ENFORCE_PROCESS_LIMIT false
 sendToLog "ENFORCE_PROCESS_LIMIT=false"
 
 sendToLog "Multitasking limitations disabled"
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 lowRamFlagDisabled() {
@@ -1835,7 +1854,7 @@ sendToLog "Disabling low RAM flag..."
 resetprop ro.config.low_ram false
 
 sendToLog "Low RAM flag disabled"
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 lowRamFlagEnabled() {
@@ -1844,7 +1863,7 @@ sendToLog "Enabling low RAM flag..."
 resetprop ro.config.low_ram true
 
 sendToLog "Low RAM flag enabled"
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 oomKillerDisabled() {
@@ -1856,7 +1875,7 @@ if [ -e $oom_kill_allocating_task ]; then
 fi;
 
 sendToLog "OOM killer disabled"
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 oomKillerEnabled() {
@@ -1868,7 +1887,7 @@ if [ -e $oom_kill_allocating_task ]; then
 fi;
 
 sendToLog "OOM killer enabled"
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 ramManagerBalanced() {
@@ -1986,7 +2005,7 @@ if [ -e $parameter_extra_free_kbytes ]; then
 fi;
 
 sendToLog "Balanced RAM manager profile for $((memTotal))mb devices successfully applied"
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 ramManagerGaming() {
@@ -2104,7 +2123,7 @@ if [ -e $parameter_extra_free_kbytes ]; then
 fi;
 
 sendToLog "Gaming RAM manager profile for $((memTotal))mb devices successfully applied"
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 ramManagerMultitasking() {
@@ -2222,7 +2241,7 @@ if [ -e $parameter_extra_free_kbytes ]; then
 fi;
 
 sendToLog "Multitasking RAM manager profile for $((memTotal))mb devices successfully applied"
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 swappinessTendency() {
@@ -2230,43 +2249,43 @@ swappinessTendency() {
 
 	swappiness=/proc/sys/vm/swappiness
 	if [ -e $swappiness ]; then
-		if [ "$1" == "1" ]; then
+		if [ "$1" = "1" ]; then
 			write $swappiness "1"
 			
 			sendToLog "swappiness=1";
 			sendToLog "Swappiness tendency set to 1";
-		elif [ "$1" == "2" ]; then
+		elif [ "$1" = "2" ]; then
 			write $swappiness "10"
 			
 			sendToLog "swappiness=10";
 			sendToLog "Swappiness tendency set to 10";
 			
-		elif [ "$1" == "3" ]; then
+		elif [ "$1" = "3" ]; then
 			write $swappiness "25"
 			
 			sendToLog "swappiness=25";
 			sendToLog "Swappiness tendency set to 25";
 			
-		elif [ "$1" == "4" ]; then
+		elif [ "$1" = "4" ]; then
 			write $swappiness "50"
 			
 			sendToLog "swappiness=50";
 			sendToLog "Swappiness tendency set to 50";
 
-		elif [ "$1" == "5" ]; then
+		elif [ "$1" = "5" ]; then
 			write $swappiness "75"
 			
 			sendToLog "swappiness=75";
 			sendToLog "Swappiness tendency set to 75";
 
-		elif [ "$1" == "6" ]; then
+		elif [ "$1" = "6" ]; then
 			write $swappiness "100"
 			
 			sendToLog "swappiness=100";
 			sendToLog "Swappiness tendency set to 100";			
 		fi
 	fi;
-	sendToLog $divider;
+	sendToLog "$divider";
 }
 
 virtualMemoryTweaksBalanced() {
@@ -2418,7 +2437,7 @@ if [ -e $dirty_ratio ]; then
 fi;
 
 sendToLog "Balanced virtual memory tweaks activated"
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 virtualMemoryTweaksBattery() {
@@ -2570,7 +2589,7 @@ if [ -e $dirty_ratio ]; then
 fi;
 
 sendToLog "Battery virtual memory tweaks activated"
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 virtualMemoryTweaksPerformance() {
@@ -2722,7 +2741,7 @@ if [ -e $dirty_ratio ]; then
 fi;
 
 sendToLog "Performance virtual memory tweaks activated"
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 heapOptimization() {
@@ -2765,192 +2784,192 @@ setprop dalvik.vm.heapminfree 2m
 sendToLog "heapminfree=2m";
 
 sendToLog "Heap optimization activated";
-sendToLog $divider;
+sendToLog "$divider";
 }
 
 #
 # Profile presets
 #
 setDefaultProfile() {
-	write $USER_PROFILE/battery_improvements "1"
+	write "$USER_PROFILE"/battery_improvements "1"
 
 	# CPU section
-	write $USER_PROFILE/cpu_optimization "2"
-	write $USER_PROFILE/gov_tuner "2"
+	write "$USER_PROFILE"/cpu_optimization "2"
+	write "$USER_PROFILE"/gov_tuner "2"
 
 	# Entropy section
-	write $USER_PROFILE/entropy "0"
+	write "$USER_PROFILE"/entropy "0"
 
 	# GPU section
-	write $USER_PROFILE/gpu_optimizer "2"
-	write $USER_PROFILE/optimize_buffers "0"
-	write $USER_PROFILE/render_opengles_using_gpu "0"
-	write $USER_PROFILE/use_opengl_skia "0"
+	write "$USER_PROFILE"/gpu_optimizer "2"
+	write "$USER_PROFILE"/optimize_buffers "0"
+	write "$USER_PROFILE"/render_opengles_using_gpu "0"
+	write "$USER_PROFILE"/use_opengl_skia "0"
 
 	# I/O tweaks section
-	write $USER_PROFILE/disable_io_stats "1"
-	write $USER_PROFILE/io_blocks_optimization "2"
-	write $USER_PROFILE/io_extended_queue "0"
-	write $USER_PROFILE/scheduler_tuner "1"
-	write $USER_PROFILE/sd_tweak "0"
+	write "$USER_PROFILE"/disable_io_stats "1"
+	write "$USER_PROFILE"/io_blocks_optimization "2"
+	write "$USER_PROFILE"/io_extended_queue "0"
+	write "$USER_PROFILE"/scheduler_tuner "1"
+	write "$USER_PROFILE"/sd_tweak "0"
 
 	# LNET tweaks section
-	write $USER_PROFILE/dns "0"
-	write $USER_PROFILE/net_buffers "0"
-	write $USER_PROFILE/net_speed_plus "0"
-	write $USER_PROFILE/net_tcp "1"
-	write $USER_PROFILE/optimize_ril "0"
+	write "$USER_PROFILE"/dns "0"
+	write "$USER_PROFILE"/net_buffers "0"
+	write "$USER_PROFILE"/net_speed_plus "0"
+	write "$USER_PROFILE"/net_tcp "1"
+	write "$USER_PROFILE"/optimize_ril "0"
 
 	# Other
-	write $USER_PROFILE/disable_debugging "0"
-	write $USER_PROFILE/disable_kernel_panic "0"
+	write "$USER_PROFILE"/disable_debugging "0"
+	write "$USER_PROFILE"/disable_kernel_panic "0"
 
 	# RAM manager section
-	write $USER_PROFILE/ram_manager "2"
-	write $USER_PROFILE/disable_multitasking_limitations "1"
-	write $USER_PROFILE/low_ram_flag "0"
-	write $USER_PROFILE/oom_killer "0"
-	write $USER_PROFILE/swappiness "3"
-	write $USER_PROFILE/virtual_memory "2"
-	write $USER_PROFILE/heap_optimization "0"
+	write "$USER_PROFILE"/ram_manager "2"
+	write "$USER_PROFILE"/disable_multitasking_limitations "1"
+	write "$USER_PROFILE"/low_ram_flag "0"
+	write "$USER_PROFILE"/oom_killer "0"
+	write "$USER_PROFILE"/swappiness "3"
+	write "$USER_PROFILE"/virtual_memory "2"
+	write "$USER_PROFILE"/heap_optimization "0"
 }
 
 setPowerSavingProfile() {
-	write $USER_PROFILE/battery_improvements "1"
+	write "$USER_PROFILE"/battery_improvements "1"
 
 	# CPU section
-	write $USER_PROFILE/cpu_optimization "1"
-	write $USER_PROFILE/gov_tuner "1"
+	write "$USER_PROFILE"/cpu_optimization "1"
+	write "$USER_PROFILE"/gov_tuner "1"
 
 	# Entropy section
-	write $USER_PROFILE/entropy "0"
+	write "$USER_PROFILE"/entropy "0"
 
 	# GPU section
-	write $USER_PROFILE/gpu_optimizer "1"
-	write $USER_PROFILE/optimize_buffers "0"
-	write $USER_PROFILE/render_opengles_using_gpu "0"
-	write $USER_PROFILE/use_opengl_skia "0"
+	write "$USER_PROFILE"/gpu_optimizer "1"
+	write "$USER_PROFILE"/optimize_buffers "0"
+	write "$USER_PROFILE"/render_opengles_using_gpu "0"
+	write "$USER_PROFILE"/use_opengl_skia "0"
 
 	# I/O tweaks section
-	write $USER_PROFILE/disable_io_stats "1"
-	write $USER_PROFILE/io_blocks_optimization "1"
-	write $USER_PROFILE/io_extended_queue "0"
-	write $USER_PROFILE/scheduler_tuner "1"
-	write $USER_PROFILE/sd_tweak "0"
+	write "$USER_PROFILE"/disable_io_stats "1"
+	write "$USER_PROFILE"/io_blocks_optimization "1"
+	write "$USER_PROFILE"/io_extended_queue "0"
+	write "$USER_PROFILE"/scheduler_tuner "1"
+	write "$USER_PROFILE"/sd_tweak "0"
 
 	# LNET tweaks section
-	write $USER_PROFILE/dns "0"
-	write $USER_PROFILE/net_buffers "0"
-	write $USER_PROFILE/net_speed_plus "0"
-	write $USER_PROFILE/net_tcp "1"
-	write $USER_PROFILE/optimize_ril "1"
+	write "$USER_PROFILE"/dns "0"
+	write "$USER_PROFILE"/net_buffers "0"
+	write "$USER_PROFILE"/net_speed_plus "0"
+	write "$USER_PROFILE"/net_tcp "1"
+	write "$USER_PROFILE"/optimize_ril "1"
 
 	# Other
-	write $USER_PROFILE/disable_debugging "0"
-	write $USER_PROFILE/disable_kernel_panic "0"
+	write "$USER_PROFILE"/disable_debugging "0"
+	write "$USER_PROFILE"/disable_kernel_panic "0"
 
 	# RAM manager section
-	write $USER_PROFILE/ram_manager "2"
-	write $USER_PROFILE/disable_multitasking_limitations "0"
-	write $USER_PROFILE/low_ram_flag "0"
-	write $USER_PROFILE/oom_killer "0"
-	write $USER_PROFILE/swappiness "1"
-	write $USER_PROFILE/virtual_memory "1"
-	write $USER_PROFILE/heap_optimization "0"
+	write "$USER_PROFILE"/ram_manager "2"
+	write "$USER_PROFILE"/disable_multitasking_limitations "0"
+	write "$USER_PROFILE"/low_ram_flag "0"
+	write "$USER_PROFILE"/oom_killer "0"
+	write "$USER_PROFILE"/swappiness "1"
+	write "$USER_PROFILE"/virtual_memory "1"
+	write "$USER_PROFILE"/heap_optimization "0"
 }
 
 setBalancedProfile() {
-	write $USER_PROFILE/battery_improvements "1"
+	write "$USER_PROFILE"/battery_improvements "1"
 
 	# CPU section
-	write $USER_PROFILE/cpu_optimization "2"
-	write $USER_PROFILE/gov_tuner "2"
+	write "$USER_PROFILE"/cpu_optimization "2"
+	write "$USER_PROFILE"/gov_tuner "2"
 
 	# Entropy section
-	write $USER_PROFILE/entropy "0"
+	write "$USER_PROFILE"/entropy "0"
 
 	# GPU section
-	write $USER_PROFILE/gpu_optimizer "2"
-	write $USER_PROFILE/optimize_buffers "0"
-	write $USER_PROFILE/render_opengles_using_gpu "0"
-	write $USER_PROFILE/use_opengl_skia "0"
+	write "$USER_PROFILE"/gpu_optimizer "2"
+	write "$USER_PROFILE"/optimize_buffers "0"
+	write "$USER_PROFILE"/render_opengles_using_gpu "0"
+	write "$USER_PROFILE"/use_opengl_skia "0"
 
 	# I/O tweaks section
-	write $USER_PROFILE/disable_io_stats "1"
-	write $USER_PROFILE/io_blocks_optimization "2"
-	write $USER_PROFILE/io_extended_queue "0"
-	write $USER_PROFILE/scheduler_tuner "1"
-	write $USER_PROFILE/sd_tweak "0"
+	write "$USER_PROFILE"/disable_io_stats "1"
+	write "$USER_PROFILE"/io_blocks_optimization "2"
+	write "$USER_PROFILE"/io_extended_queue "0"
+	write "$USER_PROFILE"/scheduler_tuner "1"
+	write "$USER_PROFILE"/sd_tweak "0"
 
 	# LNET tweaks section
-	write $USER_PROFILE/dns "0"
-	write $USER_PROFILE/net_buffers "0"
-	write $USER_PROFILE/net_speed_plus "0"
-	write $USER_PROFILE/net_tcp "1"
-	write $USER_PROFILE/optimize_ril "1"
+	write "$USER_PROFILE"/dns "0"
+	write "$USER_PROFILE"/net_buffers "0"
+	write "$USER_PROFILE"/net_speed_plus "0"
+	write "$USER_PROFILE"/net_tcp "1"
+	write "$USER_PROFILE"/optimize_ril "1"
 
 	# Other
-	write $USER_PROFILE/disable_debugging "0"
-	write $USER_PROFILE/disable_kernel_panic "0"
+	write "$USER_PROFILE"/disable_debugging "0"
+	write "$USER_PROFILE"/disable_kernel_panic "0"
 
 	# RAM manager section
-	write $USER_PROFILE/ram_manager "2"
-	write $USER_PROFILE/disable_multitasking_limitations "1"
-	write $USER_PROFILE/low_ram_flag "0"
-	write $USER_PROFILE/oom_killer "0"
-	write $USER_PROFILE/swappiness "3"
-	write $USER_PROFILE/virtual_memory "2"
-	write $USER_PROFILE/heap_optimization "0"
+	write "$USER_PROFILE"/ram_manager "2"
+	write "$USER_PROFILE"/disable_multitasking_limitations "1"
+	write "$USER_PROFILE"/low_ram_flag "0"
+	write "$USER_PROFILE"/oom_killer "0"
+	write "$USER_PROFILE"/swappiness "3"
+	write "$USER_PROFILE"/virtual_memory "2"
+	write "$USER_PROFILE"/heap_optimization "0"
 }
 
 setPerformanceProfile() {
-	write $USER_PROFILE/battery_improvements "1"
+	write "$USER_PROFILE"/battery_improvements "1"
 
 	# CPU section
-	write $USER_PROFILE/cpu_optimization "3"
-	write $USER_PROFILE/gov_tuner "3"
+	write "$USER_PROFILE"/cpu_optimization "3"
+	write "$USER_PROFILE"/gov_tuner "3"
 
 	# Entropy section
-	write $USER_PROFILE/entropy "2"
+	write "$USER_PROFILE"/entropy "2"
 
 	# GPU section
-	write $USER_PROFILE/gpu_optimizer "3"
-	write $USER_PROFILE/optimize_buffers "0"
-	write $USER_PROFILE/render_opengles_using_gpu "0"
-	write $USER_PROFILE/use_opengl_skia "0"
+	write "$USER_PROFILE"/gpu_optimizer "3"
+	write "$USER_PROFILE"/optimize_buffers "0"
+	write "$USER_PROFILE"/render_opengles_using_gpu "0"
+	write "$USER_PROFILE"/use_opengl_skia "0"
 
 	# I/O tweaks section
-	write $USER_PROFILE/disable_io_stats "1"
-	write $USER_PROFILE/io_blocks_optimization "3"
-	write $USER_PROFILE/io_extended_queue "1"
-	write $USER_PROFILE/scheduler_tuner "1"
-	write $USER_PROFILE/sd_tweak "0"
+	write "$USER_PROFILE"/disable_io_stats "1"
+	write "$USER_PROFILE"/io_blocks_optimization "3"
+	write "$USER_PROFILE"/io_extended_queue "1"
+	write "$USER_PROFILE"/scheduler_tuner "1"
+	write "$USER_PROFILE"/sd_tweak "0"
 
 	# LNET tweaks section
-	write $USER_PROFILE/dns "0"
-	write $USER_PROFILE/net_buffers "0"
-	write $USER_PROFILE/net_speed_plus "1"
-	write $USER_PROFILE/net_tcp "1"
-	write $USER_PROFILE/optimize_ril "1"
+	write "$USER_PROFILE"/dns "0"
+	write "$USER_PROFILE"/net_buffers "0"
+	write "$USER_PROFILE"/net_speed_plus "1"
+	write "$USER_PROFILE"/net_tcp "1"
+	write "$USER_PROFILE"/optimize_ril "1"
 
 	# Other
-	write $USER_PROFILE/disable_debugging "0"
-	write $USER_PROFILE/disable_kernel_panic "0"
+	write "$USER_PROFILE"/disable_debugging "0"
+	write "$USER_PROFILE"/disable_kernel_panic "0"
 
 	# RAM manager section
-	write $USER_PROFILE/ram_manager "3"
-	write $USER_PROFILE/disable_multitasking_limitations "1"
-	write $USER_PROFILE/low_ram_flag "0"
-	write $USER_PROFILE/oom_killer "0"
-	write $USER_PROFILE/swappiness "1"
-	write $USER_PROFILE/virtual_memory "3"
-	write $USER_PROFILE/heap_optimization "0"
+	write "$USER_PROFILE"/ram_manager "3"
+	write "$USER_PROFILE"/disable_multitasking_limitations "1"
+	write "$USER_PROFILE"/low_ram_flag "0"
+	write "$USER_PROFILE"/oom_killer "0"
+	write "$USER_PROFILE"/swappiness "1"
+	write "$USER_PROFILE"/virtual_memory "3"
+	write "$USER_PROFILE"/heap_optimization "0"
 }
 
 # Check number of arguments and perform task based on it.
 if [ $# -eq 2 ]; then
 	sleep 1;
-	$1 $2;
+	$1 "$2";
 	
 	exit 0;
 elif [ $# -eq 1 ]; then
@@ -2962,25 +2981,25 @@ else
 sendToLog "Starting L Speed";
 
 # Read current profile
-currentProfile=$(cat $PROFILE 2> /dev/null);
+currentProfile=$(cat "$PROFILE" 2> /dev/null);
 sendToLog "Getting profile...";
 
-if [ "$currentProfile" == "-1" ]; then
+if [ "$currentProfile" = "-1" ]; then
 	profile="user defined";
 
-elif [ "$currentProfile" == "0" ]; then
+elif [ "$currentProfile" = "0" ]; then
 	profile="default";
 	setDefaultProfile;
 
-elif [ "$currentProfile" == "1" ]; then
+elif [ "$currentProfile" = "1" ]; then
 	profile="power saving";
 	setPowerSavingProfile;
 
-elif [ "$currentProfile" == "2" ]; then
+elif [ "$currentProfile" = "2" ]; then
 	profile="balanced";
 	setBalancedProfile;
 
-elif [ "$currentProfile" == "3" ]; then
+elif [ "$currentProfile" = "3" ]; then
 	profile="performance";
 	setPerformanceProfile;
 else
@@ -3004,20 +3023,20 @@ sendToLog "Applying $profile profile";
 
 # Time in seconds when starting with profile applying
 # This will be later used for the time difference
-start=`date +%s`
+start=$(date +%s)
 
-if [ `cat $USER_PROFILE/battery_improvements` -eq 1 ]; then
+if [ "$(cat "$USER_PROFILE"/battery_improvements)" -eq 1 ]; then
 	batteryImprovements;
 fi
 
 #
 # CPU tuner section
 #
-if [ `cat $USER_PROFILE/cpu_optimization` -eq 1 ]; then
+if [ "$(cat "$USER_PROFILE"/cpu_optimization)" -eq 1 ]; then
 	cpuOptimizationBattery;
-elif [ `cat $USER_PROFILE/cpu_optimization` -eq 2 ]; then
+elif [ "$(cat "$USER_PROFILE"/cpu_optimization)" -eq 2 ]; then
 	cpuOptimizationBalanced;
-elif [ `cat $USER_PROFILE/cpu_optimization` -eq 3 ]; then
+elif [ "$(cat "$USER_PROFILE"/cpu_optimization)" -eq 3 ]; then
 	cpuOptimizationPerformance;
 fi
 
@@ -3032,57 +3051,57 @@ fi
 #
 # Entropy section
 #
-if [ `cat $USER_PROFILE/entropy` -eq 1 ]; then
+if [ "$(cat "$USER_PROFILE"/entropy)" -eq 1 ]; then
 	entropyLight;
-elif [ `cat $USER_PROFILE/entropy` -eq 2 ]; then
+elif [ "$(cat "$USER_PROFILE"/entropy)" -eq 2 ]; then
 	entropyEnlarger;
-elif [ `cat $USER_PROFILE/entropy` -eq 3 ]; then
+elif [ "$(cat "$USER_PROFILE"/entropy)" -eq 3 ]; then
 	entropyModerate;
-elif [ `cat $USER_PROFILE/entropy` -eq 4 ]; then
+elif [ "$(cat "$USER_PROFILE"/entropy)" -eq 4 ]; then
 	entropyAggressive;
 fi
 
 #
 # GPU section
 #
-if [ `cat $USER_PROFILE/gpu_optimizer` -eq 1 ]; then
+if [ "$(cat "$USER_PROFILE"/gpu_optimizer)" -eq 1 ]; then
 	gpuOptimizerPowerSaving;
-elif [ `cat $USER_PROFILE/gpu_optimizer` -eq 2 ]; then
+elif [ "$(cat "$USER_PROFILE"/gpu_optimizer)" -eq 2 ]; then
 	gpuOptimizerBalanced;
-elif [ `cat $USER_PROFILE/gpu_optimizer` -eq 3 ]; then
+elif [ "$(cat "$USER_PROFILE"/gpu_optimizer)" -eq 3 ]; then
 	gpuOptimizerPerformance;
 fi
 
-if [ `cat $USER_PROFILE/optimize_buffers` -eq 1 ]; then
+if [ "$(cat "$USER_PROFILE"/optimize_buffers)" -eq 1 ]; then
 	optimizeBuffers;
 fi
 
-if [ `cat $USER_PROFILE/render_opengles_using_gpu` -eq 1 ]; then
+if [ "$(cat "$USER_PROFILE"/render_opengles_using_gpu)" -eq 1 ]; then
 	renderOpenglesUsingGpu;
 fi
 
-if [ `cat $USER_PROFILE/use_opengl_skia` -eq 1 ]; then
+if [ "$(cat "$USER_PROFILE"/use_opengl_skia)" -eq 1 ]; then
 	useOpenglSkia;
 fi
 
 #
 # I/O tweaks section
 #
-if [ `cat $USER_PROFILE/disable_io_stats` -eq 0 ]; then
+if [ "$(cat "$USER_PROFILE"/disable_io_stats)" -eq 0 ]; then
 	enableIoStats;
-elif [ `cat $USER_PROFILE/disable_io_stats` -eq 1 ]; then
+elif [ "$(cat "$USER_PROFILE"/disable_io_stats)" -eq 1 ]; then
 	disableIoStats;
 fi
 
-if [ `cat $USER_PROFILE/io_blocks_optimization` -eq 1 ]; then
+if [ "$(cat "$USER_PROFILE"/io_blocks_optimization)" -eq 1 ]; then
 	ioBlocksOptimizationPowerSaving;
-elif [ `cat $USER_PROFILE/io_blocks_optimization` -eq 2 ]; then
+elif [ "$(cat "$USER_PROFILE"/io_blocks_optimization)" -eq 2 ]; then
 	ioBlocksOptimizationBalanced;
-elif [ `cat $USER_PROFILE/io_blocks_optimization` -eq 3 ]; then
+elif [ "$(cat "$USER_PROFILE"/io_blocks_optimization)" -eq 3 ]; then
 	ioBlocksOptimizationPerformance;
 fi
 
-if [ `cat $USER_PROFILE/io_extended_queue` -eq 1 ]; then
+if [ "$(cat "$USER_PROFILE"/io_extended_queue)" -eq 1 ]; then
 	ioExtendedQueue;
 fi
 
@@ -3090,94 +3109,94 @@ fi
 #	schedulerTuner;
 #fi
 
-if [ `cat $USER_PROFILE/sd_tweak` -eq 1 ]; then
+if [ "$(cat "$USER_PROFILE"/sd_tweak)" -eq 1 ]; then
 	sdTweak;
 fi
 
 #
 # LNET tweaks section
 #
-if [ `cat $USER_PROFILE/dns` -eq 1 ]; then
+if [ "$(cat "$USER_PROFILE"/dns)" -eq 1 ]; then
 	dnsOptimizationGooglePublic;
-elif [ `cat $USER_PROFILE/dns` -eq 2 ]; then
+elif [ "$(cat "$USER_PROFILE"/dns)" -eq 2 ]; then
 	dnsOptimizationCloudFlare;
 fi
 
-if [ `cat $USER_PROFILE/net_buffers` -eq 1 ]; then
+if [ "$(cat "$USER_PROFILE"/net_buffers)" -eq 1 ]; then
 	netBuffersSmall;
-elif [ `cat $USER_PROFILE/net_buffers` -eq 2 ]; then
+elif [ "$(cat "$USER_PROFILE"/net_buffers)" -eq 2 ]; then
 	netBuffersBig;
 fi
 
-if [ `cat $USER_PROFILE/net_speed_plus` -eq 1 ]; then
+if [ "$(cat "$USER_PROFILE"/net_speed_plus)" -eq 1 ]; then
 	netSpeedPlus;
 fi
 
-if [ `cat $USER_PROFILE/net_tcp` -eq 1 ]; then
+if [ "$(cat "$USER_PROFILE"/net_tcp)" -eq 1 ]; then
 	netTcpTweaks;
 fi
 
-if [ `cat $USER_PROFILE/optimize_ril` -eq 1 ]; then
+if [ "$(cat "$USER_PROFILE"/optimize_ril)" -eq 1 ]; then
 	rilTweaks;
 fi
 
 #
 # Other
 #
-if [ `cat $USER_PROFILE/disable_debugging` -eq 1 ]; then
+if [ "$(cat "$USER_PROFILE"/disable_debugging)" -eq 1 ]; then
 	disableDebugging;
 fi
 
-if [ `cat $USER_PROFILE/disable_kernel_panic` -eq 1 ]; then
+if [ "$(cat "$USER_PROFILE"/disable_kernel_panic)" -eq 1 ]; then
 	disableKernelPanic;
 fi
 
 #
 # RAM manager section
 #
-if [ `cat $USER_PROFILE/ram_manager` -eq 1 ]; then
+if [ "$(cat "$USER_PROFILE"/ram_manager)" -eq 1 ]; then
 	ramManagerMultitasking;
-elif [ `cat $USER_PROFILE/ram_manager` -eq 2 ]; then
+elif [ "$(cat "$USER_PROFILE"/ram_manager)" -eq 2 ]; then
 	ramManagerBalanced;
-elif [ `cat $USER_PROFILE/ram_manager` -eq 3 ]; then
+elif [ "$(cat "$USER_PROFILE"/ram_manager)" -eq 3 ]; then
 	ramManagerGaming;
 fi
 
-if [ `cat $USER_PROFILE/disable_multitasking_limitations` -eq 1 ]; then
+if [ "$(cat "$USER_PROFILE"/disable_multitasking_limitations)" -eq 1 ]; then
 	disableMultitaskingLimitations;
 fi
 
-if [ `cat $USER_PROFILE/low_ram_flag` -eq 0 ]; then
+if [ "$(cat "$USER_PROFILE"/low_ram_flag)" -eq 0 ]; then
 	lowRamFlagDisabled;
-elif [ `cat $USER_PROFILE/low_ram_flag` -eq 1 ]; then
+elif [ "$(cat "$USER_PROFILE"/low_ram_flag)" -eq 1 ]; then
 	lowRamFlagEnabled;
 fi
 
-if [ `cat $USER_PROFILE/oom_killer` -eq 0 ]; then
+if [ "$(cat "$USER_PROFILE"/oom_killer)" -eq 0 ]; then
 	oomKillerDisabled;
-elif [ `cat $USER_PROFILE/oom_killer` -eq 1 ]; then
+elif [ "$(cat "$USER_PROFILE"/oom_killer)" -eq 1 ]; then
 	oomKillerEnabled;
 fi
 
-if [ `cat $USER_PROFILE/swappiness` -eq 1 ]; then
+if [ "$(cat "$USER_PROFILE"/swappiness)" -eq 1 ]; then
 	swappinessTendency 1;
-elif [ `cat $USER_PROFILE/swappiness` -eq 2 ]; then
+elif [ "$(cat "$USER_PROFILE"/swappiness)" -eq 2 ]; then
 	swappinessTendency 2;
-elif [ `cat $USER_PROFILE/swappiness` -eq 3 ]; then
+elif [ "$(cat "$USER_PROFILE"/swappiness)" -eq 3 ]; then
 	swappinessTendency 3;
-elif [ `cat $USER_PROFILE/swappiness` -eq 4 ]; then
+elif [ "$(cat "$USER_PROFILE"/swappiness)" -eq 4 ]; then
 	swappinessTendency 4;
-elif [ `cat $USER_PROFILE/swappiness` -eq 5 ]; then
+elif [ "$(cat "$USER_PROFILE"/swappiness)" -eq 5 ]; then
 	swappinessTendency 5;
-elif [ `cat $USER_PROFILE/swappiness` -eq 6 ]; then
+elif [ "$(cat "$USER_PROFILE"/swappiness)" -eq 6 ]; then
 	swappinessTendency 6;
 fi
 
-if [ `cat $USER_PROFILE/virtual_memory` -eq 1 ]; then
+if [ "$(cat "$USER_PROFILE"/virtual_memory)" -eq 1 ]; then
 	virtualMemoryTweaksBattery;
-elif [ `cat $USER_PROFILE/virtual_memory` -eq 2 ]; then
+elif [ "$(cat "$USER_PROFILE"/virtual_memory)" -eq 2 ]; then
 	virtualMemoryTweaksBalanced;
-elif [ `cat $USER_PROFILE/virtual_memory` -eq 3 ]; then
+elif [ "$(cat "$USER_PROFILE"/virtual_memory)" -eq 3 ]; then
 	virtualMemoryTweaksPerformance;
 fi
 
@@ -3186,7 +3205,7 @@ fi
 #fi
 
 # End time of the script
-end=`date +%s`
+end=$(date +%s)
 
 # Calculate how much took to set up L Speed parameters,
 # everything is calculated in seconds
