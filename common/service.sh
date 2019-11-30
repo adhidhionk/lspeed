@@ -25,6 +25,9 @@ brand=$(getprop ro.product.brand) 2>/dev/null
 model=$(getprop ro.product.model) 2>/dev/null
 arch="Soon!" 2>/dev/null
 busyboxVersion=$(busybox | awk 'NR==1{print $2}') 2>/dev/null
+if [ -z ${busyboxVersion} ]; then
+	busyboxVersion="Busybox not found"
+fi
 rom=$(getprop ro.build.display.id) 2>/dev/null
 androidRelease=$(getprop ro.build.version.release)
 api=$(getprop ro.build.version.sdk) 2>/dev/null
