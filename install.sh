@@ -63,8 +63,17 @@ REPLACE="
 # Set what you want to display when installing your module
 
 print_modname() {
-  center_and_print # Replace this line if using custom print stuff
-  unity_main # Don't change this line
+	center_and_print "=========================================="
+	center_and_print "         .....    "
+	center_and_print "        /   /     "
+	center_and_print "       /   /      "
+	center_and_print "      /   /       "
+	center_and_print "     /   /_._._.  "
+	center_and_print "    /_._._._._./   SPEED"
+	center_and_print "           Feel the smoothness"
+	center_and_print "                            by Paget96"
+	center_and_print "=========================================="
+	unity_main # Don't change this line
 }
 
 set_permissions() {
