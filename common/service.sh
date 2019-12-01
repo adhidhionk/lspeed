@@ -63,7 +63,7 @@ createFile() {
 }
 
 sendToLog() {
-    echo "[$(date +"%H:%M:%S %d-%m-%Y")] $1" | tee -a $LOG
+    echo "[$(date +"%H:%M:%S:%3N %d-%m-%Y")] $1" | tee -a $LOG
 }
 
 write() {
@@ -86,7 +86,7 @@ fi;
 # Remove old logs when running the script again
 # and create dir if not exists
 # This will be only executed if there are no arguments while executing
-if [ $# -eq 0 ]; then
+if [ "$#" -eq 0 ]; then
 	if [ -d $LOG_DIR ]; then
 		rm -rf $LOG_DIR
 		mkdir -p $LOG_DIR
@@ -103,14 +103,9 @@ if [ ! -d $SETUP_DIR ]; then
 	mkdir -p $SETUP_DIR
 fi;
 
-if [ -f $PROFILE ]; then
+# Create $PROFILE file if not exists
+if [ ! -f $PROFILE ]; then
 	createFile $PROFILE
-fi;
-
-# Remove user_profile if it's already mounted as a file
-# This is needed to prevent crashes while running the script
-if [ -f $USER_PROFILE ]; then
-	rm -rf $USER_PROFILE
 fi;
 
 # Directory dedicated for storing current profile
@@ -118,6 +113,8 @@ if [ ! -d $USER_PROFILE ]; then
 	mkdir -p $USER_PROFILE
 fi;
 
+# Create controllers
+# This will be used for the Manager to take a control over the module
 if [ -d $USER_PROFILE ]; then
 	createFile $USER_PROFILE/battery_improvements
 
@@ -162,7 +159,9 @@ if [ -d $USER_PROFILE ]; then
 
 fi;
 
-if [ $# -eq 0 ]; then
+# Get device info when starting the module. 
+# this will be done only on boot or executed service with sh over terminal
+if [ "$#" -eq 0 ]; then
 	sendToLog "L Speed finished with base setup";
 
 	sendToLog "Starting with logging...";
@@ -2967,14 +2966,14 @@ setPerformanceProfile() {
 }
 
 # Check number of arguments and perform task based on it.
-if [ $# -eq 2 ]; then
+if [ "$#" -eq 2 ]; then
 	sleep 1;
-	$1 "$2";
+	"$1" "$2";
 	
 	exit 0;
-elif [ $# -eq 1 ]; then
+elif [ "$#" -eq 1 ]; then
 	sleep 1;
-	$1
+	"$1"
 	
 	exit 0;
 else
@@ -2982,16 +2981,17 @@ sendToLog "Starting L Speed";
 
 # Wait for boot completed and then continue with execution, when getprop sys.boot_completed is
 # equal to 1 while loop will be passed
-attempts=10
-wait=15 # Time in seconds
-while [ "$attempts" -gt 0 ] && [ "$(getprop sys.boot_completed)" != "1" ]; do
-   attempts=$((attempts-1));
-   sendToLog "Waiting for boot_completed";
-   sleep $wait
-done
+#attempts=10
+#wait=15 # Time in seconds
+#while [ "$attempts" -gt 0 ] && [ "$(getprop sys.boot_completed)" != "1" ]; do
+#   attempts=$((attempts-1));
+#   sendToLog "Waiting for boot_completed";
+#   sleep $wait
+#done
 
-# This should prevent freezing on boot
-sleep 90
+# Wait some time before applying settings
+sendToLog "Script paused for 2 minutes, please wait...";
+sleep 120
 
 # Read current profile
 currentProfile=$(cat "$PROFILE" 2> /dev/null);
