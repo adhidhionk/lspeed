@@ -2967,31 +2967,33 @@ setPerformanceProfile() {
 
 # Check number of arguments and perform task based on it.
 if [ "$#" -eq 2 ]; then
-	sleep 1;
+	sleep 0.5;
 	"$1" "$2";
 	
 	exit 0;
 elif [ "$#" -eq 1 ]; then
-	sleep 1;
+	sleep 0.5;
 	"$1"
 	
 	exit 0;
 else
+
+sleep 0.5
+
 sendToLog "Starting L Speed";
 
 # Wait for boot completed and then continue with execution, when getprop sys.boot_completed is
 # equal to 1 while loop will be passed
-#attempts=10
-#wait=15 # Time in seconds
-#while [ "$attempts" -gt 0 ] && [ "$(getprop sys.boot_completed)" != "1" ]; do
-#   attempts=$((attempts-1));
-#   sendToLog "Waiting for boot_completed";
-#   sleep $wait
-#done
+attempts=40
+wait=5 # Time in seconds
+while [ "$attempts" -gt 0 ] && [ "$(getprop sys.boot_completed)" != "1" ]; do
+   sendToLog "Waiting for boot_completed"
+   sleep $wait
+   attempts=$((attempts-1))
+done
 
-# Wait some time before applying settings
-sendToLog "Script paused for 2 minutes, please wait...";
-sleep 120
+sendToLog "Waiting for 1min 30secs before applying"
+sleep 90;
 
 # Read current profile
 currentProfile=$(cat "$PROFILE" 2> /dev/null);
