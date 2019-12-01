@@ -2980,6 +2980,19 @@ elif [ $# -eq 1 ]; then
 else
 sendToLog "Starting L Speed";
 
+# Wait for boot completed and then continue with execution, when getprop sys.boot_completed is
+# equal to 1 while loop will be passed
+attempts=10
+wait=15 # Time in seconds
+while [ "$attempts" -gt 0 ] && [ "$(getprop sys.boot_completed)" != "1" ]; do
+   attempts=$((attempts-1));
+   sendToLog "Waiting for boot_completed";
+   sleep $wait
+done
+
+# This should prevent freezing on boot
+sleep 90
+
 # Read current profile
 currentProfile=$(cat "$PROFILE" 2> /dev/null);
 sendToLog "Getting profile...";
@@ -3007,17 +3020,6 @@ else
 	setDefaultProfile;
 fi
 sendToLog "Current profile is $profile";
-
-# Wait for boot completed and then continue with execution, when getprop sys.boot_completed is
-# equal to 1 while loop will be passed
-attempts=10
-# Time in seconds
-wait=60
-while [ "$attempts" -gt 0 ] && [ "$(getprop sys.boot_completed)" != "1" ]; do
-   attempts=$((attempts-1));
-   sendToLog "Waiting for boot_completed";
-   sleep $wait
-done
 
 sendToLog "Applying $profile profile";
 
