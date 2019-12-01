@@ -26,12 +26,14 @@
   </h3>
 </div>
 
-**REQUIRES ROOT!!!**
-
-**What is L Speed:**
-- L Speed is a modification that combines tweaks inside an intuitive module, Its goal is to improve overall performance, reduce significant lags, extend battery life and improve your experience on Android. Fully customizable module with prebuit manager.
+## Introduction
+L Speed is a modification that combines tweaks inside an intuitive module who aims to improve kernel with optimal parameter changes for the widest range of devices.
+It's goal is to improve overall performance, reduce significant lags, extend battery life and improve your experience on Android. Fully customizable module with prebuit manager.
+When we talk about the performances it'll improve your gaming experience (for example PUBG, Garena Free-fire, and bunch of others), otherside there is battery profile who aims to increase your Screen on time and idle time with minimal performance loss.
+If you are unsure, simple use the balance profile which is a perfect balance between those two.
+It's very simple to use, everything is well explained in the manager it self, every option have a info button beside it.
 The mod will and should work on any device that meets its minimum requirement.
-You only need a rooted Android device to function properly.
+You only need a rooted Android device and proper installed busybox to function properly.
 
 <div align="center">
 **Module with prebuilt manager**
@@ -41,6 +43,30 @@ You only need a rooted Android device to function properly.
 
 **Requirements:**
 1. Root (Magisk 18.0 +)
+2. Properly installed busybox
+
+## Downloads
+* For stable and beta versions, download link is below
+- https://github.com/Magisk-Modules-Repo/lspeed
+
+* For canary builds, download link is below
+- https://github.com/Magisk-Modules-Repo/lspeed/archive/master.zip
+- Canary builds are bleeding edge builds and can contain bugs. Be aware of it, you flash this on your own. Those builds contains the changes till the latest commit on GitHub.
+
+After downloading canary build you just have to repack zip, extract, go into master folder and zip all the files inside.
+Uninstalling current version is necessary. 
+After everything is done, flash the zip.
+
+Please provide L Speed logs located in:
+/data/lspeed/logs
+
+And magisk logs, located in:
+/data/cache/magisk.log
+
+## Bug report
+- If you are one of the users with the issues on your device (such as bootloop, device freeze) please get Magisk canary (because of logs), 
+test the problematic build and pass me L Speed and Magisk log, logcat will be also welcomed. 
+You can pass them on any links from below (Telegram is recommended)
 
 
 **Links:**
