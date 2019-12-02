@@ -2993,22 +2993,24 @@ elif [ "$#" -eq 1 ]; then
 	exit 0;
 else
 
-sleep 0.5
-
 sendToLog "Starting L Speed";
 
 # Wait for boot completed and then continue with execution, when getprop sys.boot_completed is
 # equal to 1 while loop will be passed
 attempts=40
 wait=5 # Time in seconds
+bootCompleted=false
 while [ "$attempts" -gt 0 ] && [ "$(getprop sys.boot_completed)" != "1" ]; do
    sendToLog "Waiting for boot_completed"
    sleep $wait
+   bootCompleted=true
    attempts=$((attempts-1))
 done
 
-sendToLog "Waiting for 1min 30secs before applying"
-sleep 90;
+if [ "$bootCompleted" = true ]; then
+	sendToLog "Waiting for 1min 30secs before applying"
+	sleep 90;
+fi
 
 # Read current profile
 currentProfile=$(cat "$PROFILE" 2> /dev/null);
