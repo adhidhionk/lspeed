@@ -843,7 +843,7 @@ fi;
 
 # Adreno idler
 if [ -e /sys/module/adreno_idler/parameters/adreno_idler_active ]; then
-	write /sys/module/adreno_idler/parameters/adreno_idler_active "N"
+	write /sys/module/adreno_idler/parameters/adreno_idler_active "Y"
 	write /sys/module/adreno_idler/parameters/adreno_idler_idleworkload "6000"
 	write /sys/module/adreno_idler/parameters/adreno_idler_downdifferential "15"
 	write /sys/module/adreno_idler/parameters/adreno_idler_idlewait "15"
