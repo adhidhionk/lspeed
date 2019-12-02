@@ -1,5 +1,4 @@
 #!/system/bin/sh
-
 # L Speed tweak
 # Codename : lspeed
 version="v1.2.1";
@@ -19,13 +18,11 @@ build_date=02-12-2019;
 # that's main output after executing lspeed.sh
 #
 
-
 # DEBUG
 debug=false
 if [ "$debug" = true ]; then
 	set -x
 fi
-
 
 # Variables
 memTotal=$(free -m | awk '/^Mem:/{print $2}');
@@ -782,10 +779,6 @@ sendToLog "$divider";
 }
 
 gpuOptimizerBalanced() {
-
-# Variables
-memTotal=$(free -m | awk '/^Mem:/{print $2}');
-
 sendToLog "Optimizing GPU..."
 
 # GPU related tweaks
@@ -903,10 +896,6 @@ sendToLog "$divider";
 }
 
 gpuOptimizerPerformance() {
-
-# Variables
-memTotal=$(free -m | awk '/^Mem:/{print $2}');
-
 sendToLog "Optimizing GPU..."
 
 # GPU related tweaks
@@ -1024,10 +1013,6 @@ sendToLog "$divider";
 }
 
 gpuOptimizerPowerSaving() {
-
-# Variables
-memTotal=$(free -m | awk '/^Mem:/{print $2}');
-
 sendToLog "Optimizing GPU..."
 
 # GPU related tweaks
@@ -1928,7 +1913,7 @@ adj="0,112,224,408,824,1000";
 
 # If you set this to lower than 1024KB, your system will
 # become subtly broken, and prone to deadlock under high loads, we don't allow it below 2048kb
-mfk=$((memTotal*4));
+mfk=$((memTotal*2));
 
 if [ "$mfk" -le "4096" ]; then
 	mfk=4096;
@@ -2043,7 +2028,7 @@ adj="0,112,224,408,824,1000";
 
 # If you set this to lower than 1024KB, your system will
 # become subtly broken, and prone to deadlock under high loads, we don't allow it below 2048kb
-mfk=$((memTotal*4));
+mfk=$((memTotal*2));
 
 if [ "$mfk" -le "4096" ]; then
 mfk=4096;
@@ -2158,7 +2143,7 @@ adj="0,112,224,408,824,1000";
 
 # If you set this to lower than 1024KB, your system will
 # become subtly broken, and prone to deadlock under high loads, we don't allow it below 2048kb
-mfk=$((memTotal*4));
+mfk=$((memTotal*2));
 
 if [ "$mfk" -le "4096" ]; then
 mfk=4096;
@@ -2694,10 +2679,6 @@ sendToLog "$divider";
 }
 
 heapOptimization() {
-
-# Variables
-memTotal=$(free -m | awk '/^Mem:/{print $2}');
-
 heapSize=$((memTotal*3/16));
 
 #if [ "$heapSize" -gt "512" ]; then
