@@ -1574,11 +1574,10 @@ sendToLog "$divider";
 netSpeedPlus() {
 sendToLog "Activating Net Speed+..."
 
-
-net=$(ls /sys/class/net);
+net=$(ls -d /sys/class/net/*);
 for i in $net; do
-	if [ -e /sys/class/net/"$i"/tx_queue_len ]; then
-		write /sys/class/net/"$i"/tx_queue_len "128"
+	if [ -e "$i"/tx_queue_len ]; then
+		write "$i"/tx_queue_len "128"
 		sendToLog "tx_queue_len=128 in $i";
 	fi
 done
