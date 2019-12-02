@@ -1913,9 +1913,6 @@ sendToLog "$divider";
 
 ramManagerBalanced() {
 
-# Variables
-memTotal=$(free -m | awk '/^Mem:/{print $2}');
-
 fa=$(((memTotal*2/100)*1024/4));
 va=$(((memTotal*3/100)*1024/4));
 ss=$(((memTotal*5/100)*1024/4));
@@ -2031,9 +2028,6 @@ sendToLog "$divider";
 
 ramManagerGaming() {
 
-# Variables
-memTotal=$(free -m | awk '/^Mem:/{print $2}');
-
 fa=$(((memTotal*3/100)*1024/4));
 va=$(((memTotal*4/100)*1024/4));
 ss=$(((memTotal*6/100)*1024/4));
@@ -2148,9 +2142,6 @@ sendToLog "$divider";
 }
 
 ramManagerMultitasking() {
-
-# Variables
-memTotal=$(free -m | awk '/^Mem:/{print $2}');
 
 fa=$(((memTotal*2/100)*1024/4));
 va=$(((memTotal*3/100)*1024/4));
@@ -2372,27 +2363,6 @@ if [ -e $laptop_mode ]; then
 	sendToLog "laptop_mode=0"
 fi;
 
-#Available only when CONFIG_COMPACTION is set. When 1 is written to the file,
-#all zones are compacted such that free memory is available in contiguous
-#blocks where possible. This can be important for example in the allocation of
-#huge pages although processes will also directly compact memory as required.
-compact_memory=/proc/sys/vm/compact_memory
-if [ -e $compact_memory ]; then
-	write $compact_memory "1"		
-	sendToLog "compact_memory=1"
-fi;
-
-#Available only when CONFIG_COMPACTION is set. When set to 1, compaction is
-#allowed to examine the unevictable lru (mlocked pages) for pages to compact.
-#This should be used on systems where stalls for minor page faults are an
-#acceptable trade for large contiguous free memory.  Set to 0 to prevent
-#compaction from moving pages that are unevictable.  Default value is 1.
-compact_unevictable_allowed=/proc/sys/vm/compact_unevictable_allowed
-if [ -e $compact_unevictable_allowed ]; then
-	write $compact_unevictable_allowed "1"
-	sendToLog "compact_unevictable_allowed=1"
-fi;
-
 # page-cluster controls the number of pages up to which consecutive pages
 # are read in from swap in a single attempt. This is the swap counterpart
 # to page cache readahead.
@@ -2524,27 +2494,6 @@ if [ -e $laptop_mode ]; then
 	sendToLog "laptop_mode=0"
 fi;
 
-#Available only when CONFIG_COMPACTION is set. When 1 is written to the file,
-#all zones are compacted such that free memory is available in contiguous
-#blocks where possible. This can be important for example in the allocation of
-#huge pages although processes will also directly compact memory as required.
-compact_memory=/proc/sys/vm/compact_memory
-if [ -e $compact_memory ]; then
-	write $compact_memory "1"		
-	sendToLog "compact_memory=1"
-fi;
-
-#Available only when CONFIG_COMPACTION is set. When set to 1, compaction is
-#allowed to examine the unevictable lru (mlocked pages) for pages to compact.
-#This should be used on systems where stalls for minor page faults are an
-#acceptable trade for large contiguous free memory.  Set to 0 to prevent
-#compaction from moving pages that are unevictable.  Default value is 1.
-compact_unevictable_allowed=/proc/sys/vm/compact_unevictable_allowed
-if [ -e $compact_unevictable_allowed ]; then
-	write $compact_unevictable_allowed "1"
-	sendToLog "compact_unevictable_allowed=1"
-fi;
-
 # page-cluster controls the number of pages up to which consecutive pages
 # are read in from swap in a single attempt. This is the swap counterpart
 # to page cache readahead.
@@ -2674,27 +2623,6 @@ laptop_mode=/proc/sys/vm/laptop_mode
 if [ -e $laptop_mode ]; then
 	write $laptop_mode "0"
 	sendToLog "laptop_mode=0"
-fi;
-
-#Available only when CONFIG_COMPACTION is set. When 1 is written to the file,
-#all zones are compacted such that free memory is available in contiguous
-#blocks where possible. This can be important for example in the allocation of
-#huge pages although processes will also directly compact memory as required.
-compact_memory=/proc/sys/vm/compact_memory
-if [ -e $compact_memory ]; then
-	write $compact_memory "1"		
-	sendToLog "compact_memory=1"
-fi;
-
-#Available only when CONFIG_COMPACTION is set. When set to 1, compaction is
-#allowed to examine the unevictable lru (mlocked pages) for pages to compact.
-#This should be used on systems where stalls for minor page faults are an
-#acceptable trade for large contiguous free memory.  Set to 0 to prevent
-#compaction from moving pages that are unevictable.  Default value is 1.
-compact_unevictable_allowed=/proc/sys/vm/compact_unevictable_allowed
-if [ -e $compact_unevictable_allowed ]; then
-	write $compact_unevictable_allowed "1"
-	sendToLog "compact_unevictable_allowed=1"
 fi;
 
 # page-cluster controls the number of pages up to which consecutive pages
