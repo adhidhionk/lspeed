@@ -2,7 +2,7 @@
 
 # L Speed tweak
 # Codename : lspeed
-version="v1.2-beta1";
+version="v1.2";
 build_date=02-12-2019;
 # Developer : Paget96
 # Paypal : https://paypal.me/Paget96
@@ -18,6 +18,13 @@ build_date=02-12-2019;
 # To check if mod working go to /data/lspeed/logs/main_log.log
 # that's main output after executing lspeed.sh
 #
+
+
+# DEBUG
+debug=true
+if [ "$debug" = true ]; then
+	set -x
+fi
 
 
 # Variables
