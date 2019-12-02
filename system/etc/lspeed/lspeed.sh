@@ -734,6 +734,7 @@ elif [ "$1" = "3" ]; then
 fi
 
 sendToLog "Governor tuner applied parameters"
+sendToLog "$divider";
 }
 
 entropyAggressive() {
@@ -3240,6 +3241,7 @@ runtime=$((end-start))
 
 sendToLog "Applying took $runtime seconds";
 sendToLog "Successfully applied $profile profile";
+sendToLog "$divider";
 
 exit 0
 fi
