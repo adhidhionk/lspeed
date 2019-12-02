@@ -2,7 +2,7 @@
 
 # L Speed tweak
 # Codename : lspeed
-version="v1.2";
+version="v1.2-beta1";
 build_date=02-12-2019;
 # Developer : Paget96
 # Paypal : https://paypal.me/Paget96
@@ -2804,33 +2804,33 @@ sendToLog "$divider";
 # Profile presets
 #
 setDefaultProfile() {
-	write "$USER_PROFILE"/battery_improvements "1"
+	write "$USER_PROFILE"/battery_improvements "0"
 
 	# CPU section
-	write "$USER_PROFILE"/cpu_optimization "2"
-	write "$USER_PROFILE"/gov_tuner "2"
+	write "$USER_PROFILE"/cpu_optimization "0"
+	write "$USER_PROFILE"/gov_tuner "0"
 
 	# Entropy section
 	write "$USER_PROFILE"/entropy "0"
 
 	# GPU section
-	write "$USER_PROFILE"/gpu_optimizer "2"
+	write "$USER_PROFILE"/gpu_optimizer "0"
 	write "$USER_PROFILE"/optimize_buffers "0"
 	write "$USER_PROFILE"/render_opengles_using_gpu "0"
 	write "$USER_PROFILE"/use_opengl_skia "0"
 
 	# I/O tweaks section
-	write "$USER_PROFILE"/disable_io_stats "1"
-	write "$USER_PROFILE"/io_blocks_optimization "2"
+	write "$USER_PROFILE"/disable_io_stats "-1"
+	write "$USER_PROFILE"/io_blocks_optimization "0"
 	write "$USER_PROFILE"/io_extended_queue "0"
-	write "$USER_PROFILE"/scheduler_tuner "1"
+	write "$USER_PROFILE"/scheduler_tuner "0"
 	write "$USER_PROFILE"/sd_tweak "0"
 
 	# LNET tweaks section
 	write "$USER_PROFILE"/dns "0"
 	write "$USER_PROFILE"/net_buffers "0"
 	write "$USER_PROFILE"/net_speed_plus "0"
-	write "$USER_PROFILE"/net_tcp "1"
+	write "$USER_PROFILE"/net_tcp "0"
 	write "$USER_PROFILE"/optimize_ril "0"
 
 	# Other
@@ -2838,12 +2838,12 @@ setDefaultProfile() {
 	write "$USER_PROFILE"/disable_kernel_panic "0"
 
 	# RAM manager section
-	write "$USER_PROFILE"/ram_manager "2"
-	write "$USER_PROFILE"/disable_multitasking_limitations "1"
-	write "$USER_PROFILE"/low_ram_flag "0"
-	write "$USER_PROFILE"/oom_killer "0"
-	write "$USER_PROFILE"/swappiness "3"
-	write "$USER_PROFILE"/virtual_memory "2"
+	write "$USER_PROFILE"/ram_manager "0"
+	write "$USER_PROFILE"/disable_multitasking_limitations "0"
+	write "$USER_PROFILE"/low_ram_flag "-1"
+	write "$USER_PROFILE"/oom_killer "-1"
+	write "$USER_PROFILE"/swappiness "0"
+	write "$USER_PROFILE"/virtual_memory "0"
 	write "$USER_PROFILE"/heap_optimization "0"
 }
 
@@ -2884,8 +2884,8 @@ setPowerSavingProfile() {
 	# RAM manager section
 	write "$USER_PROFILE"/ram_manager "2"
 	write "$USER_PROFILE"/disable_multitasking_limitations "0"
-	write "$USER_PROFILE"/low_ram_flag "0"
-	write "$USER_PROFILE"/oom_killer "0"
+	write "$USER_PROFILE"/low_ram_flag "-1"
+	write "$USER_PROFILE"/oom_killer "-1"
 	write "$USER_PROFILE"/swappiness "1"
 	write "$USER_PROFILE"/virtual_memory "1"
 	write "$USER_PROFILE"/heap_optimization "0"
@@ -2928,8 +2928,8 @@ setBalancedProfile() {
 	# RAM manager section
 	write "$USER_PROFILE"/ram_manager "2"
 	write "$USER_PROFILE"/disable_multitasking_limitations "1"
-	write "$USER_PROFILE"/low_ram_flag "0"
-	write "$USER_PROFILE"/oom_killer "0"
+	write "$USER_PROFILE"/low_ram_flag "-1"
+	write "$USER_PROFILE"/oom_killer "-1"
 	write "$USER_PROFILE"/swappiness "3"
 	write "$USER_PROFILE"/virtual_memory "2"
 	write "$USER_PROFILE"/heap_optimization "0"
@@ -2972,8 +2972,8 @@ setPerformanceProfile() {
 	# RAM manager section
 	write "$USER_PROFILE"/ram_manager "3"
 	write "$USER_PROFILE"/disable_multitasking_limitations "1"
-	write "$USER_PROFILE"/low_ram_flag "0"
-	write "$USER_PROFILE"/oom_killer "0"
+	write "$USER_PROFILE"/low_ram_flag "-1"
+	write "$USER_PROFILE"/oom_killer "-1"
 	write "$USER_PROFILE"/swappiness "1"
 	write "$USER_PROFILE"/virtual_memory "3"
 	write "$USER_PROFILE"/heap_optimization "0"
