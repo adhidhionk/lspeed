@@ -1286,8 +1286,8 @@ for i in $blocks;
 	fi
 	
 	if [ -e "$i/queue/read_ahead_kb" ]; then
-		write "$i/queue/read_ahead_kb" "1024"
-		sendToLog "read_ahead_kb=1024 in $i"
+		write "$i/queue/read_ahead_kb" "128"
+		sendToLog "read_ahead_kb=128 in $i"
 	fi
 	
 	if [ -e "$i/queue/write_cache" ]; then
@@ -1342,13 +1342,13 @@ for i in $blocks;
 	fi
 	
 	if [ -e "$i/queue/nr_requests" ]; then
-		write "$i/queue/nr_requests" "256"
-		sendToLog "nr_requests=256 in $i"
+		write "$i/queue/nr_requests" "128"
+		sendToLog "nr_requests=128 in $i"
 	fi
 	
 	if [ -e "$i/queue/read_ahead_kb" ]; then
-		write "$i/queue/read_ahead_kb" "2048"
-		sendToLog "read_ahead_kb=2048 in $i"
+		write "$i/queue/read_ahead_kb" "256"
+		sendToLog "read_ahead_kb=256 in $i"
 	fi
 	
 	if [ -e "$i/queue/write_cache" ]; then
@@ -1408,8 +1408,8 @@ for i in $blocks;
 	fi
 	
 	if [ -e "$i/queue/read_ahead_kb" ]; then
-		write "$i/queue/read_ahead_kb" "256"
-		sendToLog "read_ahead_kb=256 in $i"
+		write "$i/queue/read_ahead_kb" "64"
+		sendToLog "read_ahead_kb=64 in $i"
 	fi
 	
 	if [ -e "$i/queue/write_cache" ]; then
