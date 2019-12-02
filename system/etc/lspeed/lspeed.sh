@@ -2,7 +2,7 @@
 
 # L Speed tweak
 # Codename : lspeed
-version="v1.2";
+version="v1.2.1";
 build_date=02-12-2019;
 # Developer : Paget96
 # Paypal : https://paypal.me/Paget96
@@ -21,7 +21,7 @@ build_date=02-12-2019;
 
 
 # DEBUG
-debug=true
+debug=false
 if [ "$debug" = true ]; then
 	set -x
 fi
@@ -39,7 +39,7 @@ if [ -z "${busyboxVersion}" ]; then
 	busyboxVersion="Busybox not found"
 fi
 rom=$(getprop ro.build.display.id) 2>/dev/null
-androidRelease=$(getprop ro.build.version.release)
+androidRelease=$(getprop ro.build.version.release) 2>/dev/null
 api=$(getprop ro.build.version.sdk) 2>/dev/null
 kernel=$(uname -r) 2>/dev/null
 root=$(magisk -c) 2>/dev/null
@@ -68,7 +68,7 @@ fi;
 # Functions
 createFile() {
     touch "$1"
-	chmod 0644 "$1" 2> /dev/null
+	chmod 0644 "$1"
 }
 
 sendToLog() {
@@ -76,14 +76,14 @@ sendToLog() {
 }
 
 write() {
-	#chmod 0644 "$1" 2> /dev/null
-    echo "$2" > "$1" 2> /dev/null
+	#chmod 0644 "$1"
+    echo "$2" > "$1"
 }
 
 lockFile() {
-	chmod 0644 "$1" 2> /dev/null
-    echo "$2" > "$1" 2> /dev/null
-	chmod 0444 "$1" 2> /dev/null
+	chmod 0644 "$1"
+    echo "$2" > "$1"
+	chmod 0444 "$1"
 }
 
 # Setting up default L Speed dirs and files
@@ -3019,7 +3019,7 @@ if [ "$bootCompleted" = true ]; then
 fi
 
 # Read current profile
-currentProfile=$(cat "$PROFILE" 2> /dev/null);
+currentProfile=$(cat "$PROFILE" 2>/dev/null);
 sendToLog "Getting profile...";
 
 if [ "$currentProfile" = "-1" ]; then
