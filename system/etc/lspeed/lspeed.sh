@@ -1912,18 +1912,18 @@ minFree="$fa,$va,$ss,$ha,$cp,$ea";
 adj="0,112,224,408,824,1000";
 
 # If you set this to lower than 1024KB, your system will
-# become subtly broken, and prone to deadlock under high loads, we don't allow it below 2048kb
-mfk=$((memTotal*2));
+# become subtly broken, and prone to deadlock under high loads, we don't allow it below 3072kb
+mfk=$((memTotal*14/5));
 
-if [ "$mfk" -le "4096" ]; then
-	mfk=4096;
+if [ "$mfk" -le "3072" ]; then
+mfk=3072;
 fi;
 
-# Extra free kbytes should not be bigger than min free kbytes
-efk=$((mfk/2));
+# Extra free kbytes calculated based on min_free_kbytes
+efk=$((mfk*16/5));
 
-if [ "$efk" -le "2048" ]; then
-	efk=2048;
+if [ "$efk" -le "18432‬" ]; then
+	efk=18432‬;
 fi;
 
 # Background app limit per ram size
@@ -2027,18 +2027,18 @@ minFree="$fa,$va,$ss,$ha,$cp,$ea";
 adj="0,112,224,408,824,1000";
 
 # If you set this to lower than 1024KB, your system will
-# become subtly broken, and prone to deadlock under high loads, we don't allow it below 2048kb
-mfk=$((memTotal*2));
+# become subtly broken, and prone to deadlock under high loads, we don't allow it below 3072kb
+mfk=$((memTotal*14/5));
 
-if [ "$mfk" -le "4096" ]; then
-mfk=4096;
+if [ "$mfk" -le "3072" ]; then
+mfk=3072;
 fi;
 
-# Extra free kbytes should not be bigger than min free kbytes
-efk=$((mfk/2));
+# Extra free kbytes calculated based on min_free_kbytes
+efk=$((mfk*16/5));
 
-if [ "$efk" -le "2048" ]; then
-	efk=2048;
+if [ "$efk" -le "18432‬" ]; then
+	efk=18432‬;
 fi;
 
 # Background app limit per ram size
@@ -2142,18 +2142,18 @@ minFree="$fa,$va,$ss,$ha,$cp,$ea";
 adj="0,112,224,408,824,1000";
 
 # If you set this to lower than 1024KB, your system will
-# become subtly broken, and prone to deadlock under high loads, we don't allow it below 2048kb
-mfk=$((memTotal*2));
+# become subtly broken, and prone to deadlock under high loads, we don't allow it below 3072kb
+mfk=$((memTotal*14/5));
 
-if [ "$mfk" -le "4096" ]; then
-mfk=4096;
+if [ "$mfk" -le "3072" ]; then
+mfk=3072;
 fi;
 
-# Extra free kbytes should not be bigger than min free kbytes
-efk=$((mfk/2));
+# Extra free kbytes calculated based on min_free_kbytes
+efk=$((mfk*16/5));
 
-if [ "$efk" -le "2048" ]; then
-	efk=2048;
+if [ "$efk" -le "18432‬" ]; then
+	efk=18432‬;
 fi;
 
 # Background app limit per ram size
