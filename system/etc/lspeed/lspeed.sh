@@ -26,6 +26,13 @@ fi
 
 # Variables
 memTotal=$(free -m | awk '/^Mem:/{print $2}');
+# Prevent issues when $memTotal return weird output (including non-integer values, empty strings...),
+# in this case device acts like a 4GB RAM device
+case $memTotal in
+    ''|*[!0-9]*) memTotal=4096 ;;
+    *) memTotal=$memTotal ;;
+esac
+
 real_cpu_cores=$(ls /sys/devices/system/cpu | grep -c ^cpu[0-9]);
 cpu_cores=$((real_cpu_cores-1));
 brand=$(getprop ro.product.brand) 2>/dev/null
