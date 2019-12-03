@@ -88,6 +88,16 @@ If you want, you can support me over [Paypal donate](https://paypal.me/Paget96),
 
 ## Changelog 
 
+**v1.2.2**
+- Prevent issues when $memTotal return weird output (including non-integer values, empty strings...),
+in this case device acts like a 4GB RAM device
+- Improved IO block optimization profiles, fixed some mess
+- Updated min_free_kbytes and extra_free_kbytes calculation
+- Fixed text print when installing module
+- Removed some useless stuff from code
+- Fixed some syntax errors
+- Improved overall device performances and battery life
+
 **v1.2.1**
 - This version have everything disabled by default (if clean install)
 - Run script in background when executing on boot
