@@ -1,7 +1,7 @@
 #!/system/bin/sh
 # L Speed tweak
 # Codename : lspeed
-version="v1.2.2-beta1";
+version="v1.2.2-beta2";
 build_date=02-12-2019;
 # Developer : Paget96
 # Paypal : https://paypal.me/Paget96
@@ -1294,6 +1294,10 @@ for i in $blocks;
 		sendToLog "rq_affinity=1 in $i"
 	fi
 	
+	#This controls how many requests may be allocated in the block layer for
+	#read or write requests. Note that the total allocated number may be twice
+	#this amount, since it applies only to reads or writes (not the accumulated
+	#sum).
 	#To avoid priority inversion through request starvation, a request
 	#queue maintains a separate request pool per each cgroup when
 	#CONFIG_BLK_CGROUP is enabled, and this parameter applies to each such
@@ -1379,6 +1383,10 @@ for i in $blocks;
 		sendToLog "rq_affinity=2 in $i"
 	fi
 	
+	#This controls how many requests may be allocated in the block layer for
+	#read or write requests. Note that the total allocated number may be twice
+	#this amount, since it applies only to reads or writes (not the accumulated
+	#sum).
 	#To avoid priority inversion through request starvation, a request
 	#queue maintains a separate request pool per each cgroup when
 	#CONFIG_BLK_CGROUP is enabled, and this parameter applies to each such
@@ -1467,8 +1475,7 @@ for i in $blocks;
 	#This controls how many requests may be allocated in the block layer for
 	#read or write requests. Note that the total allocated number may be twice
 	#this amount, since it applies only to reads or writes (not the accumulated
-	sum).
-
+	#sum).
 	#To avoid priority inversion through request starvation, a request
 	#queue maintains a separate request pool per each cgroup when
 	#CONFIG_BLK_CGROUP is enabled, and this parameter applies to each such
@@ -2006,7 +2013,7 @@ fi;
 # Extra free kbytes calculated based on min_free_kbytes
 efk=$((mfk*16/5));
 
-if [ "$efk" -le "18432‬" ]; then
+if [ "$efk" -le 18432 ]; then
 	efk=18432‬;
 fi;
 
@@ -2121,7 +2128,7 @@ fi;
 # Extra free kbytes calculated based on min_free_kbytes
 efk=$((mfk*16/5));
 
-if [ "$efk" -le "18432‬" ]; then
+if [ "$efk" -le 18432 ]; then
 	efk=18432‬;
 fi;
 
@@ -2236,7 +2243,7 @@ fi;
 # Extra free kbytes calculated based on min_free_kbytes
 efk=$((mfk*16/5));
 
-if [ "$efk" -le "18432‬" ]; then
+if [ "$efk" -le 18432 ]; then
 	efk=18432‬;
 fi;
 
@@ -3061,11 +3068,11 @@ elif [ "$(cat "$USER_PROFILE"/cpu_optimization)" -eq 3 ]; then
 	cpuOptimizationPerformance;
 fi
 
-if [ `cat $USER_PROFILE/gov_tuner` -eq 1 ]; then
+if [ "$(cat "$USER_PROFILE"/gov_tuner)" -eq 1 ]; then
 	governorTuner 1
-elif [ `cat $USER_PROFILE/gov_tuner` -eq 2 ]; then
+elif [ "$(cat "$USER_PROFILE"/gov_tuner)" -eq 2 ]; then
 	governorTuner 2
-elif [ `cat $USER_PROFILE/gov_tuner` -eq 3 ]; then
+elif [ "$(cat "$USER_PROFILE"/gov_tuner)" -eq 3 ]; then
 	governorTuner 3
 fi
 
