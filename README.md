@@ -86,3 +86,29 @@ You can pass them on any links from below (Telegram is recommended)
 
 If you want, you can support me over [Paypal donate](https://paypal.me/Paget96), to support my work.
 
+## Changelog 
+
+**v1.2.1**
+- This version have everything disabled by default (if clean install)
+- Run script in background when executing on boot
+- Added boot completed check
+- Wait 1min 30secs after boot to set up parameters
+- Enabled adreno idler on balanced profile
+- Updated read_aheads for blocks
+- Updated net speed+
+- Improved disable debugging
+- Added ms to log timing
+- Fixed issues with Optimize button in manager
+- Updated busybox check
+- Updated code with POSIX syntax fixes
+- Improved code
+- Enabled full debug for this build
+
+**v1.1**
+- Increased optimize time to a bit more than 24h
+- Improved device optimization
+- Added user defined indicator
+- Improved chanigng profiles
+- Updated virtual memory tweaks
+- Updated IO block optimization
+- Updated logging
