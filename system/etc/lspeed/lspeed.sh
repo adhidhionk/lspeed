@@ -1265,34 +1265,58 @@ blocks=$(ls -d /sys/block/*)
 
 for i in $blocks;
 	do
+	
+	#This file allows to turn off the disk entropy contribution. Default
+	#value of this file is '1'(on).
 	if [ -e "$i/queue/add_random" ]; then
 		write "$i/queue/add_random" "0"
 		sendToLog "add_random=0 in $i"
 	fi
 	
+	#This enables the user to disable the lookup logic involved with IO
+	#merging requests in the block layer. By default (0) all merges are
+	#enabled. When set to 1 only simple one-hit merges will be tried. When
+	#set to 2 no merge algorithms will be tried (including one-hit or more
+	#complex tree/hash lookups).
 	if [ -e "$i/queue/nomerges" ]; then
-		write "$i/queue/nomerges" "0"
-		sendToLog "nomerges=0 in $i"
+		write "$i/queue/nomerges" "1"
+		sendToLog "nomerges=1 in $i"
 	fi
 		
+	#If this option is '1', the block layer will migrate request completions to the
+	#cpu "group" that originally submitted the request. For some workloads this
+	#provides a significant reduction in CPU cycles due to caching effects.
+	#For storage configurations that need to maximize distribution of completion
+	#processing setting this option to '2' forces the completion to run on the
+	#requesting cpu (bypassing the "group" aggregation logic).
 	if [ -e "$i/queue/rq_affinity" ]; then
 		write "$i/queue/rq_affinity" "1"
 		sendToLog "rq_affinity=1 in $i"
 	fi
 	
+	#To avoid priority inversion through request starvation, a request
+	#queue maintains a separate request pool per each cgroup when
+	#CONFIG_BLK_CGROUP is enabled, and this parameter applies to each such
+	#per-block-cgroup request pool.  IOW, if there are N block cgroups,
+	#each request queue may have up to N request pools, each independently
+	#regulated by nr_requests.
 	if [ -e "$i/queue/nr_requests" ]; then
 		write "$i/queue/nr_requests" "128"
 		sendToLog "nr_requests=128 in $i"
 	fi
 	
+	#Maximum number of kilobytes to read-ahead for filesystems on this block
+	#device.
 	if [ -e "$i/queue/read_ahead_kb" ]; then
 		write "$i/queue/read_ahead_kb" "128"
 		sendToLog "read_ahead_kb=128 in $i"
 	fi
 	
-	if [ -e "$i/queue/write_cache" ]; then
-		write "$i/queue/write_cache" "write through"
-		sendToLog "write_cache=write through in $i"
+	#This file is used to stat if the device is of rotational type or
+	#non-rotational type.
+	if [ -e "$i/queue/rotational" ]; then
+		write "$i/queue/rotational" "0"
+		sendToLog "rotational=0 in $i"
 	fi
 done
 
@@ -1326,34 +1350,58 @@ blocks=$(ls -d /sys/block/*)
 
 for i in $blocks;
 	do
+	
+	#This file allows to turn off the disk entropy contribution. Default
+	#value of this file is '1'(on).
 	if [ -e "$i/queue/add_random" ]; then
 		write "$i/queue/add_random" "0"
 		sendToLog "add_random=0 in $i"
 	fi
 	
+	#This enables the user to disable the lookup logic involved with IO
+	#merging requests in the block layer. By default (0) all merges are
+	#enabled. When set to 1 only simple one-hit merges will be tried. When
+	#set to 2 no merge algorithms will be tried (including one-hit or more
+	#complex tree/hash lookups).
 	if [ -e "$i/queue/nomerges" ]; then
-		write "$i/queue/nomerges" "0"
-		sendToLog "nomerges=0 in $i"
+		write "$i/queue/nomerges" "2"
+		sendToLog "nomerges=2 in $i"
 	fi
 		
+	#If this option is '1', the block layer will migrate request completions to the
+	#cpu "group" that originally submitted the request. For some workloads this
+	#provides a significant reduction in CPU cycles due to caching effects.
+	#For storage configurations that need to maximize distribution of completion
+	#processing setting this option to '2' forces the completion to run on the
+	#requesting cpu (bypassing the "group" aggregation logic).
 	if [ -e "$i/queue/rq_affinity" ]; then
 		write "$i/queue/rq_affinity" "2"
 		sendToLog "rq_affinity=2 in $i"
 	fi
 	
+	#To avoid priority inversion through request starvation, a request
+	#queue maintains a separate request pool per each cgroup when
+	#CONFIG_BLK_CGROUP is enabled, and this parameter applies to each such
+	#per-block-cgroup request pool.  IOW, if there are N block cgroups,
+	#each request queue may have up to N request pools, each independently
+	#regulated by nr_requests.
 	if [ -e "$i/queue/nr_requests" ]; then
 		write "$i/queue/nr_requests" "128"
 		sendToLog "nr_requests=128 in $i"
 	fi
 	
+	#Maximum number of kilobytes to read-ahead for filesystems on this block
+	#device.
 	if [ -e "$i/queue/read_ahead_kb" ]; then
 		write "$i/queue/read_ahead_kb" "256"
 		sendToLog "read_ahead_kb=256 in $i"
 	fi
 	
-	if [ -e "$i/queue/write_cache" ]; then
-		write "$i/queue/write_cache" "write through"
-		sendToLog "write_cache=write through in $i"
+	#This file is used to stat if the device is of rotational type or
+	#non-rotational type.
+	if [ -e "$i/queue/rotational" ]; then
+		write "$i/queue/rotational" "0"
+		sendToLog "rotational=0 in $i"
 	fi
 done
 
@@ -1387,34 +1435,63 @@ blocks=$(ls -d /sys/block/*)
 
 for i in $blocks;
 	do
+	
+	#This file allows to turn off the disk entropy contribution. Default
+	#value of this file is '1'(on).
 	if [ -e "$i/queue/add_random" ]; then
 		write "$i/queue/add_random" "0"
 		sendToLog "add_random=0 in $i"
 	fi
 	
+	#This enables the user to disable the lookup logic involved with IO
+	#merging requests in the block layer. By default (0) all merges are
+	#enabled. When set to 1 only simple one-hit merges will be tried. When
+	#set to 2 no merge algorithms will be tried (including one-hit or more
+	#complex tree/hash lookups).
 	if [ -e "$i/queue/nomerges" ]; then
-		write "$i/queue/nomerges" "0"
-		sendToLog "nomerges=0 in $i"
-	fi
-		
-	if [ -e "$i/queue/rq_affinity" ]; then
-		write "$i/queue/rq_affinity" "0"
-		sendToLog "rq_affinity=0 in $i"
+		write "$i/queue/nomerges" "1"
+		sendToLog "nomerges=1 in $i"
 	fi
 	
+	#If this option is '1', the block layer will migrate request completions to the
+	#cpu "group" that originally submitted the request. For some workloads this
+	#provides a significant reduction in CPU cycles due to caching effects.
+	#For storage configurations that need to maximize distribution of completion
+	#processing setting this option to '2' forces the completion to run on the
+	#requesting cpu (bypassing the "group" aggregation logic).
+	if [ -e "$i/queue/rq_affinity" ]; then
+		write "$i/queue/rq_affinity" "1"
+		sendToLog "rq_affinity=1 in $i"
+	fi
+	
+	#This controls how many requests may be allocated in the block layer for
+	#read or write requests. Note that the total allocated number may be twice
+	#this amount, since it applies only to reads or writes (not the accumulated
+	sum).
+
+	#To avoid priority inversion through request starvation, a request
+	#queue maintains a separate request pool per each cgroup when
+	#CONFIG_BLK_CGROUP is enabled, and this parameter applies to each such
+	#per-block-cgroup request pool.  IOW, if there are N block cgroups,
+	#each request queue may have up to N request pools, each independently
+	#regulated by nr_requests.
 	if [ -e "$i/queue/nr_requests" ]; then
 		write "$i/queue/nr_requests" "64"
 		sendToLog "nr_requests=64 in $i"
 	fi
 	
+	#Maximum number of kilobytes to read-ahead for filesystems on this block
+	#device.
 	if [ -e "$i/queue/read_ahead_kb" ]; then
-		write "$i/queue/read_ahead_kb" "64"
-		sendToLog "read_ahead_kb=64 in $i"
+		write "$i/queue/read_ahead_kb" "128"
+		sendToLog "read_ahead_kb=128 in $i"
 	fi
 	
-	if [ -e "$i/queue/write_cache" ]; then
-		write "$i/queue/write_cache" "write through"
-		sendToLog "write_cache=write through in $i"
+	#This file is used to stat if the device is of rotational type or
+	#non-rotational type.
+	if [ -e "$i/queue/rotational" ]; then
+		write "$i/queue/rotational" "0"
+		sendToLog "rotational=0 in $i"
 	fi
 done
 
@@ -2728,14 +2805,14 @@ sendToLog "$divider";
 # Profile presets
 #
 setDefaultProfile() {
-	write "$USER_PROFILE"/battery_improvements "0"
+	write "$USER_PROFILE"/battery_improvements "1"
 
 	# CPU section
 	write "$USER_PROFILE"/cpu_optimization "0"
 	write "$USER_PROFILE"/gov_tuner "0"
 
 	# Entropy section
-	write "$USER_PROFILE"/entropy "0"
+	write "$USER_PROFILE"/entropy "2"
 
 	# GPU section
 	write "$USER_PROFILE"/gpu_optimizer "0"
@@ -2744,7 +2821,7 @@ setDefaultProfile() {
 	write "$USER_PROFILE"/use_opengl_skia "0"
 
 	# I/O tweaks section
-	write "$USER_PROFILE"/disable_io_stats "-1"
+	write "$USER_PROFILE"/disable_io_stats "1"
 	write "$USER_PROFILE"/io_blocks_optimization "0"
 	write "$USER_PROFILE"/io_extended_queue "0"
 	write "$USER_PROFILE"/scheduler_tuner "0"
@@ -2762,11 +2839,11 @@ setDefaultProfile() {
 	write "$USER_PROFILE"/disable_kernel_panic "0"
 
 	# RAM manager section
-	write "$USER_PROFILE"/ram_manager "0"
+	write "$USER_PROFILE"/ram_manager "2"
 	write "$USER_PROFILE"/disable_multitasking_limitations "0"
 	write "$USER_PROFILE"/low_ram_flag "-1"
 	write "$USER_PROFILE"/oom_killer "-1"
-	write "$USER_PROFILE"/swappiness "0"
+	write "$USER_PROFILE"/swappiness "3"
 	write "$USER_PROFILE"/virtual_memory "0"
 	write "$USER_PROFILE"/heap_optimization "0"
 }
@@ -2851,7 +2928,7 @@ setBalancedProfile() {
 
 	# RAM manager section
 	write "$USER_PROFILE"/ram_manager "2"
-	write "$USER_PROFILE"/disable_multitasking_limitations "1"
+	write "$USER_PROFILE"/disable_multitasking_limitations "0"
 	write "$USER_PROFILE"/low_ram_flag "-1"
 	write "$USER_PROFILE"/oom_killer "-1"
 	write "$USER_PROFILE"/swappiness "3"
@@ -2895,7 +2972,7 @@ setPerformanceProfile() {
 
 	# RAM manager section
 	write "$USER_PROFILE"/ram_manager "3"
-	write "$USER_PROFILE"/disable_multitasking_limitations "1"
+	write "$USER_PROFILE"/disable_multitasking_limitations "0"
 	write "$USER_PROFILE"/low_ram_flag "-1"
 	write "$USER_PROFILE"/oom_killer "-1"
 	write "$USER_PROFILE"/swappiness "1"
