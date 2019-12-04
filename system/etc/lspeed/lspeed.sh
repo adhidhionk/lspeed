@@ -1549,6 +1549,9 @@ sendToLog "$divider";
 }
 
 schedulerTuner() {
+
+sendToLog "Activating scheduler tuner..."
+	
 blocks=$(ls -d /sys/block/*)
 
 for i in $blocks;
@@ -1945,6 +1948,8 @@ for i in $blocks;
 	fi
 	
 	done
+	sendToLog "Scheduler tuner is activated"
+	sendToLog "$divider";
 }
 
 dnsOptimizationCloudFlare() {
