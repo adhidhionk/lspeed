@@ -1,7 +1,7 @@
 #!/system/bin/sh
 # L Speed tweak
 # Codename : lspeed
-version="v1.2.2";
+version="v1.2.3";
 build_date=03-12-2019;
 # Developer : Paget96
 # Paypal : https://paypal.me/Paget96
@@ -88,6 +88,10 @@ lockFile() {
 	chmod 0644 "$1"
     echo "$2" > "$1"
 	chmod 0444 "$1"
+}
+
+getScheduler() {
+	echo $(cut -d [ -f2 /sys/block/"$1"/queue/scheduler | cut -d] -f1)
 }
 
 # Setting up default L Speed dirs and files
@@ -1315,13 +1319,6 @@ for i in $blocks;
 		write "$i/queue/read_ahead_kb" "128"
 		sendToLog "read_ahead_kb=128 in $i"
 	fi
-	
-	#This file is used to stat if the device is of rotational type or
-	#non-rotational type.
-	if [ -e "$i/queue/rotational" ]; then
-		write "$i/queue/rotational" "0"
-		sendToLog "rotational=0 in $i"
-	fi
 done
 
 # MMC CRC disabled
@@ -1403,13 +1400,6 @@ for i in $blocks;
 	if [ -e "$i/queue/read_ahead_kb" ]; then
 		write "$i/queue/read_ahead_kb" "256"
 		sendToLog "read_ahead_kb=256 in $i"
-	fi
-	
-	#This file is used to stat if the device is of rotational type or
-	#non-rotational type.
-	if [ -e "$i/queue/rotational" ]; then
-		write "$i/queue/rotational" "0"
-		sendToLog "rotational=0 in $i"
 	fi
 done
 
@@ -1493,13 +1483,7 @@ for i in $blocks;
 		write "$i/queue/read_ahead_kb" "128"
 		sendToLog "read_ahead_kb=128 in $i"
 	fi
-	
-	#This file is used to stat if the device is of rotational type or
-	#non-rotational type.
-	if [ -e "$i/queue/rotational" ]; then
-		write "$i/queue/rotational" "0"
-		sendToLog "rotational=0 in $i"
-	fi
+
 done
 
 # MMC CRC disabled
@@ -1541,6 +1525,18 @@ done
 
 sendToLog "I/O extend queue is activated"
 sendToLog "$divider";
+}
+
+schedulerTuner() {
+blocks=$(ls -d /sys/block/*)
+
+for i in $blocks;
+	do
+	scheduler="$getScheduler $i"
+	
+	sendToLog "Current scheduler $scheduler in $i"
+	
+	done
 }
 
 dnsOptimizationCloudFlare() {
@@ -2882,8 +2878,8 @@ setPowerSavingProfile() {
 	write "$USER_PROFILE"/dns "0"
 	write "$USER_PROFILE"/net_buffers "0"
 	write "$USER_PROFILE"/net_speed_plus "0"
-	write "$USER_PROFILE"/net_tcp "1"
-	write "$USER_PROFILE"/optimize_ril "1"
+	write "$USER_PROFILE"/net_tcp "0"
+	write "$USER_PROFILE"/optimize_ril "0"
 
 	# Other
 	write "$USER_PROFILE"/disable_debugging "0"
@@ -3133,9 +3129,9 @@ if [ "$(cat "$USER_PROFILE"/io_extended_queue)" -eq 1 ]; then
 	ioExtendedQueue;
 fi
 
-#if [ `cat $USER_PROFILE/scheduler_tuner` -eq 1 ]; then
-#	schedulerTuner;
-#fi
+if [ "$(cat $USER_PROFILE/scheduler_tuner)" -eq 1 ]; then
+	schedulerTuner;
+fi
 
 if [ "$(cat "$USER_PROFILE"/sd_tweak)" -eq 1 ]; then
 	sdTweak;
