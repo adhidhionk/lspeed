@@ -91,7 +91,7 @@ lockFile() {
 }
 
 getScheduler() {
-	echo $(cut -d [ -f2 /sys/block/"$1"/queue/scheduler | cut -d] -f1)
+	echo $(cut -d [ -f2 "$1"/queue/scheduler | cut -d] -f1)
 }
 
 # Setting up default L Speed dirs and files
@@ -1530,11 +1530,407 @@ sendToLog "$divider";
 schedulerTuner() {
 blocks=$(ls -d /sys/block/*)
 
+getScheduler() {
+	echo $(cut -d [ -f2 "$1"/queue/scheduler | cut -d] -f1)
+}
+
 for i in $blocks;
 	do
-	scheduler="$getScheduler $i"
+	scheduler=$(getScheduler $i)
 	
 	sendToLog "Current scheduler $scheduler in $i"
+	
+	# deadline
+	FIFO_BATCH="$i/queue/iosched/fifo_batch";
+	FRONT_MERGES="$i/queue/iosched/front_merges";
+	READ_EXPIRE="$i/queue/iosched/read_expire";
+	WRITE_EXPIRE="$i/queue/iosched/write_expire";
+	WRITES_STARVED="$i/queue/iosched/writes_starved";
+
+	# anxiety
+	MAX_WRITES_STARVED="$i/queue/iosched/max_writes_starved";
+
+	# cfq
+	BACK_SEEK_MAX="$i/queue/iosched/back_seek_max";
+	BACK_SEEK_PENALTY="$i/queue/iosched/back_seek_penalty";
+	FIFO_EXPIRE_ASYNC="$i/queue/iosched/fifo_expire_async";
+	FIFO_EXPIRE_SYNC="$i/queue/iosched/fifo_expire_sync";
+	GROUP_IDLE="$i/queue/iosched/group_idle";
+	LOW_LATENCY="$i/queue/iosched/low_latency";
+	QUANTUM="$i/queue/iosched/quantum";
+	SLICE_ASYNC="$i/queue/iosched/slice_async";
+	SLICE_ASYNC_RQ="$i/queue/iosched/slice_async_rq";
+	SLICE_IDLE="$i/queue/iosched/slice_idle";
+	SLICE_SYNC="$i/queue/iosched/slice_sync";
+	TARGET_LATENCY="$i/queue/iosched/target_latency";
+
+	# bfq
+	MAX_BUDGET="$i/queue/iosched/max_budget";
+	MAX_BUDGET_ASYNC_RQ="$i/queue/iosched/max_budget_async_rq";
+	TIMEOUT_ASYNC="$i/queue/iosched/timeout_async";
+	TIMEOUT_SYNC="$i/queue/iosched/timeout_sync";
+	WR_COEOFF="$i/queue/iosched/wr_coeff";
+	WR_MAX_SOFTRT_RATE="$i/queue/iosched/wr_max_softrt_rate";
+	WR_MAX_TIME="$i/queue/iosched/wr_max_time";
+	WR_MIN_IDLE_TIME="$i/queue/iosched/wr_min_idle_time";
+	WR_MIN_INTER_ARR_ASYNC="$i/queue/iosched/wr_min_inter_arr_async";
+	WR_RT_MAX_TIME="$i/queue/iosched/wr_rt_max_time";
+
+	# row
+	HP_READ_QUANTUM="$i/queue/iosched/hp_read_quantum";
+	HP_SWRITE_QUANTUM="$i/queue/iosched/hp_swrite_quantum";
+	LOW_STARV_LIMIT="$i/queue/iosched/low_starv_limit";
+	LP_READ_QUANTUM="$i/queue/iosched/lp_read_quantum";
+	LP_SWRITE_QUANTUM="$i/queue/iosched/lp_swrite_quantum";
+	RD_IDLE_DATA="$i/queue/iosched/rd_idle_data";
+	RD_IDLE_DATA_FREQ="$i/queue/iosched/rd_idle_data_freq";
+	READ_IDLE="$i/queue/iosched/read_idle";
+	READ_IDLE_FREQ="$i/queue/iosched/read_idle_freq";
+	REG_STARV_LIMIT="$i/queue/iosched/reg_starv_limit";
+	RP_READ_QUANTUM="$i/queue/iosched/rp_read_quantum";
+	RP_SWRITE_QUANTUM="$i/queue/iosched/rp_swrite_quantum";
+	RP_WRITE_QUANTUM="$i/queue/iosched/rp_write_quantum";
+
+	# fiops
+	ASYNC_SCALE="$i/queue/iosched/async_scale";
+	READ_SCALE="$i/queue/iosched/read_scale";
+	SYNC_SCALE="$i/queue/iosched/sync_scale";
+	WRITE_SCALE="$i/queue/iosched/write_scale";
+
+	# sio/sioplus
+	ASYNC_READ_EXPIRE="$i/queue/iosched/async_read_expire";
+	ASYNC_WRITE_EXPIRE="$i/queue/iosched/async_write_expire";
+	SYNC_READ_EXPIRE="$i/queue/iosched/sync_read_expire";
+	SYNC_WRITE_EXPIRE="$i/queue/iosched/sync_write_expire";
+
+	# zen
+	ASYNC_EXPIRE="$i/queue/iosched/async_expire";
+	SYNC_EXPIRE="$i/queue/iosched/sync_expire";
+	
+	
+	# deadline
+	if [ $scheduler = "deadline" ]; then
+		if [ -e $FIFO_BATCH ]; then
+			write $FIFO_BATCH "8"
+			sendToLog "fifo_batch=8 in $i"
+		fi
+		
+		if [ -e $FRONT_MERGES ]; then
+			write $FRONT_MERGES "1"
+			sendToLog "front_merges=1 in $i"
+		fi
+		
+		if [ -e $READ_EXPIRE ]; then
+			write $READ_EXPIRE "250"
+			sendToLog "read_expire=250 in $i"
+		fi
+		
+		if [ -e $WRITE_EXPIRE ]; then
+			write $WRITE_EXPIRE "2500"
+			sendToLog "write_expire=2500 in $i"
+		fi
+
+		if [ -e $WRITES_STARVED ]; then
+			write $WRITES_STARVED "1"
+			sendToLog "writes_starved=1 in $i"
+		fi
+	fi
+
+	# anxiety
+	if [ $scheduler = "anxiety" ]; then
+		if [ -e $MAX_WRITES_STARVED ]; then
+			write $MAX_WRITES_STARVED "4"
+			sendToLog "max_writes_starved=4 in $i"
+		fi
+	fi
+
+	# cfq
+	if [ $scheduler = "cfq" ]; then
+		if [ -e $BACK_SEEK_MAX ]; then
+			write $BACK_SEEK_MAX "16384"
+			sendToLog "back_seek_max=16384 in $i"
+		fi
+		
+		if [ -e $BACK_SEEK_PENALTY ]; then
+			write $BACK_SEEK_PENALTY "1"
+			sendToLog "back_seek_penalty=1 in $i"
+		fi
+		
+		if [ -e $FIFO_EXPIRE_ASYNC ]; then
+			write $FIFO_EXPIRE_ASYNC "330"
+			sendToLog "fifo_expire_async=330 in $i"
+		fi
+		
+		if [ -e $FIFO_EXPIRE_SYNC ]; then
+			write $FIFO_EXPIRE_SYNC "80"
+			sendToLog "fifo_expire_sync=80 in $i"
+		fi
+		
+		if [ -e $GROUP_IDLE ]; then
+			write $GROUP_IDLE "0"
+			sendToLog "group_idle=0 in $i"
+		fi
+		
+		if [ -e $LOW_LATENCY ]; then
+			write $LOW_LATENCY "1"
+			sendToLog "low_latency=1 in $i"
+		fi
+		
+		if [ -e $QUANTUM ]; then
+			write $QUANTUM "4"
+			sendToLog "quantum=4 in $i"
+		fi
+		
+		if [ -e $SLICE_ASYNC ]; then
+			write $SLICE_ASYNC "50"
+			sendToLog "slice_async=50 in $i"
+		fi
+		
+		if [ -e $SLICE_ASYNC_RQ ]; then
+			write $SLICE_ASYNC_RQ "2"
+			sendToLog "slice_async_rq=2 in $i"
+		fi
+		
+		if [ -e $SLICE_IDLE ]; then
+			write $SLICE_IDLE "0"
+			sendToLog "slice_idle=0 in $i"
+		fi
+		
+		if [ -e $SLICE_SYNC ]; then
+			write $SLICE_SYNC "60"
+			sendToLog "slice_sync=60 in $i"
+		fi
+		
+		if [ -e $TARGET_LATENCY, true ]; then
+			write $TARGET_LATENCY, true "30"
+			sendToLog "target_latency=300 in $i"
+		fi
+	fi
+
+	# bfq
+	if [ $scheduler = "bfq" ]; then
+		if [ -e $BACK_SEEK_MAX ]; then
+			write $BACK_SEEK_MAX "16384"
+			sendToLog "back_seek_max=16384 in $i"
+		fi
+		
+		if [ -e $BACK_SEEK_PENALTY ]; then
+			write $BACK_SEEK_PENALTY "1"
+			sendToLog "back_seek_penalty=1 in $i"
+		fi
+		
+		if [ -e $FIFO_EXPIRE_ASYNC ]; then
+			write $FIFO_EXPIRE_ASYNC "250"
+			sendToLog "fifo_expire_async=250 in $i"
+		fi
+		
+		if [ -e $FIFO_EXPIRE_SYNC ]; then
+			write $FIFO_EXPIRE_SYNC "120"
+			sendToLog "fifo_expire_sync=120 in $i"
+		fi
+		
+		if [ -e $LOW_LATENCY ]; then
+			write $LOW_LATENCY "1"
+			sendToLog "low_latency=1 in $i"
+		fi
+		
+		if [ -e $MAX_BUDGET ]; then
+			write $MAX_BUDGET "0"
+			sendToLog "max_budget=0 in $i"
+		fi
+		
+		if [ -e $MAX_BUDGET_ASYNC_RQ ]; then
+			write $MAX_BUDGET_ASYNC_RQ "4"
+			sendToLog "max_budget_async_rq=4 in $i"
+		fi
+		
+		if [ -e $SLICE_IDLE ]; then
+			write $SLICE_IDLE "0"
+			sendToLog "slice_idle=0 in $i"
+		fi
+		
+		if [ -e $TIMEOUT_ASYNC ]; then
+			write $TIMEOUT_ASYNC "40"
+			sendToLog "timeout_async=40 in $i"
+		fi
+		
+		if [ -e $TIMEOUT_SYNC ]; then
+			write $TIMEOUT_SYNC "120"
+			sendToLog "timeout_sync=120 in $i"
+		fi
+		
+		if [ -e $WR_COEOFF ]; then
+			write $WR_COEOFF "20"
+			sendToLog "wr_coeff=20 in $i"
+		fi
+		
+		if [ -e $WR_MAX_SOFTRT_RATE ]; then
+			write $WR_MAX_SOFTRT_RATE "7000"
+			sendToLog "wr_max_softrt_rate=7000 in $i"
+		fi
+		
+		if [ -e $WR_MAX_TIME ]; then
+			write $WR_MAX_TIME "2250"
+			sendToLog "wr_max_time=2250 in $i"
+		fi
+		
+		if [ -e $WR_MIN_IDLE_TIME ]; then
+			write $WR_MIN_IDLE_TIME "2000"
+			sendToLog "wr_min_idle_time=2000 in $i"
+		fi
+		
+		if [ -e $WR_MIN_INTER_ARR_ASYNC ]; then
+			write $WR_MIN_INTER_ARR_ASYNC "500"
+			sendToLog "wr_min_inter_arr_async=500 in $i"
+		fi
+		
+		if [ -e $WR_RT_MAX_TIME ]; then
+			write $WR_RT_MAX_TIME "300"
+			sendToLog " wr_rt_max_time=300 in $i"
+		fi
+	fi
+
+	# row
+	if [ $scheduler = "row" ]; then
+		if [ -e $HP_READ_QUANTUM ]; then
+			write $HP_READ_QUANTUM "90"
+			sendToLog "hp_read_quantum=90 in $i"
+		fi
+		
+		if [ -e $HP_SWRITE_QUANTUM ]; then
+			write $HP_SWRITE_QUANTUM "5"
+			sendToLog "hp_swrite_quantum=5 in $i"
+		fi
+		
+		if [ -e $LOW_STARV_LIMIT ]; then
+			write $LOW_STARV_LIMIT "10000"
+			sendToLog "low_starv_limit=10000 in $i"
+		fi
+		
+		if [ -e $LP_READ_QUANTUM ]; then
+			write $LP_READ_QUANTUM "3"
+			sendToLog "lp_read_quantum=3 in $i"
+		fi
+		
+		if [ -e $LP_SWRITE_QUANTUM ]; then
+			write $LP_SWRITE_QUANTUM "10"
+			sendToLog "lp_swrite_quantum=10 in $i"
+		fi
+		
+		if [ -e $RD_IDLE_DATA ]; then
+			write $RD_IDLE_DATA "10"
+			sendToLog "rd_idle_data=10 in $i"
+		fi
+		
+		if [ -e $RD_IDLE_DATA_FREQ ]; then
+			write $RD_IDLE_DATA_FREQ "25"
+			sendToLog "rd_idle_data_freq=25 in $i"
+		fi
+		
+		if [ -e $READ_IDLE ]; then
+			write $READ_IDLE "10"
+			sendToLog "read_idle=10 in $i"
+		fi
+		
+		if [ -e $READ_IDLE_FREQ ]; then
+			write $READ_IDLE_FREQ "25"
+			sendToLog "read_idle_freq=25 in $i"
+		fi
+		
+		if [ -e $REG_STARV_LIMIT ]; then
+			write $REG_STARV_LIMIT "5000"
+			sendToLog "reg_starv_limit=5000 in $i"
+		fi
+		
+		if [ -e $RP_READ_QUANTUM ]; then
+			write $RP_READ_QUANTUM "75"
+			sendToLog "rp_read_quantum=75 in $i"
+		fi
+		
+		if [ -e $RP_SWRITE_QUANTUM ]; then
+			write $RP_SWRITE_QUANTUM "4"
+			sendToLog "rp_swrite_quantum=4 in $i"
+		fi
+		
+		if [ -e $RP_WRITE_QUANTUM ]; then
+			write $RP_WRITE_QUANTUM "4"
+			sendToLog "rp_write_quantum=4 in $i"
+		fi
+	fi
+	
+	# fiops
+	if [ $scheduler = "fiops" ]; then
+		if [ -e $ASYNC_SCALE ]; then
+			write $ASYNC_SCALE "5"
+			sendToLog "async_scale=5 in $i"
+		fi
+		
+		if [ -e $READ_SCALE ]; then
+			write $READ_SCALE "3"
+			sendToLog "read_scale=3 in $i"
+		fi
+		
+		if [ -e $SYNC_SCALE ]; then
+			write $SYNC_SCALE "2"
+			sendToLog "sync_scale=2 in $i"
+		fi
+		
+		if [ -e $WRITE_SCALE ]; then
+			write $WRITE_SCALE "4"
+			sendToLog "write_scale=1 in $i"
+		fi
+	fi
+	
+	#  sio/sioplus
+	if [ $scheduler = "sio" ] || [ $scheduler = "sioplus" ]; then
+		if [ -e $ASYNC_READ_EXPIRE ]; then
+			write $ASYNC_READ_EXPIRE "500"
+			sendToLog "async_read_expire=500 in $i"
+		fi
+		
+		if [ -e $ASYNC_WRITE_EXPIRE ]; then
+			write $ASYNC_WRITE_EXPIRE "2000"
+			sendToLog "async_write_expire=2000 in $i"
+		fi
+		
+		if [ -e $FIFO_BATCH ]; then
+			write $FIFO_BATCH "3"
+			sendToLog "fifo_batch=3 in $i"
+		fi
+		
+		if [ -e $SYNC_READ_EXPIRE ]; then
+			write $SYNC_READ_EXPIRE "250"
+			sendToLog "sync_read_expire=250 in $i"
+		fi
+		
+		if [ -e $SYNC_WRITE_EXPIRE ]; then
+			write $SYNC_WRITE_EXPIRE "1250"
+			sendToLog "sync_write_expire=1250 in $i"
+		fi
+		
+		if [ -e $WRITES_STARVED ]; then
+			write $WRITES_STARVED "1"
+			sendToLog "writes_starved=1 in $i"
+		fi
+	fi
+
+	# zen
+	if [ $scheduler = "zen" ]; then
+		if [ -e $ASYNC_EXPIRE ]; then
+			write $ASYNC_EXPIRE "2500"
+			sendToLog "async_expire=2500 in $i"
+		fi
+		
+		if [ -e $FIFO_BATCH ]; then
+			write $FIFO_BATCH "8"
+			sendToLog "fifo_batch=8 in $i"
+		fi
+		
+		if [ -e $SYNC_EXPIRE ]; then
+			write $SYNC_EXPIRE "300"
+			sendToLog "sync_expire=300 in $i"
+		fi
+	fi
 	
 	done
 }
