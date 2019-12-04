@@ -1,7 +1,7 @@
 #!/system/bin/sh
 # L Speed tweak
 # Codename : lspeed
-version="v1.2.3";
+version="v1.2.3-canary3";
 build_date=03-12-2019;
 # Developer : Paget96
 # Paypal : https://paypal.me/Paget96
@@ -1235,6 +1235,27 @@ if [ -e $SDA ] && [ -e $MMCBLK0 ]; then
 	sendToLog "SD speed tweak is activated";
 
 elif [ -e $SDA ] && [ -e $MMCBLK1 ]; then
+
+	external_totalSize=$(blockdev --getsize64 $DEV_MMCBLK1);
+
+	if [ "$external_totalSize" -lt 8589934592 ]; then
+		extReadAhead="256";
+	elif [ "$external_totalSize" -ge 8589934592 ] && [ "$external_totalSize" -lt 17179869184 ]; then
+		extReadAhead="512";
+	elif [ "$external_totalSize" -ge 17179869184 ] && [ "$external_totalSize" -lt 34359738368 ]; then
+		extReadAhead="1024";
+	elif [ "$external_totalSize" -ge 34359738368 ]; then
+		extReadAhead="2048";
+	else
+		extReadAhead="256";
+	fi
+
+	sendToLog "Your SD Card size is: $((external_totalSize/1024/1024/1024))kb";
+	sendToLog "Read Ahead based on SD Card size: $((extReadAhead))kb";
+	write $MMCBLK1_READ_AHEAD_KB $extReadAhead;
+	sendToLog "SD speed tweak is activated";
+	
+elif [ -e $MMCBLK1 ]; then
 
 	external_totalSize=$(blockdev --getsize64 $DEV_MMCBLK1);
 
