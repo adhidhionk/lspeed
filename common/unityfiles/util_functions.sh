@@ -723,6 +723,7 @@ unity_main() {
     ui_print "  ! Removing...!"
     $BOOTMODE && { ui_print "  ! Magisk manager isn't supported!"; abort "   ! Flash in TWRP !"; }
     unity_upgrade -s
+	
   elif [ -f "$MOD_VER" ]; then
     if [ $(grep_prop versionCode $MOD_VER) -ge $(grep_prop versionCode $TMPDIR/module.prop) ]; then
       ui_print "  ! Current or newer version detected!"
@@ -731,6 +732,7 @@ unity_main() {
       ui_print "  ! Older version detected! Upgrading..."
       unity_upgrade
     fi
+	
   else
     unity_install
   fi

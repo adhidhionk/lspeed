@@ -1,27 +1,21 @@
-
 #
 # Installing manager from $MODPATH/
 #
-unzip -o "$ZIPFILE" 'app/*' -d $MODPATH/ >&2
+unzip -o "$ZIPFILE" 'app/*' -d /data/local/tmp >&2
 
-apkDir="$MODPATH/app/"
-  cd $apkDir || exit
+apkDir="/data/local/tmp/app"
 
 installApk() {
 
-	cd $apkDir || exit
-
-	filelist=$(ls "$1")
+	filelist=$(ls $1)
 
 	for file in $filelist; do
 
 		extension="${file##*.}"
 
 		if [ "$extension" = "apk" ]; then
-
 			echo "- Installing ""$file""..."
-			#cp -r -f  /sdcard/apks/*.apk /data/local/tmp/
-			pm install -r -f -d "$file"
+			pm install -r "$1/$file"
 			
 			echo "- Successfully installed $file"
 		else
