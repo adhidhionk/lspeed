@@ -87,6 +87,12 @@ You can pass them on any links from below (Telegram is recommended)
 If you want, you can support me over [Paypal donate](https://paypal.me/Paget96), to support my work.
 
 ## Changelog 
+**v1.2.3**
+- L Speed manager removed from /system, zip should install it as user app
+- Established Scheduler tuner, support for deadline, anxiety, cfq, bfq, row, fiops, sio, sioplus, zen
+- Fixed SD tweak
+- Fixed syntax
+- Code improvements
 
 **v1.2.2**
 - Prevent issues when $memTotal return weird output (including non-integer values, empty strings...),
