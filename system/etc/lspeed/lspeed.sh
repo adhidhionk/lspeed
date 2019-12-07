@@ -1625,6 +1625,12 @@ for i in $blocks;
 	ASYNC_EXPIRE="$i/queue/iosched/async_expire";
 	SYNC_EXPIRE="$i/queue/iosched/sync_expire";
 	
+	# Write log when found a scheduler in block
+	# This log contains current scheduler in $i block
+	if [ "$scheduler" != "none" ]; then
+		sendToLog "Found $scheduler in $i"
+	fi
+	
 	# deadline
 	if [ "$scheduler" = "deadline" ]; then
 		if [ -e "$FIFO_BATCH" ]; then
@@ -1800,7 +1806,7 @@ for i in $blocks;
 		
 		if [ -e "$WR_RT_MAX_TIME" ]; then
 			write "$WR_RT_MAX_TIME" "300"
-			sendToLog " wr_rt_max_time=300 in $i"
+			sendToLog "wr_rt_max_time=300 in $i"
 		fi
 
 	# row
@@ -1943,7 +1949,7 @@ for i in $blocks;
 		
 	else
 		if [ "$scheduler" != "none" ]; then
-			sendToLog "Your current scheduler $scheduler in $i is not supported"
+			sendToLog "Scheduler $scheduler in $i is not supported"
 		fi
 	fi
 	
