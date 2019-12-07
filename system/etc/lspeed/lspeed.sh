@@ -2398,7 +2398,7 @@ sendToLog "$divider";
 
 ramManagerBalanced() {
 
-fa=$(((memTotal*2/100)*1024/4));
+fa=$(((memTotal*5/2/100)*1024/4));
 va=$(((memTotal*3/100)*1024/4));
 ss=$(((memTotal*5/100)*1024/4));
 ha=$(((memTotal*7/100)*1024/4));
@@ -2513,9 +2513,9 @@ sendToLog "$divider";
 
 ramManagerGaming() {
 
-fa=$(((memTotal*3/100)*1024/4));
-va=$(((memTotal*4/100)*1024/4));
-ss=$(((memTotal*6/100)*1024/4));
+fa=$(((memTotal*3/2/100)*1024/4));
+va=$(((memTotal*2/100)*1024/4));
+ss=$(((memTotal*4/100)*1024/4));
 ha=$(((memTotal*7/100)*1024/4));
 cp=$(((memTotal*11/100)*1024/4));
 ea=$(((memTotal*15/100)*1024/4));
@@ -2630,10 +2630,10 @@ ramManagerMultitasking() {
 
 fa=$(((memTotal*2/100)*1024/4));
 va=$(((memTotal*3/100)*1024/4));
-ss=$(((memTotal*5/100)*1024/4));
+ss=$(((memTotal*4/100)*1024/4));
 ha=$(((memTotal*6/100)*1024/4));
 cp=$(((memTotal*9/100)*1024/4));
-ea=$(((memTotal*11/100)*1024/4));
+ea=$(((memTotal*12/100)*1024/4));
 minFree="$fa,$va,$ss,$ha,$cp,$ea";
 
 # Higher values of oom_adj are more likely
