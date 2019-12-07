@@ -1,8 +1,8 @@
 #!/system/bin/sh
 # L Speed tweak
 # Codename : lspeed
-version="v1.2.4-c2";
-build_date=07-12-2019;
+version="v1.2.4-c3";
+build_date=08-12-2019;
 # Developer : Paget96
 # Paypal : https://paypal.me/Paget96
 
@@ -3243,7 +3243,7 @@ setDefaultProfile() {
 	write "$USER_PROFILE"/use_opengl_skia "0"
 
 	# I/O tweaks section
-	write "$USER_PROFILE"/disable_io_stats "1"
+	write "$USER_PROFILE"/disable_io_stats "0"
 	write "$USER_PROFILE"/io_blocks_optimization "0"
 	write "$USER_PROFILE"/io_extended_queue "0"
 	write "$USER_PROFILE"/scheduler_tuner "0"
@@ -3287,7 +3287,7 @@ setPowerSavingProfile() {
 	write "$USER_PROFILE"/use_opengl_skia "0"
 
 	# I/O tweaks section
-	write "$USER_PROFILE"/disable_io_stats "1"
+	write "$USER_PROFILE"/disable_io_stats "0"
 	write "$USER_PROFILE"/io_blocks_optimization "1"
 	write "$USER_PROFILE"/io_extended_queue "0"
 	write "$USER_PROFILE"/scheduler_tuner "1"
@@ -3331,7 +3331,7 @@ setBalancedProfile() {
 	write "$USER_PROFILE"/use_opengl_skia "0"
 
 	# I/O tweaks section
-	write "$USER_PROFILE"/disable_io_stats "1"
+	write "$USER_PROFILE"/disable_io_stats "0"
 	write "$USER_PROFILE"/io_blocks_optimization "2"
 	write "$USER_PROFILE"/io_extended_queue "0"
 	write "$USER_PROFILE"/scheduler_tuner "1"
@@ -3375,7 +3375,7 @@ setPerformanceProfile() {
 	write "$USER_PROFILE"/use_opengl_skia "0"
 
 	# I/O tweaks section
-	write "$USER_PROFILE"/disable_io_stats "1"
+	write "$USER_PROFILE"/disable_io_stats "0"
 	write "$USER_PROFILE"/io_blocks_optimization "3"
 	write "$USER_PROFILE"/io_extended_queue "1"
 	write "$USER_PROFILE"/scheduler_tuner "1"
