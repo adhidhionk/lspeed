@@ -77,7 +77,9 @@ print_modname() {
 }
 
 set_permissions() {
-  : # Remove this if adding to this function
+  set_perm_recursive $UNITY 0 0 0755 0644
+  set_perm $UNITY/service.sh 0 0 0777
+  set_perm_recursive $UNITY/system/etc/lspeed 0 0 0755 0777
 
   # Note that all files/folders have the $UNITY prefix - keep this prefix on all of your files/folders
   # Also note the lack of '/' between variables - preceding slashes are already included in the variables
