@@ -1,8 +1,8 @@
 #!/system/bin/sh
 # L Speed tweak
 # Codename : lspeed
-version="v1.2.3";
-build_date=05-12-2019;
+version="v1.2.4-canary1";
+build_date=07-12-2019;
 # Developer : Paget96
 # Paypal : https://paypal.me/Paget96
 
@@ -1330,15 +1330,15 @@ for i in $blocks;
 	#each request queue may have up to N request pools, each independently
 	#regulated by nr_requests.
 	if [ -e "$i/queue/nr_requests" ]; then
-		write "$i/queue/nr_requests" "128"
-		sendToLog "nr_requests=128 in $i"
+		write "$i/queue/nr_requests" "256"
+		sendToLog "nr_requests=256 in $i"
 	fi
 	
 	#Maximum number of kilobytes to read-ahead for filesystems on this block
 	#device.
 	if [ -e "$i/queue/read_ahead_kb" ]; then
-		write "$i/queue/read_ahead_kb" "128"
-		sendToLog "read_ahead_kb=128 in $i"
+		write "$i/queue/read_ahead_kb" "512"
+		sendToLog "read_ahead_kb=512 in $i"
 	fi
 done
 
@@ -1412,15 +1412,15 @@ for i in $blocks;
 	#each request queue may have up to N request pools, each independently
 	#regulated by nr_requests.
 	if [ -e "$i/queue/nr_requests" ]; then
-		write "$i/queue/nr_requests" "128"
-		sendToLog "nr_requests=128 in $i"
+		write "$i/queue/nr_requests" "512"
+		sendToLog "nr_requests=512 in $i"
 	fi
 	
 	#Maximum number of kilobytes to read-ahead for filesystems on this block
 	#device.
 	if [ -e "$i/queue/read_ahead_kb" ]; then
-		write "$i/queue/read_ahead_kb" "256"
-		sendToLog "read_ahead_kb=256 in $i"
+		write "$i/queue/read_ahead_kb" "1024"
+		sendToLog "read_ahead_kb=1024 in $i"
 	fi
 done
 
@@ -1479,8 +1479,8 @@ for i in $blocks;
 	#processing setting this option to '2' forces the completion to run on the
 	#requesting cpu (bypassing the "group" aggregation logic).
 	if [ -e "$i/queue/rq_affinity" ]; then
-		write "$i/queue/rq_affinity" "1"
-		sendToLog "rq_affinity=1 in $i"
+		write "$i/queue/rq_affinity" "0"
+		sendToLog "rq_affinity=0 in $i"
 	fi
 	
 	#This controls how many requests may be allocated in the block layer for
@@ -1494,8 +1494,8 @@ for i in $blocks;
 	#each request queue may have up to N request pools, each independently
 	#regulated by nr_requests.
 	if [ -e "$i/queue/nr_requests" ]; then
-		write "$i/queue/nr_requests" "64"
-		sendToLog "nr_requests=64 in $i"
+		write "$i/queue/nr_requests" "128"
+		sendToLog "nr_requests=128 in $i"
 	fi
 	
 	#Maximum number of kilobytes to read-ahead for filesystems on this block
