@@ -790,7 +790,7 @@ sendToLog "$divider";
 }
 
 gpuOptimizerBalanced() {
-sendToLog "Optimizing GPU..."
+sendToLog "Applying balanced GPU optimization...";
 
 # GPU related tweaks
 if [ -d "/sys/class/kgsl/kgsl-3d0" ]; then
@@ -902,12 +902,12 @@ if [ -e $gpu/force_rail_on ]; then
 	sendToLog "force_rail_on enabled"
 fi;
 
-sendToLog "GPU is optimized..."
+sendToLog "Balanced GPU optimization applied"
 sendToLog "$divider";
 }
 
 gpuOptimizerPerformance() {
-sendToLog "Optimizing GPU..."
+sendToLog "Applying performance GPU optimization...";
 
 # GPU related tweaks
 if [ -d "/sys/class/kgsl/kgsl-3d0" ]; then
@@ -1019,12 +1019,12 @@ if [ -e $gpu/force_rail_on ]; then
 	sendToLog "force_rail_on enabled"
 fi;
 
-sendToLog "GPU is optimized..."
+sendToLog "Performance GPU optimization applied"
 sendToLog "$divider";
 }
 
 gpuOptimizerPowerSaving() {
-sendToLog "Optimizing GPU..."
+sendToLog "Applying power saving GPU optimization...";
 
 # GPU related tweaks
 if [ -d "/sys/class/kgsl/kgsl-3d0" ]; then
@@ -1137,7 +1137,7 @@ if [ -e $gpu/force_rail_on ]; then
 	sendToLog "force_rail_on disabled"
 fi;
 
-sendToLog "GPU is optimized..."
+sendToLog "Power saving GPU optimization applied"
 sendToLog "$divider";
 }
 
