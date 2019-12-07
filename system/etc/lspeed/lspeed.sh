@@ -316,7 +316,7 @@ sendToLog "Activating battery improvements...";
 # CPU Optimization battery profile
 #
 cpuOptimizationBattery() {
-	sendToLog "Optimizing CPU...";
+	sendToLog "Applying power saving CPU optimization...";
 
 	if [ -e "/sys/devices/system/cpu/cpuidle/use_deepest_state" ]; then
 		write /sys/devices/system/cpu/cpuidle/use_deepest_state "1"
@@ -444,7 +444,7 @@ cpuOptimizationBattery() {
 		sendToLog "$sched_boost_on_input=N"
 	fi;
 
-	sendToLog "CPU is optimized..."
+	sendToLog "Power saving CPU optimization applied";
 	sendToLog "$divider";
 }
 
@@ -452,7 +452,7 @@ cpuOptimizationBattery() {
 # CPU Optimization balanced profile
 #
 cpuOptimizationBalanced() {
-sendToLog "Optimizing CPU...";
+sendToLog "Applying balanced CPU optimization...";
 
 if [ -e "/sys/devices/system/cpu/cpuidle/use_deepest_state" ]; then
 	write /sys/devices/system/cpu/cpuidle/use_deepest_state "1"
@@ -580,7 +580,7 @@ if [ -e $sched_boost_on_input ]; then
 	sendToLog "$sched_boost_on_input=N"
 fi;
 
-sendToLog "CPU is optimized..."
+sendToLog "Balanced CPU optimization applied";
 sendToLog "$divider";
 }
 
@@ -588,7 +588,7 @@ sendToLog "$divider";
 # CPU Optimization performance profile
 #
 cpuOptimizationPerformance() {
-sendToLog "Optimizing CPU...";
+sendToLog "Applying performance CPU optimization...";
 
 if [ -e "/sys/devices/system/cpu/cpuidle/use_deepest_state" ]; then
 	write /sys/devices/system/cpu/cpuidle/use_deepest_state "1"
@@ -718,7 +718,7 @@ if [ -e $sched_boost_on_input ]; then
 	sendToLog "$sched_boost_on_input=N"
 fi;
 
-sendToLog "CPU is optimized..."
+sendToLog "Performance CPU optimization applied";
 sendToLog "$divider";
 }
 
@@ -3457,6 +3457,7 @@ fi
 sendToLog "Current profile is $profile";
 
 sendToLog "Applying $profile profile";
+sendToLog "$divider";
 
 # Time in seconds when starting with profile applying
 # This will be later used for the time difference
