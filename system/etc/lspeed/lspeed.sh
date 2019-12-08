@@ -1,7 +1,7 @@
 #!/system/bin/sh
 # L Speed tweak
 # Codename : lspeed
-version="v1.2.4-c3";
+version="v1.2.4-c4";
 build_date=08-12-2019;
 # Developer : Paget96
 # Paypal : https://paypal.me/Paget96
@@ -2807,11 +2807,10 @@ fi;
 # notifying it that another process is waiting to open the file.
 # If the lease holder does not remove or downgrade the lease within this grace period,
 # the kernel forcibly breaks the lease.
-
 lease_break_time=/proc/sys/fs/lease-break-time
 if [ -e $lease_break_time ]; then
-	write $lease_break_time "10"		
-	sendToLog "lease_break_time=10"
+	write $lease_break_time "20"		
+	sendToLog "lease_break_time=20"
 fi;
 
 # dnotify is a signal used to notify a process about file/directory changes.
@@ -2882,16 +2881,16 @@ fi;
 # unsafe this is also a safeguard against data loss.
 dirty_expire_centisecs=/proc/sys/vm/dirty_expire_centisecs
 if [ -e $dirty_expire_centisecs ]; then
-	write $dirty_expire_centisecs "500"		
-	sendToLog "dirty_expire_centisecs=500"
+	write $dirty_expire_centisecs "250"		
+	sendToLog "dirty_expire_centisecs=250"
 fi;
 
 # vm.dirty_writeback_centisecs is how often the pdflush/flush/kdmflush processes wake up
 # and check to see if work needs to be done.
 dirty_writeback_centisecs=/proc/sys/vm/dirty_writeback_centisecs
 if [ -e $dirty_writeback_centisecs ]; then
-	write $dirty_writeback_centisecs "1000"		
-	sendToLog "dirty_writeback_centisecs=1000"
+	write $dirty_writeback_centisecs "2500"		
+	sendToLog "dirty_writeback_centisecs=2500"
 fi;
 
 # vm.dirty_background_ratio is the percentage of system memory(RAM)
@@ -2941,8 +2940,8 @@ fi;
 
 lease_break_time=/proc/sys/fs/lease-break-time
 if [ -e $lease_break_time ]; then
-	write $lease_break_time "10"		
-	sendToLog "lease_break_time=10"
+	write $lease_break_time "20"		
+	sendToLog "lease_break_time=20"
 fi;
 
 # dnotify is a signal used to notify a process about file/directory changes.
@@ -3021,8 +3020,8 @@ fi;
 # and check to see if work needs to be done.
 dirty_writeback_centisecs=/proc/sys/vm/dirty_writeback_centisecs
 if [ -e $dirty_writeback_centisecs ]; then
-	write $dirty_writeback_centisecs "1000"		
-	sendToLog "dirty_writeback_centisecs=1000"
+	write $dirty_writeback_centisecs "3000"		
+	sendToLog "dirty_writeback_centisecs=3000"
 fi;
 
 # vm.dirty_background_ratio is the percentage of system memory(RAM)
@@ -3034,8 +3033,8 @@ fi;
 # dirty_background_ratio = dirty_ratio / 2
 dirty_background_ratio=/proc/sys/vm/dirty_background_ratio
 if [ -e $dirty_background_ratio ]; then
-	write $dirty_background_ratio "5"		
-	sendToLog "dirty_background_ratio=5"
+	write $dirty_background_ratio "10"		
+	sendToLog "dirty_background_ratio=10"
 fi;
 
 # vm.dirty_ratio is the absolute maximum amount of system memory
@@ -3045,8 +3044,8 @@ fi;
 # but is a safeguard against too much data being cached unsafely in memory.
 dirty_ratio=/proc/sys/vm/dirty_ratio
 if [ -e $dirty_ratio ]; then
-	write $dirty_ratio "20"		
-	sendToLog "dirty_ratio=20"
+	write $dirty_ratio "25"		
+	sendToLog "dirty_ratio=25"
 fi;
 
 sendToLog "Battery virtual memory tweaks activated"
@@ -3072,8 +3071,8 @@ fi;
 
 lease_break_time=/proc/sys/fs/lease-break-time
 if [ -e $lease_break_time ]; then
-	write $lease_break_time "10"
-	sendToLog "lease_break_time=10"
+	write $lease_break_time "20"
+	sendToLog "lease_break_time=20"
 fi;
 
 # dnotify is a signal used to notify a process about file/directory changes.
@@ -3144,16 +3143,16 @@ fi;
 # unsafe this is also a safeguard against data loss.
 dirty_expire_centisecs=/proc/sys/vm/dirty_expire_centisecs
 if [ -e $dirty_expire_centisecs ]; then
-	write $dirty_expire_centisecs "500"
-	sendToLog "dirty_expire_centisecs=500"
+	write $dirty_expire_centisecs "200"
+	sendToLog "dirty_expire_centisecs=200"
 fi;
 
 # vm.dirty_writeback_centisecs is how often the pdflush/flush/kdmflush processes wake up
 # and check to see if work needs to be done.
 dirty_writeback_centisecs=/proc/sys/vm/dirty_writeback_centisecs
 if [ -e $dirty_writeback_centisecs ]; then
-	write $dirty_writeback_centisecs "1200"
-	sendToLog "dirty_writeback_centisecs=1200"
+	write $dirty_writeback_centisecs "2500"
+	sendToLog "dirty_writeback_centisecs=2500"
 fi;
 
 # vm.dirty_background_ratio is the percentage of system memory(RAM)
@@ -3165,8 +3164,8 @@ fi;
 # dirty_background_ratio = dirty_ratio / 2
 dirty_background_ratio=/proc/sys/vm/dirty_background_ratio
 if [ -e $dirty_background_ratio ]; then
-	write $dirty_background_ratio "15"
-	sendToLog "dirty_background_ratio=15"
+	write $dirty_background_ratio "10"
+	sendToLog "dirty_background_ratio=10"
 fi;
 
 # vm.dirty_ratio is the absolute maximum amount of system memory
@@ -3176,8 +3175,8 @@ fi;
 # but is a safeguard against too much data being cached unsafely in memory.
 dirty_ratio=/proc/sys/vm/dirty_ratio
 if [ -e $dirty_ratio ]; then
-	write $dirty_ratio "60"
-	sendToLog "dirty_ratio=60"
+	write $dirty_ratio "42"
+	sendToLog "dirty_ratio=42"
 fi;
 
 sendToLog "Performance virtual memory tweaks activated"
@@ -3187,9 +3186,9 @@ sendToLog "$divider";
 heapOptimization() {
 heapSize=$((memTotal*3/16));
 
-#if [ "$heapSize" -gt "512" ]; then
-#	heapSize=512;
-#fi
+if [ "$heapSize" -gt "768" ]; then
+	heapSize=768;
+fi
 
 heapGrowthLimit=$((heapSize*5/11));
 
@@ -3197,8 +3196,8 @@ sendToLog "Activating heap optimization";
 
 # The ideal ratio of live to free memory. Is clamped to have a value between 0.2 and 0.9.
 # This limit the managed hepSize to heapsize*heaptargetutilization
-setprop dalvik.vm.heaptargetutilization 0.85
-sendToLog "heapTargetUtilization=0.85";
+setprop dalvik.vm.heaptargetutilization 0.80
+sendToLog "heapTargetUtilization=0.80";
 
 # This is the heap size that Dalvik/ART assigns to every new ‘large’ App.
 # Large Apps are the ones that include the ‘android:largeHeap’ option in their manifest.
@@ -3219,7 +3218,7 @@ sendToLog "heapmaxfree=8m";
 setprop dalvik.vm.heapminfree 2m
 sendToLog "heapminfree=2m";
 
-sendToLog "Heap optimization activated";
+sendToLog "Heap optimization for $((memTotal))mb device activated";
 sendToLog "$divider";
 }
 
@@ -3234,7 +3233,7 @@ setDefaultProfile() {
 	write "$USER_PROFILE"/gov_tuner "0"
 
 	# Entropy section
-	write "$USER_PROFILE"/entropy "2"
+	write "$USER_PROFILE"/entropy "0"
 
 	# GPU section
 	write "$USER_PROFILE"/gpu_optimizer "0"
@@ -3243,7 +3242,7 @@ setDefaultProfile() {
 	write "$USER_PROFILE"/use_opengl_skia "0"
 
 	# I/O tweaks section
-	write "$USER_PROFILE"/disable_io_stats "0"
+	write "$USER_PROFILE"/disable_io_stats "-1"
 	write "$USER_PROFILE"/io_blocks_optimization "0"
 	write "$USER_PROFILE"/io_extended_queue "0"
 	write "$USER_PROFILE"/scheduler_tuner "0"
@@ -3287,7 +3286,7 @@ setPowerSavingProfile() {
 	write "$USER_PROFILE"/use_opengl_skia "0"
 
 	# I/O tweaks section
-	write "$USER_PROFILE"/disable_io_stats "0"
+	write "$USER_PROFILE"/disable_io_stats "-1"
 	write "$USER_PROFILE"/io_blocks_optimization "1"
 	write "$USER_PROFILE"/io_extended_queue "0"
 	write "$USER_PROFILE"/scheduler_tuner "1"
@@ -3331,7 +3330,7 @@ setBalancedProfile() {
 	write "$USER_PROFILE"/use_opengl_skia "0"
 
 	# I/O tweaks section
-	write "$USER_PROFILE"/disable_io_stats "0"
+	write "$USER_PROFILE"/disable_io_stats "-1"
 	write "$USER_PROFILE"/io_blocks_optimization "2"
 	write "$USER_PROFILE"/io_extended_queue "0"
 	write "$USER_PROFILE"/scheduler_tuner "1"
@@ -3366,7 +3365,7 @@ setPerformanceProfile() {
 	write "$USER_PROFILE"/gov_tuner "3"
 
 	# Entropy section
-	write "$USER_PROFILE"/entropy "2"
+	write "$USER_PROFILE"/entropy "0"
 
 	# GPU section
 	write "$USER_PROFILE"/gpu_optimizer "3"
@@ -3375,7 +3374,7 @@ setPerformanceProfile() {
 	write "$USER_PROFILE"/use_opengl_skia "0"
 
 	# I/O tweaks section
-	write "$USER_PROFILE"/disable_io_stats "0"
+	write "$USER_PROFILE"/disable_io_stats "-1"
 	write "$USER_PROFILE"/io_blocks_optimization "3"
 	write "$USER_PROFILE"/io_extended_queue "1"
 	write "$USER_PROFILE"/scheduler_tuner "1"
@@ -3644,9 +3643,9 @@ elif [ "$(cat "$USER_PROFILE"/virtual_memory)" -eq 3 ]; then
 	virtualMemoryTweaksPerformance;
 fi
 
-#if [ `cat $USER_PROFILE/heap_optimization` -eq 1 ]; then
-#	heapOptimization;
-#fi
+if [ "$(cat $USER_PROFILE/heap_optimization)" -eq 1 ]; then
+	heapOptimization;
+fi
 
 # End time of the script
 end=$(date +%s)
