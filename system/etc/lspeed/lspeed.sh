@@ -2881,16 +2881,16 @@ fi;
 # unsafe this is also a safeguard against data loss.
 dirty_expire_centisecs=/proc/sys/vm/dirty_expire_centisecs
 if [ -e $dirty_expire_centisecs ]; then
-	write $dirty_expire_centisecs "250"		
-	sendToLog "dirty_expire_centisecs=250"
+	write $dirty_expire_centisecs "1000"		
+	sendToLog "dirty_expire_centisecs=1000"
 fi;
 
 # vm.dirty_writeback_centisecs is how often the pdflush/flush/kdmflush processes wake up
 # and check to see if work needs to be done.
 dirty_writeback_centisecs=/proc/sys/vm/dirty_writeback_centisecs
 if [ -e $dirty_writeback_centisecs ]; then
-	write $dirty_writeback_centisecs "2500"		
-	sendToLog "dirty_writeback_centisecs=2500"
+	write $dirty_writeback_centisecs "500"		
+	sendToLog "dirty_writeback_centisecs=500"
 fi;
 
 # vm.dirty_background_ratio is the percentage of system memory(RAM)
@@ -2899,11 +2899,11 @@ fi;
 # background processes kick in to write it to disk.
 # It can be 50% or less of dirtyRatio
 # If ( dirty_background_ratio >= dirty_ratio ) {
-# dirty_background_ratio = dirty_ratio / 2
+# dirty_background_ratio = dirty_ratio / 2 (or 4)
 dirty_background_ratio=/proc/sys/vm/dirty_background_ratio
 if [ -e $dirty_background_ratio ]; then
-	write $dirty_background_ratio "10"		
-	sendToLog "dirty_background_ratio=10"
+	write $dirty_background_ratio "5"		
+	sendToLog "dirty_background_ratio=5"
 fi;
 
 # vm.dirty_ratio is the absolute maximum amount of system memory
@@ -2913,8 +2913,8 @@ fi;
 # but is a safeguard against too much data being cached unsafely in memory.
 dirty_ratio=/proc/sys/vm/dirty_ratio
 if [ -e $dirty_ratio ]; then
-	write $dirty_ratio "35"		
-	sendToLog "dirty_ratio=35"
+	write $dirty_ratio "25"		
+	sendToLog "dirty_ratio=25"
 fi;
 
 sendToLog "Balanced virtual memory tweaks activated"
@@ -3012,16 +3012,16 @@ fi;
 # unsafe this is also a safeguard against data loss.
 dirty_expire_centisecs=/proc/sys/vm/dirty_expire_centisecs
 if [ -e $dirty_expire_centisecs ]; then
-	write $dirty_expire_centisecs "500"		
-	sendToLog "dirty_expire_centisecs=500"
+	write $dirty_expire_centisecs "3000"		
+	sendToLog "dirty_expire_centisecs=3000"
 fi;
 
 # vm.dirty_writeback_centisecs is how often the pdflush/flush/kdmflush processes wake up
 # and check to see if work needs to be done.
 dirty_writeback_centisecs=/proc/sys/vm/dirty_writeback_centisecs
 if [ -e $dirty_writeback_centisecs ]; then
-	write $dirty_writeback_centisecs "3000"		
-	sendToLog "dirty_writeback_centisecs=3000"
+	write $dirty_writeback_centisecs "500"		
+	sendToLog "dirty_writeback_centisecs=500"
 fi;
 
 # vm.dirty_background_ratio is the percentage of system memory(RAM)
@@ -3030,11 +3030,11 @@ fi;
 # background processes kick in to write it to disk.
 # It can be 50% or less of dirtyRatio
 # If ( dirty_background_ratio >= dirty_ratio ) {
-# dirty_background_ratio = dirty_ratio / 2
+# dirty_background_ratio = dirty_ratio / 2 (or 4)
 dirty_background_ratio=/proc/sys/vm/dirty_background_ratio
 if [ -e $dirty_background_ratio ]; then
-	write $dirty_background_ratio "10"		
-	sendToLog "dirty_background_ratio=10"
+	write $dirty_background_ratio "5"		
+	sendToLog "dirty_background_ratio=5"
 fi;
 
 # vm.dirty_ratio is the absolute maximum amount of system memory
@@ -3044,8 +3044,8 @@ fi;
 # but is a safeguard against too much data being cached unsafely in memory.
 dirty_ratio=/proc/sys/vm/dirty_ratio
 if [ -e $dirty_ratio ]; then
-	write $dirty_ratio "25"		
-	sendToLog "dirty_ratio=25"
+	write $dirty_ratio "30"		
+	sendToLog "dirty_ratio=30"
 fi;
 
 sendToLog "Battery virtual memory tweaks activated"
@@ -3143,16 +3143,16 @@ fi;
 # unsafe this is also a safeguard against data loss.
 dirty_expire_centisecs=/proc/sys/vm/dirty_expire_centisecs
 if [ -e $dirty_expire_centisecs ]; then
-	write $dirty_expire_centisecs "200"
-	sendToLog "dirty_expire_centisecs=200"
+	write $dirty_expire_centisecs "500"
+	sendToLog "dirty_expire_centisecs=500"
 fi;
 
 # vm.dirty_writeback_centisecs is how often the pdflush/flush/kdmflush processes wake up
 # and check to see if work needs to be done.
 dirty_writeback_centisecs=/proc/sys/vm/dirty_writeback_centisecs
 if [ -e $dirty_writeback_centisecs ]; then
-	write $dirty_writeback_centisecs "2500"
-	sendToLog "dirty_writeback_centisecs=2500"
+	write $dirty_writeback_centisecs "200"
+	sendToLog "dirty_writeback_centisecs=200"
 fi;
 
 # vm.dirty_background_ratio is the percentage of system memory(RAM)
@@ -3161,11 +3161,11 @@ fi;
 # background processes kick in to write it to disk.
 # It can be 50% or less of dirtyRatio
 # If ( dirty_background_ratio >= dirty_ratio ) {
-# dirty_background_ratio = dirty_ratio / 2
+# dirty_background_ratio = dirty_ratio / 2 (or 4)
 dirty_background_ratio=/proc/sys/vm/dirty_background_ratio
 if [ -e $dirty_background_ratio ]; then
-	write $dirty_background_ratio "10"
-	sendToLog "dirty_background_ratio=10"
+	write $dirty_background_ratio "5"
+	sendToLog "dirty_background_ratio=5"
 fi;
 
 # vm.dirty_ratio is the absolute maximum amount of system memory
@@ -3175,8 +3175,8 @@ fi;
 # but is a safeguard against too much data being cached unsafely in memory.
 dirty_ratio=/proc/sys/vm/dirty_ratio
 if [ -e $dirty_ratio ]; then
-	write $dirty_ratio "42"
-	sendToLog "dirty_ratio=42"
+	write $dirty_ratio "10"
+	sendToLog "dirty_ratio=10"
 fi;
 
 sendToLog "Performance virtual memory tweaks activated"
