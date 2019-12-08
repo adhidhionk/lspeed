@@ -1397,8 +1397,8 @@ for i in $blocks;
 	#processing setting this option to '2' forces the completion to run on the
 	#requesting cpu (bypassing the "group" aggregation logic).
 	if [ -e "$i/queue/rq_affinity" ]; then
-		write "$i/queue/rq_affinity" "2"
-		sendToLog "rq_affinity=2 in $i"
+		write "$i/queue/rq_affinity" "1"
+		sendToLog "rq_affinity=1 in $i"
 	fi
 	
 	#This controls how many requests may be allocated in the block layer for
