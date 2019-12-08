@@ -3186,8 +3186,9 @@ sendToLog "$divider";
 heapOptimization() {
 heapSize=$((memTotal*3/16));
 
-if [ "$heapSize" -gt "768" ]; then
-	heapSize=768;
+# Don't use more than 512mb
+if [ "$heapSize" -gt "512" ]; then
+	heapSize=512;
 fi
 
 heapGrowthLimit=$((heapSize*5/11));
