@@ -1,7 +1,7 @@
 #!/system/bin/sh
 # L Speed tweak
 # Codename : lspeed
-version="v1.2.4-c5";
+version="v1.2.4";
 build_date=08-12-2019;
 # Developer : Paget96
 # Paypal : https://paypal.me/Paget96
@@ -3195,8 +3195,8 @@ heapGrowthLimit=$((heapSize*5/11));
 
 sendToLog "Activating heap optimization";
 
-# The ideal ratio of live to free memory. Is clamped to have a value between 0.2 and 0.9.
-# This limit the managed hepSize to heapsize*heaptargetutilization
+# The ideal ratio of live to free memory. It's good to have a value between 0.2 and 0.9.
+# This limit the managed hepSize to heapsize*heaptargetutilization so it won't be full every time
 setprop dalvik.vm.heaptargetutilization 0.80
 sendToLog "heapTargetUtilization=0.80";
 

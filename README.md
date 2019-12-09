@@ -87,6 +87,20 @@ You can pass them on any links from below (Telegram is recommended)
 If you want, you can support me over [Paypal donate](https://paypal.me/Paget96), to support my work.
 
 ## Changelog 
+**v1.2.4**
+- Added window animation scale, transition animation scale, animator duration scale
+- Fixed files permissions
+- Updated IO Blocks profiles
+- Improved calculations for Ram Manager (all profiles) (less aggressive)
+- Disable I/O stats disabled by default on all profiles
+- Updated explanation of disable I/O stats
+- Updated heap optimization
+- Updated Virtual memory tweaks (all profiles)
+- Set rq_affinity only to 0 and 1, some kernels don't support aggressive
+- Fixed up some mess for dirty caches, fixed up expire time and how often to flush
+- Reduced percentage for max cache size before force to flush
+- Updated logging
+
 **v1.2.3**
 - L Speed manager removed from /system, zip should install it as user app
 - Established Scheduler tuner, support for deadline, anxiety, cfq, bfq, row, fiops, sio, sioplus, zen
