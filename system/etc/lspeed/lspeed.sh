@@ -1219,6 +1219,7 @@ sendToLog "Activating SD speed tweak";
 
 if [ -e $SDA ] && [ -e $MMCBLK0 ]; then
 
+	sendToLog "SD card mounted on $DEV_MMCBLK0";
 	external_totalSize=$(blockdev --getsize64 $DEV_MMCBLK0);
 
 	if [ "$external_totalSize" -lt 8589934592 ]; then
@@ -1240,6 +1241,7 @@ if [ -e $SDA ] && [ -e $MMCBLK0 ]; then
 
 elif [ -e $SDA ] && [ -e $MMCBLK1 ]; then
 
+	sendToLog "SD card mounted on $DEV_MMCBLK1";
 	external_totalSize=$(blockdev --getsize64 $DEV_MMCBLK1);
 
 	if [ "$external_totalSize" -lt 8589934592 ]; then
@@ -1261,6 +1263,7 @@ elif [ -e $SDA ] && [ -e $MMCBLK1 ]; then
 	
 elif [ -e $MMCBLK1 ]; then
 
+	sendToLog "SD card mounted on $DEV_MMCBLK1";
 	external_totalSize=$(blockdev --getsize64 $DEV_MMCBLK1);
 
 	if [ "$external_totalSize" -lt 8589934592 ]; then
