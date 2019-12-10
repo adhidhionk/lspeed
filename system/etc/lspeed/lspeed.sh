@@ -1213,6 +1213,10 @@ SDA="/sys/block/sda";
 
 sendToLog "Activating SD speed tweak";
 
+# On some devices:
+# SD* and MMCBLK0 is sdcard
+#
+
 if [ -e $SDA ] && [ -e $MMCBLK0 ]; then
 
 	external_totalSize=$(blockdev --getsize64 $DEV_MMCBLK0);
