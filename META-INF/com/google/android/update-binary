@@ -59,7 +59,7 @@ $BOOTMODE && boot_actions || recovery_actions
 ##########################################################################################
 
 # Extract common files
-unzip -oj "$ZIPFILE" module.prop install.sh uninstall.sh 'common/*' -d $TMPDIR >&2
+unzip -oj "$ZIPFILE" service.sh module.prop install.sh uninstall.sh 'common/*' -d $TMPDIR >&2
 
 [ ! -f $TMPDIR/install.sh ] && abort "! Unable to extract zip file!"
 # Load install script
@@ -92,6 +92,7 @@ ui_print "******************************"
 # Create mod paths
 rm -rf $MODPATH 2>/dev/null
 mkdir -p $MODPATH
+unzip -o "$ZIPFILE" 'system/*' -d $MODPATH >&2
 
 on_install
 

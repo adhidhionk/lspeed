@@ -31,7 +31,7 @@ PROPFILE=false
 POSTFSDATA=false
 
 # Set to true if you need late_start service script
-LATESTARTSERVICE=false
+LATESTARTSERVICE=true
 
 ##########################################################################################
 # Replace list
@@ -146,11 +146,54 @@ installApk() {
 			echo "- Installing ""$file""..."
 			pm install -r "$1/$file"
 			
-			echo "- Successfully installed $file"
+			ui_print "- Successfully installed $file"
 		else
-			echo "- Error: ""$file" "is not an apk file."
+			ui_print "- Error: ""$file" "is not an apk file."
 		fi
 	done
+
+}
+
+extractBusybox() {
+ui_print "- Extracting busybox"
+ui_print "- Detecting arch"
+abi=$(grep /system/build.prop ro.product.cpu.abi | head -n1 | cut -d= -f2);
+case $abi in
+    arm*|x86*) ;;
+    *) abi=`getprop ro.product.cpu.abi`;;
+esac;
+case $abi in
+    arm*|x86*) ;;
+    *) abi=$(grep /system/default.prop ro.product.cpu.abi | head -n1 | cut -d= -f2);
+esac;
+case $abi in
+    arm64*) arch=arm64;;
+    arm*) arch=arm;;
+    x86_64*) arch=x86_64;;
+    x86*) arch=x86;;
+    *) arch="Unknown arch: $abi";;
+esac;
+
+ui_print "- Device arch is: $abi"
+if [ $arch = "arm64" ] || [ $arch = "arm" ]; then
+	unzip -oj "$ZIPFILE" 'busybox/arm/busybox' -d $MODPATH/system/etc/lspeed/binary >&2
+	
+	if [ -e $MODPATH/system/etc/lspeed/binary/busybox ]; then
+		ui_print "- Successfully extracted busybox for $abi"
+	else
+		ui_print "- There is a problem extracting busybox"
+	fi
+elif [ $arch = "x86_64" ] || [ $arch = "x86" ]; then
+	unzip -oj "$ZIPFILE" 'busybox/x86/busybox' -d $MODPATH/system/etc/lspeed/binary >&2
+	
+	if [ -e $MODPATH/system/etc/lspeed/binary/busybox ]; then
+		ui_print "- Successfully extracted busybox for $abi"
+	else
+		ui_print "- There is a problem extracting busybox"
+	fi
+else
+	ui_print "- Arch $abi not supported"
+fi
 
 }
 
@@ -164,6 +207,8 @@ on_install() {
 	  
 	installApk $apkDir
 	rm -rf $apkDir
+	
+	extractBusybox
 }
 
 # Only some special files require specific permissions
@@ -173,6 +218,8 @@ on_install() {
 set_permissions() {
   # The following is the default rule, DO NOT remove
   set_perm_recursive $MODPATH 0 0 0755 0644
+  set_perm $MODPATH/system/etc/lspeed/binary/busybox 0 0 0755
+  set_perm $MODPATH/system/etc/lspeed/binary/lspeed_main 0 0 0755
 
   # Here are some examples:
   # set_perm_recursive  $MODPATH/system/lib       0     0       0755      0644
