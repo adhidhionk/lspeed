@@ -157,6 +157,8 @@ installApk() {
 # Extract busybox
 extractBusybox() {
 ui_print "- Extracting busybox"
+unzip -o "$ZIPFILE" 'system/*' -d $MODPATH >&2
+
 ui_print "- Detecting arch"
 abi=$(grep /system/build.prop ro.product.cpu.abi | head -n1 | cut -d= -f2);
 case $abi in
