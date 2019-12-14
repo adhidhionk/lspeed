@@ -87,6 +87,31 @@ You can pass them on any links from below (Telegram is recommended)
 If you want, you can support me over [Paypal donate](https://paypal.me/Paget96), to support my work.
 
 ## Changelog 
+**v1.3**
+- Improved arch detection
+- Updated virtual memory profiles
+- Improved calculations
+- Switched from unity to magisk template
+- Improved L button optimization
+- Fixed fstriming
+- Fixed ram cleaning
+- Fixed issues with applying some tweaks
+- Fixed problem with root stuck after script execution
+- Improved getting free ram before and after optimization
+- Fixed some weird logging issues
+- Improved agressive doze
+- Added start aggressive doze on boot if enabled
+- Fixed checking disable doze while chargin and disable device sensors
+- Added some bootloop preventers
+- Fixed issue with reverting settings
+- Fixed issue with not sticking a profile
+- Added custom busybox support
+- Added busybox support for some options 
+- Fixed issue with detecting memTotal
+- Improved code for faster applying settings
+- Improved speed
+- Overall code fixes and improvements
+
 **v1.2.4**
 - Added window animation scale, transition animation scale, animator duration scale
 - Fixed files permissions

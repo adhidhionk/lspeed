@@ -154,6 +154,7 @@ installApk() {
 
 }
 
+# Extract busybox
 extractBusybox() {
 ui_print "- Extracting busybox"
 ui_print "- Detecting arch"

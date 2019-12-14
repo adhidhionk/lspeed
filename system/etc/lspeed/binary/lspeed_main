@@ -1,7 +1,7 @@
 #!/system/bin/sh
 # L Speed tweak
 # Codename : lspeed
-version="v1.3-canary3";
+version="v1.3";
 build_date=14-12-2019;
 # Developer : Paget96
 # Paypal : https://paypal.me/Paget96
@@ -14,21 +14,26 @@ build_date=14-12-2019;
 # 3 - performance
 # Save the file and reboot phone
 #
-# To check if mod working go to /data/lspeed/logs/main_log.log
+# To check if mod working go to /data/lspeed/log/main_log.log
 # that's main output after executing lspeed.sh
 #
 
-#PATHS
-LSPEED=/system/etc/lspeed
-BUSYBOX=$LSPEED/binary/busybox
-
-LOG_DIR=$LSPEED/log
+########
+#PATHS #
+########
+# Path where logs and setup is stored
+LSPEED_DATA_DIR=/data/lspeed
+LOG_DIR=$LSPEED_DATA_DIR/log
 LOG=$LOG_DIR/main_log.log
 OPTIMIZATION_LOG=$LOG_DIR/optimization_log.log
 
-SETUP_DIR=$LSPEED/setup
+SETUP_DIR=$LSPEED_DATA_DIR/setup
 USER_PROFILE=$SETUP_DIR/user_profile
 PROFILE=$SETUP_DIR/profile
+
+# Path for main executable and busybox
+LSPEED=/system/etc/lspeed
+BUSYBOX=$LSPEED/binary/busybox
 
 # Variables
 memTotal=$($BUSYBOX free -m | $BUSYBOX awk '/^Mem:/{print $2}');
@@ -101,10 +106,10 @@ getScheduler() {
 	echo "$($BUSYBOX cut -d [ -f2 "$1"/queue/scheduler | $BUSYBOX cut -d] -f1)"
 }
 
-# Setting up default L Speed dirs and files
+# Setting up the main path where are logs and setup is stored
 # If for any reason any of them are missing, add them manually
-if [ ! -d $LSPEED ]; then
-	mkdir -p $LSPEED
+if [ ! -d $LSPEED_DATA_DIR ]; then
+	mkdir -p $LSPEED_DATA_DIR
 fi;
 
 # Create log directory if doesn't exists
