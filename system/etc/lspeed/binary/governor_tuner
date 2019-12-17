@@ -12,7 +12,6 @@ LOG=$LOG_DIR/main_log.log
 
 SETUP_DIR=$LSPEED_DATA_DIR/setup
 USER_PROFILE=$SETUP_DIR/user_profile
-PROFILE=$SETUP_DIR/profile
 
 # governor_tuner config files
 GOVERNOR_TUNER_DATA_DIR=$SETUP_DIR/governor_tuner
@@ -66,11 +65,11 @@ waitMainProcess() {
 		proc1=$($BUSYBOX cat $LSPEED_DATA_DIR/lspeed_main_PID)
 		proc2=$(ps | $BUSYBOX grep "$proc1" | $BUSYBOX head -n 1 | $BUSYBOX tr -s ' ' | $BUSYBOX cut -d ' ' -f2)
 		
-		while [ $proc1 -eq $proc2 ]; do
+		while [ "$proc1" -eq "$proc2" ]; do
 			
 			proc2=$(ps | $BUSYBOX grep "$proc1" | $BUSYBOX head -n 1 | $BUSYBOX tr -s ' ' | $BUSYBOX cut -d ' ' -f2)
 			
-			if	[ $proc1 -eq $proc2 ]; then
+			if	[ "$proc1" -eq "$proc2" ]; then
 				sendToLog "$divider"
 				sendToLog "governor_tuner waiting for lspeed_main($proc1) to finish the job"
 				sendToLog "$divider"
@@ -123,10 +122,10 @@ getMinAndMaxFreq() {
 		minFreq=$($BUSYBOX cat $scalingAvailableFrequencies | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $1}')
 		maxFreq=$($BUSYBOX cat $scalingAvailableFrequencies | tr '\n' ' ' | $BUSYBOX awk '{print $NF}')
 
-		if [ $minFreq -lt $maxFreq ]; then
+		if [ "$minFreq" -lt "$maxFreq" ]; then
 			echo "$minFreq " >> $MIN_MAX_FREQ
 			echo "$maxFreq " >> $MIN_MAX_FREQ
-		elif [ $minFreq -gt $maxFreq ]; then
+		elif [ "$minFreq" -gt "$maxFreq" ]; then
 			echo "$maxFreq " >> $MIN_MAX_FREQ
 			echo "$minFreq " >> $MIN_MAX_FREQ
 		fi
@@ -150,7 +149,7 @@ getMinFreqList() {
 	minMaxFreqSize=$($BUSYBOX cat $MIN_MAX_FREQ | $BUSYBOX tr '\n' ' ' | $BUSYBOX wc -w)
 
 	i=1
-	while [ $i -le $minMaxFreqSize ]; do
+	while [ $i -le "$minMaxFreqSize" ]; do
 		
 		minFreqList=$($BUSYBOX cat $MIN_MAX_FREQ | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$i'}')
 
@@ -174,7 +173,7 @@ getMaxFreqList() {
 	minMaxFreqSize=$($BUSYBOX cat $MIN_MAX_FREQ | $BUSYBOX tr '\n' ' ' | $BUSYBOX wc -w)
 
 	i=2
-	while [ $i -le $minMaxFreqSize ]; do
+	while [ $i -le "$minMaxFreqSize" ]; do
 		
 		maxFreqList=$($BUSYBOX cat $MIN_MAX_FREQ | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$i'}')
 
@@ -196,7 +195,7 @@ logicalCores() {
 	
 	maxFreqListSize=$($BUSYBOX cat $MAX_FREQ_LIST | $BUSYBOX tr '\n' ' ' | $BUSYBOX wc -w)
 
-	if [ $maxFreqListSize -ge 1 ]; then
+	if [ "$maxFreqListSize" -ge 1 ]; then
 		i=1
 		
 		# Core 0 is always on
@@ -204,7 +203,7 @@ logicalCores() {
 		
 		while [ $i -le $((maxFreqListSize)) ]; do
 				
-			if [ $((i + 1)) -le $maxFreqListSize ]; then
+			if [ $((i + 1)) -le "$maxFreqListSize" ]; then
 				maxFreqList=$($BUSYBOX cat $MAX_FREQ_LIST | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$i'}')
 				nextMaxFreqList=$($BUSYBOX cat $MAX_FREQ_LIST | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$((i+1))'}')
 
@@ -246,7 +245,7 @@ little=0
 
 logicalCoresListSize=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX wc -w)
 
-if [ $logicalCoresListSize -eq 3 ]; then
+if [ "$logicalCoresListSize" -eq 3 ]; then
 	a=1
 	while [ $a -le $((logicalCoresListSize)) ]; do
 	    logicalCore=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$a'}')
@@ -254,7 +253,7 @@ if [ $logicalCoresListSize -eq 3 ]; then
 		uniqueFreq=$($BUSYBOX cat $UNIQUE_FREQ | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $1}')
 		maxFreqList=$($BUSYBOX cat $MAX_FREQ_LIST | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$((logicalCore+1))'}')
 		
-		if [ $uniqueFreq -eq $maxFreqList ]; then
+		if [ "$uniqueFreq" -eq "$maxFreqList" ]; then
 			big=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$a'}')
 		fi
 			
@@ -274,8 +273,8 @@ if [ $logicalCoresListSize -eq 3 ]; then
         uniqueFreq=$($BUSYBOX cat $UNIQUE_FREQ | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $2}')
 		maxFreqList=$($BUSYBOX cat $MAX_FREQ_LIST | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$((logicalCore+1))'}')
 		
-		if [ $uniqueFreq -eq $maxFreqList ]; then
-			moddle=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$b'}')
+		if [ "$uniqueFreq" -eq "$maxFreqList" ]; then
+			middle=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$b'}')
 		fi
 			
 		b=$(( b + 1 ))
@@ -292,7 +291,7 @@ if [ $logicalCoresListSize -eq 3 ]; then
 		uniqueFreq=$($BUSYBOX cat $UNIQUE_FREQ | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $1}')
 		maxFreqList=$($BUSYBOX cat $MAX_FREQ_LIST | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$((logicalCore+1))'}')
 		
-		if [ $uniqueFreq -eq $maxFreqList ]; then
+		if [ "$uniqueFreq" -eq "$maxFreqList" ]; then
 			little=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$c'}')
 		fi
 			
@@ -305,7 +304,7 @@ if [ $logicalCoresListSize -eq 3 ]; then
 	
 	unset logicalCore; unset uniqueFreq; unset maxFreqList;
 
-elif [ $logicalCoresListSize -eq 2 ]; then
+elif [ "$logicalCoresListSize" -eq 2 ]; then
 	a=1
 	while [ $a -le $((logicalCoresListSize)) ]; do
 	    logicalCore=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$a'}')
@@ -313,7 +312,7 @@ elif [ $logicalCoresListSize -eq 2 ]; then
 		uniqueFreq=$($BUSYBOX cat $UNIQUE_FREQ | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $1}')
 		maxFreqList=$($BUSYBOX cat $MAX_FREQ_LIST | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$((logicalCore+1))'}')
 		
-		if [ $uniqueFreq -eq $maxFreqList ]; then
+		if [ "$uniqueFreq" -eq "$maxFreqList" ]; then
 			big=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$a'}')
 		fi
 			
@@ -331,7 +330,7 @@ elif [ $logicalCoresListSize -eq 2 ]; then
 		uniqueFreq=$($BUSYBOX cat $UNIQUE_FREQ | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $1}')
 		maxFreqList=$($BUSYBOX cat $MAX_FREQ_LIST | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$((logicalCore+1))'}')
 		
-		if [ $uniqueFreq -eq $maxFreqList ]; then
+		if [ "$uniqueFreq" -eq "$maxFreqList" ]; then
 			little=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$c'}')
 		fi
 			
@@ -369,21 +368,21 @@ if [ "$#" -gt 0 ]; then
 	sendToLog "Applying $1 profile"
 	sendToLog "Governor tuner found $coreGetterListSize main CPU cores"
 
-	if [ $coreGetterListSize -eq 3 ]; then
+	if [ "$coreGetterListSize" -eq 3 ]; then
 		
 		#
 		# BIG Cluster
 		#
 		getCore=$($BUSYBOX cat $CORE_GETTER | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $1}')
-		getCurrentGovernor=$($BUSYBOX cat /sys/devices/system/cpu/cpu$getCore/cpufreq/scaling_governor)
+		getCurrentGovernor=$($BUSYBOX cat /sys/devices/system/cpu/cpu"$getCore"/cpufreq/scaling_governor)
 		clusterGovernorPath="/sys/devices/system/cpu/cpu$getCore/cpufreq/$getCurrentGovernor"
 		
 		sendToLog "First one is BIG located on cpu$getCore"
 		sendToLog "Current governor on BIG: $getCurrentGovernor"
 		
-		if [ -e $GOVERNOR_TUNER_PRESETS/$1/$getCurrentGovernor ]; then
+		if [ -e $GOVERNOR_TUNER_PRESETS/"$1"/"$getCurrentGovernor" ]; then
 			sendToLog "Changing governor parameters"
-			sh $GOVERNOR_TUNER_PRESETS/$1/$getCurrentGovernor "big" $clusterGovernorPath
+			sh $GOVERNOR_TUNER_PRESETS/"$1"/"$getCurrentGovernor" "big" "$clusterGovernorPath"
 			sendToLog "Governor parameters successfully changed"
 		else
 			sendToLog "Governor $getCurrentGovernor is not supported"
@@ -396,15 +395,15 @@ if [ "$#" -gt 0 ]; then
 		# MIDDLE Cluster
 		#
 		getCore=$($BUSYBOX cat $CORE_GETTER | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $2}')
-		getCurrentGovernor=$($BUSYBOX cat /sys/devices/system/cpu/cpu$getCore/cpufreq/scaling_governor)
+		getCurrentGovernor=$($BUSYBOX cat /sys/devices/system/cpu/cpu"$getCore"/cpufreq/scaling_governor)
 		clusterGovernorPath="/sys/devices/system/cpu/cpu$getCore/cpufreq/$getCurrentGovernor"
 		
 		sendToLog "Second one is MIDDLE located on cpu$getCore"
 		sendToLog "Current governor on MIDDLE: $getCurrentGovernor"
 		
-		if [ -e $GOVERNOR_TUNER_PRESETS/$1/$getCurrentGovernor ]; then
+		if [ -e $GOVERNOR_TUNER_PRESETS/"$1"/"$getCurrentGovernor" ]; then
 			sendToLog "Changing governor parameters"
-			sh $GOVERNOR_TUNER_PRESETS/$1/$getCurrentGovernor "middle" $clusterGovernorPath
+			sh $GOVERNOR_TUNER_PRESETS/"$1"/"$getCurrentGovernor" "middle" "$clusterGovernorPath"
 			sendToLog "Governor parameters successfully changed"
 		else
 			sendToLog "Governor $getCurrentGovernor is not supported"
@@ -417,15 +416,15 @@ if [ "$#" -gt 0 ]; then
 		# LITTLE Cluster
 		#
 		getCore=$($BUSYBOX cat $CORE_GETTER | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $3}')
-		getCurrentGovernor=$($BUSYBOX cat /sys/devices/system/cpu/cpu$getCore/cpufreq/scaling_governor)
+		getCurrentGovernor=$($BUSYBOX cat /sys/devices/system/cpu/cpu"$getCore"/cpufreq/scaling_governor)
 		clusterGovernorPath="/sys/devices/system/cpu/cpu$getCore/cpufreq/$getCurrentGovernor"
 		
 		sendToLog "Third one is LITTLE located on cpu$getCore"
 		sendToLog "Current governor on LITTLE: $getCurrentGovernor"
 		
-		if [ -e $GOVERNOR_TUNER_PRESETS/$1/$getCurrentGovernor ]; then
+		if [ -e $GOVERNOR_TUNER_PRESETS/"$1"/"$getCurrentGovernor" ]; then
 			sendToLog "Changing governor parameters"
-			sh $GOVERNOR_TUNER_PRESETS/$1/$getCurrentGovernor "little" $clusterGovernorPath
+			sh $GOVERNOR_TUNER_PRESETS/"$1"/"$getCurrentGovernor" "little" "$clusterGovernorPath"
 			sendToLog "Governor parameters successfully changed"
 		else
 			sendToLog "Governor $getCurrentGovernor is not supported"
@@ -433,21 +432,21 @@ if [ "$#" -gt 0 ]; then
 		
 		sendToLog "$divider"
 		unset getCore; unset getCurrentGovernor; unset clusterGovernorPath;
-	elif [ $coreGetterListSize -eq 2 ]; then
+	elif [ "$coreGetterListSize" -eq 2 ]; then
 
 		#
 		# BIG Cluster
 		#
 		getCore=$($BUSYBOX cat $CORE_GETTER | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $1}')
-		getCurrentGovernor=$($BUSYBOX cat /sys/devices/system/cpu/cpu$getCore/cpufreq/scaling_governor)
+		getCurrentGovernor=$($BUSYBOX cat /sys/devices/system/cpu/cpu"$getCore"/cpufreq/scaling_governor)
 		clusterGovernorPath="/sys/devices/system/cpu/cpu$getCore/cpufreq/$getCurrentGovernor"
 
 		sendToLog "First one is BIG located on cpu$getCore"
 		sendToLog "Current governor on BIG: $getCurrentGovernor"
 		
-		if [ -e $GOVERNOR_TUNER_PRESETS/$1/$getCurrentGovernor ]; then
+		if [ -e $GOVERNOR_TUNER_PRESETS/"$1"/"$getCurrentGovernor" ]; then
 			sendToLog "Changing governor parameters"
-			sh $GOVERNOR_TUNER_PRESETS/$1/$getCurrentGovernor "big" $clusterGovernorPath
+			sh $GOVERNOR_TUNER_PRESETS/"$1"/"$getCurrentGovernor" "big" "$clusterGovernorPath"
 			sendToLog "Governor parameters successfully changed"
 		else
 			sendToLog "Governor $getCurrentGovernor is not supported"
@@ -459,15 +458,15 @@ if [ "$#" -gt 0 ]; then
 		# LITTLE Cluster
 		#
 		getCore=$($BUSYBOX cat $CORE_GETTER | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $2}')
-		getCurrentGovernor=$($BUSYBOX cat /sys/devices/system/cpu/cpu$getCore/cpufreq/scaling_governor)
+		getCurrentGovernor=$($BUSYBOX cat /sys/devices/system/cpu/cpu"$getCore"/cpufreq/scaling_governor)
 		clusterGovernorPath="/sys/devices/system/cpu/cpu$getCore/cpufreq/$getCurrentGovernor"
 		
 		sendToLog "Second one is LITTLE located on cpu$getCore"
 		sendToLog "Current governor on LITTLE: $getCurrentGovernor"
 		
-		if [ -e $GOVERNOR_TUNER_PRESETS/$1/$getCurrentGovernor ]; then
+		if [ -e $GOVERNOR_TUNER_PRESETS/"$1"/"$getCurrentGovernor" ]; then
 			sendToLog "Changing governor parameters"
-			sh $GOVERNOR_TUNER_PRESETS/$1/$getCurrentGovernor "little" $clusterGovernorPath
+			sh $GOVERNOR_TUNER_PRESETS/"$1"/"$getCurrentGovernor" "little" "$clusterGovernorPath"
 			sendToLog "Governor parameters successfully changed"
 		else
 			sendToLog "Governor $getCurrentGovernor is not supported"
@@ -486,9 +485,9 @@ if [ "$#" -gt 0 ]; then
 		sendToLog "Current governor on REGULAR: $getCurrentGovernor"
 		sendToLog "Governor path: $regularGovernorPath"
 		
-		if [ -e $GOVERNOR_TUNER_PRESETS/$1/$getCurrentGovernor ]; then
+		if [ -e $GOVERNOR_TUNER_PRESETS/"$1"/"$getCurrentGovernor" ]; then
 			sendToLog "Changing governor parameters"
-			sh $GOVERNOR_TUNER_PRESETS/$1/$getCurrentGovernor "regular" $regularGovernorPath
+			sh $GOVERNOR_TUNER_PRESETS/"$1"/"$getCurrentGovernor" "regular" "$regularGovernorPath"
 			sendToLog "Governor parameters successfully changed"
 		else
 			sendToLog "Governor $getCurrentGovernor is not supported"
@@ -503,8 +502,11 @@ fi
 while true; do
 	getProfile=$($BUSYBOX cat $USER_PROFILE/governor_tuner) 2>/dev/null
 
-	if [ "$getProfile" -eq 1 ] || [ "getProfile" -eq 2 ] || [ "getProfile" -eq 3 ]; then
+	if [ "$getProfile" -eq 1 ] || [ "$getProfile" -eq 2 ] || [ "$getProfile" -eq 3 ]; then
 		write $GOVERNOR_TUNER_DATA_DIR/governor_tuner_PID $$
+	elif [ "$getProfile" -eq 0 ]; then
+		sendToLog "Governor tuner is disabled, killing process."
+		exit 0
 	else
 		sendToLog "Cannot reteive current profile"
 		exit 0
@@ -524,7 +526,7 @@ while true; do
 		profile=""
 	fi
 
-	applyParameters $profile
+	applyParameters "$profile"
 
 	sleep 300;
 
