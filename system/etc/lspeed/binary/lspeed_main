@@ -2442,7 +2442,7 @@ adj="0,112,224,408,824,1000";
 
 # If you set this to lower than 1024KB, your system will
 # become subtly broken, and prone to deadlock under high loads, we don't allow it below 3072kb
-mfk=$((memTotal*14/5));
+mfk=$((memTotal*9/5));
 
 if [ "$mfk" -le "3072" ]; then
 mfk=3072;
@@ -2557,7 +2557,7 @@ adj="0,112,224,408,824,1000";
 
 # If you set this to lower than 1024KB, your system will
 # become subtly broken, and prone to deadlock under high loads, we don't allow it below 3072kb
-mfk=$((memTotal*14/5));
+mfk=$((memTotal*9/5));
 
 if [ "$mfk" -le "3072" ]; then
 mfk=3072;
@@ -2672,7 +2672,7 @@ adj="0,112,224,408,824,1000";
 
 # If you set this to lower than 1024KB, your system will
 # become subtly broken, and prone to deadlock under high loads, we don't allow it below 3072kb
-mfk=$((memTotal*14/5));
+mfk=$((memTotal*9/5));
 
 if [ "$mfk" -le "3072" ]; then
 mfk=3072;
