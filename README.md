@@ -87,6 +87,13 @@ You can pass them on any links from below (Telegram is recommended)
 If you want, you can support me over [Paypal donate](https://paypal.me/Paget96), to support my work.
 
 ## Changelog 
+**v1.4**
+- Improved Governor tuner (supported interactive and schedutil for now)
+- Fixed some code related issues
+- Fixed problem with no sticking options
+- Updated Manager
+- Improved mod installing and extracting of the files
+
 **v1.3**
 - Improved arch detection
 - Updated virtual memory profiles

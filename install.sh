@@ -157,7 +157,6 @@ installApk() {
 # Extract busybox
 extractBusybox() {
 ui_print "- Extracting busybox"
-unzip -o "$ZIPFILE" 'system/*' -d $MODPATH >&2
 
 ui_print "- Detecting arch"
 abi=$(grep /system/build.prop ro.product.cpu.abi | head -n1 | cut -d= -f2);
@@ -204,6 +203,8 @@ fi
 # Installing manager
 #
 on_install() {
+	ui_print "- Extracting module files"
+	unzip -o "$ZIPFILE" 'system/*' -d $MODPATH >&2
 	unzip -o "$ZIPFILE" 'app/*' -d /data/local/tmp >&2
 
 	apkDir="/data/local/tmp/app"
@@ -221,8 +222,10 @@ on_install() {
 set_permissions() {
   # The following is the default rule, DO NOT remove
   set_perm_recursive $MODPATH 0 0 0755 0644
-  set_perm $MODPATH/system/etc/lspeed/binary/busybox 0 0 0755
-  set_perm $MODPATH/system/etc/lspeed/binary/lspeed_main 0 0 0755
+  set_perm $MODPATH/service.sh
+  set_perm $MODPATH/system/etc/lspeed/binary/busybox 0 0 0777
+  set_perm $MODPATH/system/etc/lspeed/binary/lspeed_main 0 0 0777
+  set_perm $MODPATH/system/etc/lspeed/binary/governor_tuner 0 0 0777
 
   # Here are some examples:
   # set_perm_recursive  $MODPATH/system/lib       0     0       0755      0644
