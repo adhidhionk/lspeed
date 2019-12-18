@@ -61,8 +61,8 @@ fi;
 
 # Wait for main process to finish, we don't want logs overlaping
 waitMainProcess() {
-	if [ -s $LSPEED_DATA_DIR/lspeed_main_PID ]; then
-		proc1=$($BUSYBOX cat $LSPEED_DATA_DIR/lspeed_main_PID)
+	if [ -s $LSPEED_DATA_DIR/main_function_PID ]; then
+		proc1=$($BUSYBOX cat $LSPEED_DATA_DIR/main_function_PID)
 		proc2=$(ps | $BUSYBOX grep "$proc1" | $BUSYBOX head -n 1 | $BUSYBOX tr -s ' ' | $BUSYBOX cut -d ' ' -f2)
 		
 		while [ "$proc1" -eq "$proc2" ]; do
@@ -71,12 +71,12 @@ waitMainProcess() {
 			
 			if	[ "$proc1" -eq "$proc2" ]; then
 				sendToLog "$divider"
-				sendToLog "governor_tuner waiting for lspeed_main($proc1) to finish the job"
+				sendToLog "governor_tuner waiting for main_function($proc1) to finish the job"
 				sendToLog "$divider"
 				sleep 5;
 			else
 				sendToLog "$divider"
-				sendToLog "lspeed_main finished the job, governor_tuner proceeding..."
+				sendToLog "main_function finished the job, governor_tuner proceeding..."
 				sendToLog "$divider"
 				sleep 2;
 			fi

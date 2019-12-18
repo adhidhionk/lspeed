@@ -224,7 +224,7 @@ set_permissions() {
   set_perm_recursive $MODPATH 0 0 0755 0644
   set_perm $MODPATH/service.sh
   set_perm $MODPATH/system/etc/lspeed/binary/busybox 0 0 0777
-  set_perm $MODPATH/system/etc/lspeed/binary/lspeed_main 0 0 0777
+  set_perm $MODPATH/system/etc/lspeed/binary/main_function 0 0 0777
   set_perm $MODPATH/system/etc/lspeed/binary/governor_tuner 0 0 0777
 
   # Here are some examples:
