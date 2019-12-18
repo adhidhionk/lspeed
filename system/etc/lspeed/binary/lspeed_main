@@ -1188,7 +1188,7 @@ sendToLog "$divider";
 enableIoStats() {
 sendToLog "Enabling I/O Stats..."
 
-blocks=$($BUSYBOX ls -d /sys/block/*)
+blocks="/sys/block/*"
 
 for i in $blocks;
 	do
@@ -1203,7 +1203,7 @@ sendToLog "$divider";
 disableIoStats() {
 sendToLog "Disabling I/O Stats..."
 
-blocks=$($BUSYBOX ls -d /sys/block/*)
+blocks="/sys/block/*"
 
 for i in $blocks;
 	do
@@ -1310,7 +1310,7 @@ sendToLog "$divider";
 ioBlocksOptimizationBalanced() {
 sendToLog "Activating balanced I/O blocks optimization..."
 
-blocks=$($BUSYBOX ls -d /sys/block/*)
+blocks="/sys/block/*"
 
 for i in $blocks;
 	do
@@ -1392,7 +1392,7 @@ sendToLog "$divider";
 ioBlocksOptimizationPerformance() {
 sendToLog "Activating performance I/O blocks optimization..."
 
-blocks=$($BUSYBOX ls -d /sys/block/*)
+blocks="/sys/block/*"
 
 for i in $blocks;
 	do
@@ -1474,7 +1474,7 @@ sendToLog "$divider";
 ioBlocksOptimizationPowerSaving() {
 sendToLog "Activating power saving I/O blocks optimization..."
 
-blocks=$($BUSYBOX ls -d /sys/block/*)
+blocks="/sys/block/*"
 
 for i in $blocks;
 	do
@@ -1557,7 +1557,7 @@ sendToLog "$divider";
 ioExtendedQueue() {
 sendToLog "Activating I/O extend queue..."
 
-blocks=$($BUSYBOX ls -d /sys/block/*)
+blocks="/sys/block/*"
 
 for i in $blocks;
 	do
@@ -1575,7 +1575,7 @@ schedulerTuner() {
 
 sendToLog "Activating scheduler tuner..."
 	
-blocks=$($BUSYBOX ls -d /sys/block/*)
+blocks="/sys/block/*"
 
 for i in $blocks;
 	do
