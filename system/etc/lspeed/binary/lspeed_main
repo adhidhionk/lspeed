@@ -1328,8 +1328,8 @@ for i in $blocks;
 	#set to 2 no merge algorithms will be tried (including one-hit or more
 	#complex tree/hash lookups).
 	if [ -e "$i/queue/nomerges" ]; then
-		write "$i/queue/nomerges" "1"
-		sendToLog "nomerges=1 in $i"
+		write "$i/queue/nomerges" "2"
+		sendToLog "nomerges=2 in $i"
 	fi
 		
 	#If this option is '1', the block layer will migrate request completions to the
@@ -1492,8 +1492,8 @@ for i in $blocks;
 	#set to 2 no merge algorithms will be tried (including one-hit or more
 	#complex tree/hash lookups).
 	if [ -e "$i/queue/nomerges" ]; then
-		write "$i/queue/nomerges" "0"
-		sendToLog "nomerges=0 in $i"
+		write "$i/queue/nomerges" "2"
+		sendToLog "nomerges=2 in $i"
 	fi
 	
 	#If this option is '1', the block layer will migrate request completions to the
@@ -1918,7 +1918,7 @@ for i in $blocks;
 		
 		if [ -e "$WRITE_SCALE" ]; then
 			write "$WRITE_SCALE" "4"
-			sendToLog "write_scale=1 in $i"
+			sendToLog "write_scale=4 in $i"
 		fi
 	
 	#  sio/sioplus
