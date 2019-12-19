@@ -8,6 +8,11 @@ LSPEED_DATA_DIR=/data/lspeed
 LOG_DIR=$LSPEED_DATA_DIR/log
 LOG=$LOG_DIR/main_log.log
 
+# Path for executables and busybox
+LSPEED=/system/etc/lspeed
+BINARY_DIR=$LSPEED/binary
+BUSYBOX=$BINARY_DIR/busybox
+
 sendToLog() {
 timeZone=$(getprop persist.sys.timezone)
 printDate=$(TZ="$timeZone" $BUSYBOX date +"%H:%M:%S:%3N %d-%m-%Y")
