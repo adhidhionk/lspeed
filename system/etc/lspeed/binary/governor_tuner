@@ -601,7 +601,7 @@ while true; do
 			sleep $((exec_interval*60));
 		fi
 	else
-		sendToLog "governor_tuner will be executed in 300secs"
+		sendToLog "governor_tuner will be executed in 5mins"
 		sleep 300;
 	fi
 
