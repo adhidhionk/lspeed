@@ -21,6 +21,7 @@ MAX_FREQ_LIST=$GOVERNOR_TUNER_DATA_DIR/max_freq_list
 LOGICAL_CORE=$GOVERNOR_TUNER_DATA_DIR/logical_core
 UNIQUE_FREQ=$GOVERNOR_TUNER_DATA_DIR/unique_freq
 CORE_GETTER=$GOVERNOR_TUNER_DATA_DIR/core_getter
+INTERVAL=$GOVERNOR_TUNER_DATA_DIR/interval
 
 # Path in /system dir
 LSPEED=/system/etc/lspeed
@@ -382,12 +383,12 @@ if [ "$#" -gt 0 ]; then
 		sendToLog "Current governor on BIG: $getCurrentGovernor"
 		
 		if [ -e $GOVERNOR_TUNER_PRESETS/"$1"/"$getCurrentGovernor" ]; then
-			if [ -e clusterGovernorPath ]; then
+			if [ -e "$clusterGovernorPath" ]; then
 				sendToLog "Changing governor parameters"
 				sh $GOVERNOR_TUNER_PRESETS/"$1"/"$getCurrentGovernor" "big" "$clusterGovernorPath"
 				sendToLog "Governor parameters successfully changed"
 				
-			elif [ -e regularGovernorPath ]; then
+			elif [ -e "$regularGovernorPath" ]; then
 				sendToLog "Changing governor parameters"
 				sh $GOVERNOR_TUNER_PRESETS/"$1"/"$getCurrentGovernor" "regular" "$regularGovernorPath"
 				sendToLog "Governor parameters successfully changed"
@@ -415,12 +416,12 @@ if [ "$#" -gt 0 ]; then
 		sendToLog "Current governor on MIDDLE: $getCurrentGovernor"
 		
 		if [ -e $GOVERNOR_TUNER_PRESETS/"$1"/"$getCurrentGovernor" ]; then
-			if [ -e clusterGovernorPath ]; then
+			if [ -e "$clusterGovernorPath" ]; then
 				sendToLog "Changing governor parameters"
 				sh $GOVERNOR_TUNER_PRESETS/"$1"/"$getCurrentGovernor" "middle" "$clusterGovernorPath"
 				sendToLog "Governor parameters successfully changed"
 			
-			elif [ -e regularGovernorPath ]; then
+			elif [ -e "$regularGovernorPath" ]; then
 				sendToLog "Changing governor parameters"
 				sh $GOVERNOR_TUNER_PRESETS/"$1"/"$getCurrentGovernor" "regular" "$regularGovernorPath"
 				sendToLog "Governor parameters successfully changed"
@@ -447,12 +448,12 @@ if [ "$#" -gt 0 ]; then
 		sendToLog "Current governor on LITTLE: $getCurrentGovernor"
 		
 		if [ -e $GOVERNOR_TUNER_PRESETS/"$1"/"$getCurrentGovernor" ]; then
-			if [ -e clusterGovernorPath ]; then
+			if [ -e "$clusterGovernorPath" ]; then
 				sendToLog "Changing governor parameters"
 				sh $GOVERNOR_TUNER_PRESETS/"$1"/"$getCurrentGovernor" "little" "$clusterGovernorPath"
 				sendToLog "Governor parameters successfully changed"
 				
-			elif [ -e regularGovernorPath ]; then
+			elif [ -e "$regularGovernorPath" ]; then
 				sendToLog "Changing governor parameters"
 				sh $GOVERNOR_TUNER_PRESETS/"$1"/"$getCurrentGovernor" "regular" "$regularGovernorPath"
 				sendToLog "Governor parameters successfully changed"
@@ -481,12 +482,12 @@ if [ "$#" -gt 0 ]; then
 		sendToLog "Current governor on BIG: $getCurrentGovernor"
 		
 		if [ -e $GOVERNOR_TUNER_PRESETS/"$1"/"$getCurrentGovernor" ]; then
-			if [ -e clusterGovernorPath ]; then
+			if [ -e "$clusterGovernorPath" ]; then
 				sendToLog "Changing governor parameters"
 				sh $GOVERNOR_TUNER_PRESETS/"$1"/"$getCurrentGovernor" "big" "$clusterGovernorPath"
 				sendToLog "Governor parameters successfully changed"
 				
-			elif [ -e regularGovernorPath ]; then
+			elif [ -e "$regularGovernorPath" ]; then
 				sendToLog "Changing governor parameters"
 				sh $GOVERNOR_TUNER_PRESETS/"$1"/"$getCurrentGovernor" "regular" "$regularGovernorPath"
 				sendToLog "Governor parameters successfully changed"
@@ -514,12 +515,12 @@ if [ "$#" -gt 0 ]; then
 		sendToLog "Current governor on LITTLE: $getCurrentGovernor"
 		
 		if [ -e $GOVERNOR_TUNER_PRESETS/"$1"/"$getCurrentGovernor" ]; then
-			if [ -e clusterGovernorPath ]; then
+			if [ -e "$clusterGovernorPath" ]; then
 				sendToLog "Changing governor parameters"
 				sh $GOVERNOR_TUNER_PRESETS/"$1"/"$getCurrentGovernor" "little" "$clusterGovernorPath"
 				sendToLog "Governor parameters successfully changed"
 				
-			elif [ -e regularGovernorPath ]; then
+			elif [ -e "$regularGovernorPath" ]; then
 				sendToLog "Changing governor parameters"
 				sh $GOVERNOR_TUNER_PRESETS/"$1"/"$getCurrentGovernor" "regular" "$regularGovernorPath"
 				sendToLog "Governor parameters successfully changed"
@@ -586,6 +587,22 @@ while true; do
 
 	applyParameters "$profile"
 
-	sleep 300;
+	# This is a little part of the code which tells how often to run governor_tuner
+	# If $INTERVAL file doesn't exists it'll be executed every 5mins, otherwise it'll get
+	# the interval inside, if it's 0 governor_tuner will be one shoot script, so executed just once
+	# If the value is above 0 that will set sleep to seconds, 1 means 1min. 10 means 10 mins and so on.
+	if [ -s $INTERVAL ]; then
+		exec_interval=$($BUSYBOX cat $INTERVAL)
+	   
+		if [ "$exec_interval" -eq 0 ]; then
+			exit 0
+		else
+			sendToLog "governor_tuner will be executed in $((exec_interval))mins"
+			sleep $((exec_interval*60));
+		fi
+	else
+		sendToLog "governor_tuner will be executed in 300secs"
+		sleep 300;
+	fi
 
 done
