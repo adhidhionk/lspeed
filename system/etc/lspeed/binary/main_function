@@ -1,7 +1,7 @@
 #!/system/bin/sh
 # L Speed tweak
 # Codename : lspeed
-version="v1.5-canary1";
+version="v1.5-canary2";
 build_date=19-12-2019;
 # Developer : Paget96
 # Paypal : https://paypal.me/Paget96
@@ -186,6 +186,7 @@ if [ -d $USER_PROFILE ]; then
 	# Other
 	createFile $USER_PROFILE/disable_debugging
 	createFile $USER_PROFILE/disable_kernel_panic
+	createFile $USER_PROFILE/selinux
 
 	# RAM manager section
 	createFile $USER_PROFILE/ram_manager
@@ -2344,6 +2345,20 @@ sendToLog "Kernel panic disabled"
 sendToLog "$divider";
 }
 
+selinux() {
+	sendToLog "Changing selinux..."
+
+	if [ "$1" = "0" ]; then
+		setenforce 0
+		sendToLog "Selinux changed to permissive"
+	elif [ "$1" = "1" ]; then
+		setenforce 1
+		sendToLog "Selinux changed to enforcing"
+	fi
+
+	sendToLog "$divider"
+}
+
 disableMultitaskingLimitations() {
 sendToLog "Disabling multitasking limitations..."
 
@@ -3602,7 +3617,7 @@ if [ "$($BUSYBOX cat "$USER_PROFILE"/optimize_ril)" -eq 1 ]; then
 fi
 
 #
-# Other
+# Misc
 #
 if [ "$($BUSYBOX cat "$USER_PROFILE"/disable_debugging)" -eq 1 ]; then
 	disableDebugging;
@@ -3610,6 +3625,12 @@ fi
 
 if [ "$($BUSYBOX cat "$USER_PROFILE"/disable_kernel_panic)" -eq 1 ]; then
 	disableKernelPanic;
+fi
+
+if [ "$($BUSYBOX cat "$USER_PROFILE"/selinux)" -eq 0 ]; then
+	selinux 0;
+elif [ "$($BUSYBOX cat "$USER_PROFILE"/selinux)" -eq 1 ]; then
+	selinux 1;
 fi
 
 #
