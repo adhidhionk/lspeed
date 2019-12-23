@@ -141,7 +141,7 @@ getMinAndMaxFreq() {
 }
 
 #######
-# Method returns Min frequency of LITTLE, MIDDLE AND BIG cores,
+# Method returns Min frequency of LITTLE, BIG and PRIME cores,
 # also REGULAR frequency in a list taking min_max_freq list as argument
 #######
 getMinFreqList() {
@@ -165,7 +165,7 @@ getMinFreqList() {
 }
 
 #######
-# Method returns Max frequency of LITTLE, MIDDLE AND BIG cores,
+# Method returns Max frequency of LITTLE, BIG and PRIME cores,
 # also REGULAR frequency in a list taking min_max_freq list as argument
 #######
 getMaxFreqList() {
@@ -240,8 +240,8 @@ getUniqueFreq() {
 coreGetter() {
 
 rm -rf $CORE_GETTER
+prime=0
 big=0
-middle=0
 little=0
 
 logicalCoresListSize=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX wc -w)
@@ -255,15 +255,15 @@ if [ "$logicalCoresListSize" -eq 3 ]; then
 		maxFreqList=$($BUSYBOX cat $MAX_FREQ_LIST | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$((logicalCore+1))'}')
 		
 		if [ "$uniqueFreq" -eq "$maxFreqList" ]; then
-			big=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$a'}')
+			prime=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$a'}')
 		fi
 			
 		a=$(( a + 1 ))
 	done
 	
-	echo "$big " >> $CORE_GETTER
+	echo "$prime " >> $CORE_GETTER
 	
-	echo "Big cpu core is $big"
+	echo "Prime cpu core is $prime"
 	
 	unset logicalCore; unset uniqueFreq; unset maxFreqList;
 	
@@ -275,15 +275,15 @@ if [ "$logicalCoresListSize" -eq 3 ]; then
 		maxFreqList=$($BUSYBOX cat $MAX_FREQ_LIST | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$((logicalCore+1))'}')
 		
 		if [ "$uniqueFreq" -eq "$maxFreqList" ]; then
-			middle=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$b'}')
+			big=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$b'}')
 		fi
 			
 		b=$(( b + 1 ))
 	done
 	
-	echo "$middle " >> $CORE_GETTER
+	echo "$big " >> $CORE_GETTER
 	
-	echo "Middle cpu core is $middle"
+	echo "Big cpu core is $big"
 	
 	unset logicalCore; unset uniqueFreq; unset maxFreqList;
 	
@@ -372,20 +372,20 @@ if [ "$#" -gt 0 ]; then
 	if [ "$coreGetterListSize" -eq 3 ]; then
 		
 		#
-		# BIG Cluster
+		# PRIME Cluster
 		#
 		getCore=$($BUSYBOX cat $CORE_GETTER | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $1}')
 		getCurrentGovernor=$($BUSYBOX cat /sys/devices/system/cpu/cpu"$getCore"/cpufreq/scaling_governor)
 		clusterGovernorPath="/sys/devices/system/cpu/cpu$getCore/cpufreq/$getCurrentGovernor"
 		regularGovernorPath="/sys/devices/system/cpu/cpufreq/$getCurrentGovernor"
 		
-		sendToLog "First one is BIG located on cpu$getCore"
-		sendToLog "Current governor on BIG: $getCurrentGovernor"
+		sendToLog "First one is PRIME located on cpu$getCore"
+		sendToLog "Current governor on PRIME: $getCurrentGovernor"
 		
 		if [ -e $GOVERNOR_TUNER_PRESETS/"$1"/"$getCurrentGovernor" ]; then
 			if [ -e "$clusterGovernorPath" ]; then
 				sendToLog "Changing governor parameters"
-				sh $GOVERNOR_TUNER_PRESETS/"$1"/"$getCurrentGovernor" "big" "$clusterGovernorPath"
+				sh $GOVERNOR_TUNER_PRESETS/"$1"/"$getCurrentGovernor" "prime" "$clusterGovernorPath"
 				sendToLog "Governor parameters successfully changed"
 				
 			elif [ -e "$regularGovernorPath" ]; then
@@ -405,20 +405,20 @@ if [ "$#" -gt 0 ]; then
 		unset getCore; unset getCurrentGovernor; unset clusterGovernorPath; unset regularGovernorPath;
 		
 		#
-		# MIDDLE Cluster
+		# BIG Cluster
 		#
 		getCore=$($BUSYBOX cat $CORE_GETTER | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $2}')
 		getCurrentGovernor=$($BUSYBOX cat /sys/devices/system/cpu/cpu"$getCore"/cpufreq/scaling_governor)
 		clusterGovernorPath="/sys/devices/system/cpu/cpu$getCore/cpufreq/$getCurrentGovernor"
 		regularGovernorPath="/sys/devices/system/cpu/cpufreq/$getCurrentGovernor"
 		
-		sendToLog "Second one is MIDDLE located on cpu$getCore"
-		sendToLog "Current governor on MIDDLE: $getCurrentGovernor"
+		sendToLog "Second one is BIG located on cpu$getCore"
+		sendToLog "Current governor on BIG: $getCurrentGovernor"
 		
 		if [ -e $GOVERNOR_TUNER_PRESETS/"$1"/"$getCurrentGovernor" ]; then
 			if [ -e "$clusterGovernorPath" ]; then
 				sendToLog "Changing governor parameters"
-				sh $GOVERNOR_TUNER_PRESETS/"$1"/"$getCurrentGovernor" "middle" "$clusterGovernorPath"
+				sh $GOVERNOR_TUNER_PRESETS/"$1"/"$getCurrentGovernor" "big" "$clusterGovernorPath"
 				sendToLog "Governor parameters successfully changed"
 			
 			elif [ -e "$regularGovernorPath" ]; then

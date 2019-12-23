@@ -31,18 +31,13 @@ lockFile() {
 	chmod 0444 "$1"
 }
 
-if [ $1 = "big" ]; then 
+if [ $1 = "prime" ]; then 
 	if [ -e $2 ]; then
 		if [ -e $2/up_rate_limit_us ]; then
 			lockFile $2/up_rate_limit_us "1000"
 			sendToLog "up_rate_limit_us=1000"
 		fi
 	
-		if [ -e $2/down_rate_limit_us ]; then
-			lockFile $2/down_rate_limit_us "5000"
-			sendToLog "down_rate_limit_us=5000"
-		fi
-		
 		if [ -e $2/down_rate_limit_us ]; then
 			lockFile $2/down_rate_limit_us "5000"
 			sendToLog "down_rate_limit_us=5000"
@@ -60,7 +55,7 @@ if [ $1 = "big" ]; then
 		
 	fi
 
-elif [ $1 = "middle" ]; then 
+elif [ $1 = "big" ]; then 
 	if [ -e $2 ]; then
 		if [ -e $2/up_rate_limit_us ]; then
 			lockFile $2/up_rate_limit_us "1000"
