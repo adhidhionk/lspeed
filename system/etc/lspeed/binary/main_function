@@ -1,8 +1,8 @@
 #!/system/bin/sh
 # L Speed tweak
 # Codename : lspeed
-version="v1.5-canary3";
-build_date=23-12-2019;
+version="v1.5-canary4";
+build_date=24-12-2019;
 # Developer : Paget96
 # Paypal : https://paypal.me/Paget96
 
@@ -168,6 +168,8 @@ if [ -d $USER_PROFILE ]; then
 	createFile $USER_PROFILE/optimize_buffers
 	createFile $USER_PROFILE/render_opengles_using_gpu
 	createFile $USER_PROFILE/use_opengl_skia
+	createFile $USER_PROFILE/force_gpu_rendering
+	createFile $USER_PROFILE/force_4x_msaa
 
 	# I/O tweaks section
 	createFile $USER_PROFILE/disable_io_stats
@@ -1178,6 +1180,36 @@ sendToLog "Changing app rendering to skiagl..."
 setprop debug.hwui.renderer skiagl
 
 sendToLog "Rendering chaned to skiagl"
+sendToLog "$divider";
+}
+
+forceGpuRendering() {
+
+if [ $1 -eq 0 ]; then
+	sendToLog "Disabling force GPU rendering..."
+	setprop persist.sys.ui.hw 0
+	sendToLog "Force GPU rendering successfully disabled"
+elif [ $1 -eq 1 ]; then
+	sendToLog "Enabling force GPU rendering..."
+	setprop persist.sys.ui.hw 1
+	sendToLog "Force GPU rendering successfully enabled"
+fi
+ 
+sendToLog "$divider";
+}
+
+force4xMsaa() {
+
+if [ $1 -eq 0 ]; then
+	sendToLog "Disabling force 4x MSAA..."
+	setprop debug.egl.force_msaa 0
+	sendToLog "Force 4x MSAA successfully disabled"
+elif [ $1 -eq 1 ]; then
+	sendToLog "Enabling force 4x MSAA..."
+	setprop debug.egl.force_msaa 1
+	sendToLog "Force 4x MSAA successfully enabled"
+fi
+ 
 sendToLog "$divider";
 }
 
@@ -3280,7 +3312,9 @@ setDefaultProfile() {
 	write "$USER_PROFILE"/optimize_buffers "0"
 	write "$USER_PROFILE"/render_opengles_using_gpu "0"
 	write "$USER_PROFILE"/use_opengl_skia "0"
-
+	write "$USER_PROFILE"/force_gpu_rendering "0"
+	write "$USER_PROFILE"/force_4x_msaa "0"
+	
 	# I/O tweaks section
 	write "$USER_PROFILE"/disable_io_stats "-1"
 	write "$USER_PROFILE"/io_blocks_optimization "0"
@@ -3324,7 +3358,9 @@ setPowerSavingProfile() {
 	write "$USER_PROFILE"/optimize_buffers "0"
 	write "$USER_PROFILE"/render_opengles_using_gpu "0"
 	write "$USER_PROFILE"/use_opengl_skia "0"
-
+	write "$USER_PROFILE"/force_gpu_rendering "0"
+	write "$USER_PROFILE"/force_4x_msaa "0"
+	
 	# I/O tweaks section
 	write "$USER_PROFILE"/disable_io_stats "-1"
 	write "$USER_PROFILE"/io_blocks_optimization "1"
@@ -3368,6 +3404,8 @@ setBalancedProfile() {
 	write "$USER_PROFILE"/optimize_buffers "0"
 	write "$USER_PROFILE"/render_opengles_using_gpu "0"
 	write "$USER_PROFILE"/use_opengl_skia "0"
+	write "$USER_PROFILE"/force_gpu_rendering "0"
+	write "$USER_PROFILE"/force_4x_msaa "0"
 
 	# I/O tweaks section
 	write "$USER_PROFILE"/disable_io_stats "-1"
@@ -3412,6 +3450,8 @@ setPerformanceProfile() {
 	write "$USER_PROFILE"/optimize_buffers "0"
 	write "$USER_PROFILE"/render_opengles_using_gpu "0"
 	write "$USER_PROFILE"/use_opengl_skia "0"
+	write "$USER_PROFILE"/force_gpu_rendering "0"
+	write "$USER_PROFILE"/force_4x_msaa "0"
 
 	# I/O tweaks section
 	write "$USER_PROFILE"/disable_io_stats "-1"
