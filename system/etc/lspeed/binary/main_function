@@ -2348,12 +2348,18 @@ sendToLog "$divider";
 selinux() {
 	sendToLog "Changing selinux..."
 
-	if [ "$1" = "0" ]; then
-		setenforce 0
-		sendToLog "Selinux changed to permissive"
-	elif [ "$1" = "1" ]; then
-		setenforce 1
-		sendToLog "Selinux changed to enforcing"
+	setenforce $1
+	
+	selinuxState=$(cat /sys/fs/selinux/enforce)
+
+	if [ $1 -eq $selinuxState ]; then
+		if [ $selinuxState -eq 0 ]; then
+			sendToLog "Selinux changed to permissive"
+		elif [ $selinuxState -eq 1 ]; then
+			sendToLog "Selinux changed to enforcing"
+		fi
+	else
+		sendToLog "Unable to change selinux mode"
 	fi
 
 	sendToLog "$divider"
