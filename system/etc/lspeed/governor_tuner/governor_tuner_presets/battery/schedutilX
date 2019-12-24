@@ -34,13 +34,13 @@ lockFile() {
 if [ $1 = "prime" ]; then 
 	if [ -e $2 ]; then
 		if [ -e $2/up_rate_limit_us ]; then
-			lockFile $2/up_rate_limit_us "4000"
-			sendToLog "up_rate_limit_us=4000"
+			lockFile $2/up_rate_limit_us "10000"
+			sendToLog "up_rate_limit_us=10000"
 		fi
 	
 		if [ -e $2/down_rate_limit_us ]; then
-			lockFile $2/down_rate_limit_us "500"
-			sendToLog "down_rate_limit_us=500"
+			lockFile $2/down_rate_limit_us "1000"
+			sendToLog "down_rate_limit_us=1000"
 		fi
 		
 		if [ -e $2/hispeed_load ]; then
@@ -58,13 +58,13 @@ if [ $1 = "prime" ]; then
 elif [ $1 = "big" ]; then 
 	if [ -e $2 ]; then
 		if [ -e $2/up_rate_limit_us ]; then
-			lockFile $2/up_rate_limit_us "2000"
-			sendToLog "up_rate_limit_us=2000"
+			lockFile $2/up_rate_limit_us "6000"
+			sendToLog "up_rate_limit_us=6000"
 		fi
 	
 		if [ -e $2/down_rate_limit_us ]; then
-			lockFile $2/down_rate_limit_us "500"
-			sendToLog "down_rate_limit_us=500"
+			lockFile $2/down_rate_limit_us "1000"
+			sendToLog "down_rate_limit_us=1000"
 		fi
 		
 		if [ -e $2/hispeed_load ]; then
@@ -82,13 +82,13 @@ elif [ $1 = "big" ]; then
 elif [ $1 = "little" ]; then 
 	if [ -e $2 ]; then
 		if [ -e $2/up_rate_limit_us ]; then
-			lockFile $2/up_rate_limit_us "2000"
-			sendToLog "up_rate_limit_us=2000"
+			lockFile $2/up_rate_limit_us "3000"
+			sendToLog "up_rate_limit_us=3000"
 		fi
 	
 		if [ -e $2/down_rate_limit_us ]; then
-			lockFile $2/down_rate_limit_us "500"
-			sendToLog "down_rate_limit_us=500"
+			lockFile $2/down_rate_limit_us "1000"
+			sendToLog "down_rate_limit_us=1000"
 		fi
 		
 		if [ -e $2/hispeed_load ]; then
@@ -106,13 +106,13 @@ elif [ $1 = "little" ]; then
 elif [ $1 = "regular" ]; then 
 	if [ -e $2 ]; then
 		if [ -e $2/up_rate_limit_us ]; then
-			lockFile $2/up_rate_limit_us "2000"
-			sendToLog "up_rate_limit_us=2000"
+			lockFile $2/up_rate_limit_us "3000"
+			sendToLog "up_rate_limit_us=3000"
 		fi
 	
 		if [ -e $2/down_rate_limit_us ]; then
-			lockFile $2/down_rate_limit_us "500"
-			sendToLog "down_rate_limit_us=500"
+			lockFile $2/down_rate_limit_us "1000"
+			sendToLog "down_rate_limit_us=1000"
 		fi
 		
 		if [ -e $2/hispeed_load ]; then

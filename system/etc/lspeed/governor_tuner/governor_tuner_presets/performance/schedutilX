@@ -87,8 +87,8 @@ elif [ $1 = "little" ]; then
 		fi
 	
 		if [ -e $2/down_rate_limit_us ]; then
-			lockFile $2/down_rate_limit_us "5000"
-			sendToLog "down_rate_limit_us=5000"
+			lockFile $2/down_rate_limit_us "3000"
+			sendToLog "down_rate_limit_us=3000"
 		fi
 		
 		if [ -e $2/hispeed_load ]; then
@@ -111,8 +111,8 @@ elif [ $1 = "regular" ]; then
 		fi
 	
 		if [ -e $2/down_rate_limit_us ]; then
-			lockFile $2/down_rate_limit_us "5000"
-			sendToLog "down_rate_limit_us=5000"
+			lockFile $2/down_rate_limit_us "3000"
+			sendToLog "down_rate_limit_us=3000"
 		fi
 		
 		if [ -e $2/hispeed_load ]; then

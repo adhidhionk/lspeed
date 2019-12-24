@@ -34,13 +34,13 @@ lockFile() {
 if [ $1 = "prime" ]; then 
 	if [ -e $2 ]; then
 		if [ -e $2/up_rate_limit_us ]; then
-			lockFile $2/up_rate_limit_us "1000"
-			sendToLog "up_rate_limit_us=1000"
+			lockFile $2/up_rate_limit_us "2000"
+			sendToLog "up_rate_limit_us=2000"
 		fi
 	
 		if [ -e $2/down_rate_limit_us ]; then
-			lockFile $2/down_rate_limit_us "2000"
-			sendToLog "down_rate_limit_us=2000"
+			lockFile $2/down_rate_limit_us "3000"
+			sendToLog "down_rate_limit_us=3000"
 		fi
 		
 		if [ -e $2/hispeed_load ]; then
@@ -63,8 +63,8 @@ elif [ $1 = "big" ]; then
 		fi
 	
 		if [ -e $2/down_rate_limit_us ]; then
-			lockFile $2/down_rate_limit_us "2000"
-			sendToLog "down_rate_limit_us=2000"
+			lockFile $2/down_rate_limit_us "3000"
+			sendToLog "down_rate_limit_us=3000"
 		fi
 		
 		if [ -e $2/hispeed_load ]; then
