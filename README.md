@@ -87,6 +87,26 @@ You can pass them on any links from below (Telegram is recommended)
 If you want, you can support me over [Paypal donate](https://paypal.me/Paget96), to support my work.
 
 ## Changelog 
+**v1.5**
+- Added force GPU rendering with brief explanation
+- Added force 4x msaa with brief explanation
+- Added GPU info
+- Added advanced reboot menu
+- Added selinux toggle
+- min_free_kbytes reduced
+- Disabled merges for all blocks
+- Fixed typo in log output for fiops scheduler
+- Improved compatibility of governor tuner
+- Improved governor tuner detection of PRIME and BIG cpu cores
+- Swapped governor parameters for BIG and PRIME cores
+- Fixed detection of triple clustered devices
+- Added governor tuner execution interval
+- Added support for schedutilX
+- Fixed some syntax errors
+- Fixed issues with loading back a setup
+- Main tweaks section renamed to misc
+- Optimized app code
+
 **v1.4**
 - Improved Governor tuner (supported interactive and schedutil for now)
 - Fixed some code related issues
