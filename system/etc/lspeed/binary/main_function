@@ -1762,13 +1762,13 @@ for i in $blocks;
 		fi
 		
 		if [ -e "$GROUP_IDLE" ]; then
-			write "$GROUP_IDLE" "0"
-			sendToLog "group_idle=0 in $i"
+			write "$GROUP_IDLE" "1"
+			sendToLog "group_idle=1 in $i"
 		fi
 		
 		if [ -e "$LOW_LATENCY" ]; then
-			write "$LOW_LATENCY" "1"
-			sendToLog "low_latency=1 in $i"
+			write "$LOW_LATENCY" "0"
+			sendToLog "low_latency=0 in $i"
 		fi
 		
 		if [ -e "$QUANTUM" ]; then
@@ -1824,8 +1824,8 @@ for i in $blocks;
 		fi
 		
 		if [ -e "$LOW_LATENCY" ]; then
-			write "$LOW_LATENCY" "1"
-			sendToLog "low_latency=1 in $i"
+			write "$LOW_LATENCY" "0"
+			sendToLog "low_latency=0 in $i"
 		fi
 		
 		if [ -e "$MAX_BUDGET" ]; then
