@@ -2983,8 +2983,8 @@ fi;
 # and check to see if work needs to be done.
 dirty_writeback_centisecs=/proc/sys/vm/dirty_writeback_centisecs
 if [ -e $dirty_writeback_centisecs ]; then
-	write $dirty_writeback_centisecs "1000"		
-	sendToLog "dirty_writeback_centisecs=1000"
+	write $dirty_writeback_centisecs "3000"		
+	sendToLog "dirty_writeback_centisecs=3000"
 fi;
 
 # vm.dirty_background_ratio is the percentage of system memory(RAM)
@@ -3245,8 +3245,8 @@ fi;
 # and check to see if work needs to be done.
 dirty_writeback_centisecs=/proc/sys/vm/dirty_writeback_centisecs
 if [ -e $dirty_writeback_centisecs ]; then
-	write $dirty_writeback_centisecs "600"
-	sendToLog "dirty_writeback_centisecs=600"
+	write $dirty_writeback_centisecs "3000"
+	sendToLog "dirty_writeback_centisecs=3000"
 fi;
 
 # vm.dirty_background_ratio is the percentage of system memory(RAM)
