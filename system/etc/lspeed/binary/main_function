@@ -1392,6 +1392,14 @@ for i in $blocks;
 		write "$i/queue/read_ahead_kb" "128"
 		sendToLog "read_ahead_kb=128 in $i"
 	fi
+	
+	# Tell scheduler that it's facing with non rotational drive to disable
+	# unnecessary seek-reducing logic in the scheduler. We are not using rotational HDDs
+	if [ -e "$i/queue/rotational" ]; then
+		write "$i/queue/rotational" "0"
+		sendToLog "rotational=0 in $i"
+	fi
+	
 done
 
 # MMC CRC disabled
@@ -1449,8 +1457,8 @@ for i in $blocks;
 	#processing setting this option to '2' forces the completion to run on the
 	#requesting cpu (bypassing the "group" aggregation logic).
 	if [ -e "$i/queue/rq_affinity" ]; then
-		write "$i/queue/rq_affinity" "2"
-		sendToLog "rq_affinity=2 in $i"
+		write "$i/queue/rq_affinity" "1"
+		sendToLog "rq_affinity=1 in $i"
 	fi
 	
 	#This controls how many requests may be allocated in the block layer for
@@ -1474,6 +1482,14 @@ for i in $blocks;
 		write "$i/queue/read_ahead_kb" "256"
 		sendToLog "read_ahead_kb=256 in $i"
 	fi
+	
+	# Tell scheduler that it's facing with non rotational drive to disable
+	# unnecessary seek-reducing logic in the scheduler. We are not using rotational HDDs
+	if [ -e "$i/queue/rotational" ]; then
+		write "$i/queue/rotational" "0"
+		sendToLog "rotational=0 in $i"
+	fi
+	
 done
 
 # MMC CRC disabled
@@ -1546,8 +1562,8 @@ for i in $blocks;
 	#each request queue may have up to N request pools, each independently
 	#regulated by nr_requests.
 	if [ -e "$i/queue/nr_requests" ]; then
-		write "$i/queue/nr_requests" "128"
-		sendToLog "nr_requests=128 in $i"
+		write "$i/queue/nr_requests" "64"
+		sendToLog "nr_requests=64 in $i"
 	fi
 	
 	#Maximum number of kilobytes to read-ahead for filesystems on this block
@@ -1557,6 +1573,13 @@ for i in $blocks;
 		sendToLog "read_ahead_kb=128 in $i"
 	fi
 
+	# Tell scheduler that it's facing with non rotational drive to disable
+	# unnecessary seek-reducing logic in the scheduler. We are not using rotational HDDs
+	if [ -e "$i/queue/rotational" ]; then
+		write "$i/queue/rotational" "0"
+		sendToLog "rotational=0 in $i"
+	fi
+	
 done
 
 # MMC CRC disabled
