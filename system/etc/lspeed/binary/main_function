@@ -1643,7 +1643,6 @@ for i in $blocks;
 	MAX_WRITES_STARVED="$i/queue/iosched/max_writes_starved";
 
 	# cfq
-	BACK_SEEK_MAX="$i/queue/iosched/back_seek_max";
 	BACK_SEEK_PENALTY="$i/queue/iosched/back_seek_penalty";
 	FIFO_EXPIRE_ASYNC="$i/queue/iosched/fifo_expire_async";
 	FIFO_EXPIRE_SYNC="$i/queue/iosched/fifo_expire_sync";
@@ -1741,11 +1740,6 @@ for i in $blocks;
 
 	# cfq
 	elif [ "$scheduler" = "cfq" ]; then
-		if [ -e "$BACK_SEEK_MAX" ]; then
-			write "$BACK_SEEK_MAX" "16384"
-			sendToLog "back_seek_max=16384 in $i"
-		fi
-		
 		if [ -e "$BACK_SEEK_PENALTY" ]; then
 			write "$BACK_SEEK_PENALTY" "1"
 			sendToLog "back_seek_penalty=1 in $i"
@@ -1772,8 +1766,8 @@ for i in $blocks;
 		fi
 		
 		if [ -e "$QUANTUM" ]; then
-			write "$QUANTUM" "4"
-			sendToLog "quantum=4 in $i"
+			write "$QUANTUM" "8"
+			sendToLog "quantum=8 in $i"
 		fi
 		
 		if [ -e "$SLICE_ASYNC" ]; then
@@ -1803,11 +1797,6 @@ for i in $blocks;
 
 	# bfq
 	elif [ "$scheduler" = "bfq" ]; then
-		if [ -e "$BACK_SEEK_MAX" ]; then
-			write "$BACK_SEEK_MAX" "16384"
-			sendToLog "back_seek_max=16384 in $i"
-		fi
-		
 		if [ -e "$BACK_SEEK_PENALTY" ]; then
 			write "$BACK_SEEK_PENALTY" "1"
 			sendToLog "back_seek_penalty=1 in $i"
