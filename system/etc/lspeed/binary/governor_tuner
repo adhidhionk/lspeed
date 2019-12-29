@@ -362,10 +362,12 @@ while true; do
 			exit 0
 		else
 			sendToLog "governor_tuner will be executed in $((exec_interval))mins"
+			sendToLog "$divider"
 			sleep $((exec_interval*60));
 		fi
 	else
 		sendToLog "governor_tuner will be executed in 5mins"
+		sendToLog "$divider"
 		sleep 300;
 	fi
 
