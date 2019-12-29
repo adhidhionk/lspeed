@@ -53,13 +53,16 @@ getMinAndMaxFreq() {
 	
 	core_count=$($BUSYBOX cat $CPU_CORE_COUNT)
 	core=0
+	
 	while [ $core -le "$core_count" ]; do
 
 	scalingAvailableFrequencies=/sys/devices/system/cpu/cpu$core/cpufreq/scaling_available_frequencies
 	
+	echo $scalingAvailableFrequencies
+	
 	if [ -e $scalingAvailableFrequencies ]; then
 		minFreq=$($BUSYBOX cat $scalingAvailableFrequencies | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $1}')
-		maxFreq=$($BUSYBOX cat $scalingAvailableFrequencies | tr '\n' ' ' | $BUSYBOX awk '{print $NF}')
+		maxFreq=$($BUSYBOX cat $scalingAvailableFrequencies | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $NF}')
 
 		if [ "$minFreq" -lt "$maxFreq" ]; then
 			echo "$minFreq " >> $MIN_MAX_FREQ
@@ -69,10 +72,10 @@ getMinAndMaxFreq() {
 			echo "$minFreq " >> $MIN_MAX_FREQ
 		fi
 	fi
-
+	
 	core=$(( core + 1 ))
 	done
-	
+		
 	sleep 0.5
 	
 	unset core; unset scalingAvailableFrequencies; unset minFreq; unset maxFreq;
