@@ -1,7 +1,7 @@
 #!/system/bin/sh
 # L Speed tweak
 # Codename : lspeed
-version="v1.6-c1";
+version="v1.6-c2";
 build_date=29-12-2019;
 # Developer : Paget96
 # Paypal : https://paypal.me/Paget96
@@ -797,16 +797,16 @@ cpuOptimizationBalanced() {
 		fi
 		
 		# update cpuset now that processors are up
-		# Foreground should contain most cores (on battery profile we will use "$useTill-1")
+		# Foreground should contain most cores (on battery profile we will use "$getPrime-1")
 		if [ -e /dev/cpuset/foreground/cpus ]; then
-			write /dev/cpuset/foreground/cpus "$getLittle-$((useTill-1))"
-			sendToLog "cpuset for foreground set: $getLittle-$((useTill-1))"
+			write /dev/cpuset/foreground/cpus "$getLittle-$useTill"
+			sendToLog "cpuset for foreground set: $getLittle-$useTill"
 		fi
 		
-		# top-app gets all LITTLE cpus
+		# top-app gets all LITTLE, BIG and one PRIME cpu
 		if [ -e /dev/cpuset/top-app/cpus ]; then
-			write /dev/cpuset/top-app/cpus "$getLittle-$useTill"
-			sendToLog "cpuset for top-app set: $getLittle-$useTill"
+			write /dev/cpuset/top-app/cpus "$getLittle-$getBig"
+			sendToLog "cpuset for top-app set: $getLittle-$getBig"
 		fi
 		
 		# background contains a small subset (generally one little core)
@@ -846,16 +846,16 @@ cpuOptimizationBalanced() {
 		fi
 		
 		# update cpuset now that processors are up
-		# Foreground should contain most cores (on battery profile we will use "$useTill-1")
+		# Foreground should contain most cores (on balanced profile we will use "$getLittle-$useTill")
 		if [ -e /dev/cpuset/foreground/cpus ]; then
-			write /dev/cpuset/foreground/cpus "$getLittle-$((useTill-1))"
-			sendToLog "cpuset for foreground set: $getLittle-$((useTill-1))"
+			write /dev/cpuset/foreground/cpus "$getLittle-$useTill"
+			sendToLog "cpuset for foreground set: $getLittle-$useTill"
 		fi
 		
-		# top-app gets all LITTLE cpus
+		# top-app gets all LITTLE + one BIG cpu
 		if [ -e /dev/cpuset/top-app/cpus ]; then
-			write /dev/cpuset/top-app/cpus "$getLittle-$useTill"
-			sendToLog "cpuset for top-app set: $getLittle-$useTill"
+			write /dev/cpuset/top-app/cpus "$getLittle-$getBig"
+			sendToLog "cpuset for top-app set: $getLittle-$getBig"
 		fi
 		
 		# background contains a small subset (generally one little core)
@@ -882,14 +882,14 @@ cpuOptimizationBalanced() {
 			# update cpuset now that processors are up
 			# Foreground should contain most cores (we will use half of the cpu cores for battery profile)
 			if [ -e /dev/cpuset/foreground/cpus ]; then
-				write /dev/cpuset/foreground/cpus "$getRegular-$((core_count/2))"
-				sendToLog "cpuset for foreground set: $getRegular-$((core_count/2))"
+				write /dev/cpuset/foreground/cpus "$getRegular-$((core_count-1))"
+				sendToLog "cpuset for foreground set: $getRegular-$((core_count-1))"
 			fi
 			
 			# top-app gets all cpus (including reserved one)
 			if [ -e /dev/cpuset/top-app/cpus ]; then
-				write /dev/cpuset/top-app/cpus "$getRegular-$(((core_count/2)-1))"
-				sendToLog "cpuset for top-app set: $getRegular-$(((core_count/2)-1))"
+				write /dev/cpuset/top-app/cpus "$getRegular-$((core_count-1))"
+				sendToLog "cpuset for top-app set: $getRegular-$((core_count-1))"
 			fi
 			
 			#background contains a small subset (one core is enough)
@@ -1083,7 +1083,7 @@ cpuOptimizationPerformance() {
 		fi
 		
 		# update cpuset now that processors are up
-		# Foreground should contain most cores (on performance profile we will use "$useTill-1")
+		# Foreground should contain most cores (on performance profile we will use "$core_count-1")
 		if [ -e /dev/cpuset/foreground/cpus ]; then
 			write /dev/cpuset/foreground/cpus "$getLittle-$((core_count-1))"
 			sendToLog "cpuset for foreground set: $getLittle-$((core_count-1))"
