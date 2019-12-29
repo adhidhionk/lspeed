@@ -1,7 +1,7 @@
 #!/system/bin/sh
 # L Speed tweak
 # Codename : lspeed
-version="v1.6";
+version="v1.6-c1";
 build_date=29-12-2019;
 # Developer : Paget96
 # Paypal : https://paypal.me/Paget96
@@ -1554,10 +1554,10 @@ for i in $blocks;
 	
 	# Tell scheduler that it's facing with non rotational drive to disable
 	# unnecessary seek-reducing logic in the scheduler. We are not using rotational HDDs
-	if [ -e "$i/queue/rotational" ]; then
-		write "$i/queue/rotational" "0"
-		sendToLog "rotational=0 in $i"
-	fi
+	#if [ -e "$i/queue/rotational" ]; then
+	#	write "$i/queue/rotational" "0"
+	#	sendToLog "rotational=0 in $i"
+	#fi
 	
 done
 
@@ -1644,10 +1644,10 @@ for i in $blocks;
 	
 	# Tell scheduler that it's facing with non rotational drive to disable
 	# unnecessary seek-reducing logic in the scheduler. We are not using rotational HDDs
-	if [ -e "$i/queue/rotational" ]; then
-		write "$i/queue/rotational" "0"
-		sendToLog "rotational=0 in $i"
-	fi
+	#if [ -e "$i/queue/rotational" ]; then
+	#	write "$i/queue/rotational" "0"
+	#	sendToLog "rotational=0 in $i"
+	#fi
 	
 done
 
@@ -1734,10 +1734,10 @@ for i in $blocks;
 
 	# Tell scheduler that it's facing with non rotational drive to disable
 	# unnecessary seek-reducing logic in the scheduler. We are not using rotational HDDs
-	if [ -e "$i/queue/rotational" ]; then
-		write "$i/queue/rotational" "0"
-		sendToLog "rotational=0 in $i"
-	fi
+	#if [ -e "$i/queue/rotational" ]; then
+	#	write "$i/queue/rotational" "0"
+	#	sendToLog "rotational=0 in $i"
+	#fi
 	
 done
 
