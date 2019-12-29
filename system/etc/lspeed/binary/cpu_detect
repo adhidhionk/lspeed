@@ -13,6 +13,8 @@ SETUP_DIR=$LSPEED_DATA_DIR/setup
 
 # cpu_detect output files
 CPU_DETECT_DATA_DIR=$SETUP_DIR/cpu_detect
+CPU_CORE_COUNT=$CPU_DETECT_DATA_DIR/cpu_core_count
+REAL_CPU_CORE_COUNT=$CPU_DETECT_DATA_DIR/real_cpu_core_count
 MIN_MAX_FREQ=$CPU_DETECT_DATA_DIR/min_max_freq
 MIN_FREQ_LIST=$CPU_DETECT_DATA_DIR/min_freq_list
 MAX_FREQ_LIST=$CPU_DETECT_DATA_DIR/max_freq_list
@@ -29,8 +31,16 @@ if [ ! -d $CPU_DETECT_DATA_DIR ]; then
 	mkdir -p $CPU_DETECT_DATA_DIR
 fi;
 
-real_cpu_cores=$($BUSYBOX ls /sys/devices/system/cpu | $BUSYBOX grep -c ^cpu[0-9]);
-cpu_cores=$((real_cpu_cores-1));
+#######
+# Method returns min and max frequencies as list
+#######
+getCPUcoreCount() {
+	real_cpu_cores=$($BUSYBOX ls /sys/devices/system/cpu | $BUSYBOX grep -c ^cpu[0-9]);
+	cpu_cores=$((real_cpu_cores-1));
+	
+	echo "$cpu_cores" > $CPU_CORE_COUNT
+	echo "$real_cpu_cores" >> $REAL_CPU_CORE_COUNT
+}
 
 #######
 # Method returns min and max frequencies as list
@@ -39,7 +49,7 @@ getMinAndMaxFreq() {
 	rm -rf $MIN_MAX_FREQ
 	
 	core=0
-	while [ "$core" -le "$cpu_cores" ]; do
+	while [ "$core" -le "$CPU_CORE_COUNT" ]; do
 
 	scalingAvailableFrequencies=/sys/devices/system/cpu/cpu$core/cpufreq/scaling_available_frequencies
 	
@@ -265,6 +275,7 @@ fi
 sleep 1
 }
 
+getCPUcoreCount
 getMinAndMaxFreq
 getMinFreqList
 getMaxFreqList
