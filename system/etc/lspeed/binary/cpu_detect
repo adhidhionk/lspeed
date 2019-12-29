@@ -33,6 +33,9 @@ fi;
 # Method returns min and max frequencies as list
 #######
 getCPUcoreCount() {
+	rm -rf $CPU_CORE_COUNT
+	rm -rf $REAL_CPU_CORE_COUNT
+	
 	real_cpu_cores=$($BUSYBOX ls /sys/devices/system/cpu | $BUSYBOX grep -c ^cpu[0-9]);
 	cpu_cores=$((real_cpu_cores-1));
 	
@@ -50,7 +53,7 @@ getMinAndMaxFreq() {
 	
 	core_count=$($BUSYBOX cat $CPU_CORE_COUNT)
 	core=0
-	while [ "$core" -le "$core_count" ]; do
+	while [ $core -le "$core_count" ]; do
 
 	scalingAvailableFrequencies=/sys/devices/system/cpu/cpu$core/cpufreq/scaling_available_frequencies
 	
