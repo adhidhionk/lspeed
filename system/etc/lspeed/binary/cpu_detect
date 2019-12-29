@@ -1,0 +1,273 @@
+#!/system/bin/sh
+# This is a part of L Speed
+# CPU detection
+
+########
+#PATHS #
+########
+# Path where logs and setup is stored (/data)
+LSPEED_DATA_DIR=/data/lspeed
+LOG_DIR=$LSPEED_DATA_DIR/log
+
+SETUP_DIR=$LSPEED_DATA_DIR/setup
+
+# cpu_detect output files
+CPU_DETECT_DATA_DIR=$SETUP_DIR/cpu_detect
+MIN_MAX_FREQ=$CPU_DETECT_DATA_DIR/min_max_freq
+MIN_FREQ_LIST=$CPU_DETECT_DATA_DIR/min_freq_list
+MAX_FREQ_LIST=$CPU_DETECT_DATA_DIR/max_freq_list
+LOGICAL_CORE=$CPU_DETECT_DATA_DIR/logical_core
+UNIQUE_FREQ=$CPU_DETECT_DATA_DIR/unique_freq
+CORE_GETTER=$CPU_DETECT_DATA_DIR/core_getter
+
+# Path in /system dir
+LSPEED=/system/etc/lspeed
+BUSYBOX=$LSPEED/binary/busybox
+
+# Create cpu_detect dir if not exists
+if [ ! -d $CPU_DETECT_DATA_DIR ]; then
+	mkdir -p $CPU_DETECT_DATA_DIR
+fi;
+
+real_cpu_cores=$($BUSYBOX ls /sys/devices/system/cpu | $BUSYBOX grep -c ^cpu[0-9]);
+cpu_cores=$((real_cpu_cores-1));
+
+#######
+# Method returns min and max frequencies as list
+#######
+getMinAndMaxFreq() {
+	rm -rf $MIN_MAX_FREQ
+	
+	core=0
+	while [ "$core" -le "$cpu_cores" ]; do
+
+	scalingAvailableFrequencies=/sys/devices/system/cpu/cpu$core/cpufreq/scaling_available_frequencies
+	
+	if [ -e $scalingAvailableFrequencies ]; then
+		minFreq=$($BUSYBOX cat $scalingAvailableFrequencies | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $1}')
+		maxFreq=$($BUSYBOX cat $scalingAvailableFrequencies | tr '\n' ' ' | $BUSYBOX awk '{print $NF}')
+
+		if [ "$minFreq" -lt "$maxFreq" ]; then
+			echo "$minFreq " >> $MIN_MAX_FREQ
+			echo "$maxFreq " >> $MIN_MAX_FREQ
+		elif [ "$minFreq" -gt "$maxFreq" ]; then
+			echo "$maxFreq " >> $MIN_MAX_FREQ
+			echo "$minFreq " >> $MIN_MAX_FREQ
+		fi
+	fi
+
+	core=$(( core + 1 ))
+	done
+	
+	sleep 0.5
+	
+	unset core; unset scalingAvailableFrequencies; unset minFreq; unset maxFreq;
+}
+
+#######
+# Method returns Min frequency of LITTLE, BIG and PRIME cores,
+# also REGULAR frequency in a list taking min_max_freq list as argument
+#######
+getMinFreqList() {
+	rm -rf $MIN_FREQ_LIST
+	
+	minMaxFreqSize=$($BUSYBOX cat $MIN_MAX_FREQ | $BUSYBOX tr '\n' ' ' | $BUSYBOX wc -w)
+
+	i=1
+	while [ $i -le "$minMaxFreqSize" ]; do
+		
+		minFreqList=$($BUSYBOX cat $MIN_MAX_FREQ | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$i'}')
+
+		echo "$minFreqList " >> $MIN_FREQ_LIST
+
+		i=$(( i + 2 ))
+	done
+
+	sleep 0.5
+
+	unset minMaxFreqSize; unset i; unset minFreqList;
+}
+
+#######
+# Method returns Max frequency of LITTLE, BIG and PRIME cores,
+# also REGULAR frequency in a list taking min_max_freq list as argument
+#######
+getMaxFreqList() {
+	rm -rf $MAX_FREQ_LIST
+	
+	minMaxFreqSize=$($BUSYBOX cat $MIN_MAX_FREQ | $BUSYBOX tr '\n' ' ' | $BUSYBOX wc -w)
+
+	i=2
+	while [ $i -le "$minMaxFreqSize" ]; do
+		
+		maxFreqList=$($BUSYBOX cat $MIN_MAX_FREQ | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$i'}')
+
+		echo "$maxFreqList " >> $MAX_FREQ_LIST
+
+		i=$(( i + 2 ))
+	done
+	
+	sleep 0.5
+	
+	unset minMaxFreqSize; unset i; unset maxFreqList;
+}
+
+#######
+#Logical cores detect the parent core of the cluster
+#######
+logicalCores() {
+	rm -rf $LOGICAL_CORE
+	
+	maxFreqListSize=$($BUSYBOX cat $MAX_FREQ_LIST | $BUSYBOX tr '\n' ' ' | $BUSYBOX wc -w)
+
+	if [ "$maxFreqListSize" -ge 1 ]; then
+		i=1
+		
+		# Core 0 is always on
+		echo "0 " >> $LOGICAL_CORE
+		
+		while [ $i -le $((maxFreqListSize)) ]; do
+				
+			if [ $((i + 1)) -le "$maxFreqListSize" ]; then
+				maxFreqList=$($BUSYBOX cat $MAX_FREQ_LIST | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$i'}')
+				nextMaxFreqList=$($BUSYBOX cat $MAX_FREQ_LIST | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$((i+1))'}')
+
+				if [ "$maxFreqList" != "$nextMaxFreqList" ]; then
+					echo "$i " >> $LOGICAL_CORE
+				fi
+			fi
+			i=$(( i + 1 ))
+		done
+	fi
+	
+	sleep 0.5
+
+	unset maxFreqListSize; unset i; unset maxFreqList; unset nextMaxFreqList;
+}
+
+##########
+# Lets create a Integer list containing non-repeating values of max_frequency
+##########
+getUniqueFreq() {
+	rm -rf $UNIQUE_FREQ
+	
+	sleep 0.2
+	
+	$BUSYBOX cat $MAX_FREQ_LIST | $BUSYBOX tr ' ' '\n' | $BUSYBOX sort -n -r | $BUSYBOX uniq > $UNIQUE_FREQ
+	
+	sleep 0.5
+}
+
+##########
+# coreGetter returns a list with parent core of clusters in descending order BIG to LITTLE
+##########
+coreGetter() {
+
+rm -rf $CORE_GETTER
+prime=0
+big=0
+little=0
+
+logicalCoresListSize=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX wc -w)
+
+if [ "$logicalCoresListSize" -eq 3 ]; then
+	a=1
+	while [ $a -le $((logicalCoresListSize)) ]; do
+	    logicalCore=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$a'}')
+				
+		uniqueFreq=$($BUSYBOX cat $UNIQUE_FREQ | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $1}')
+		maxFreqList=$($BUSYBOX cat $MAX_FREQ_LIST | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$((logicalCore+1))'}')
+		
+		if [ "$uniqueFreq" -eq "$maxFreqList" ]; then
+			prime=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$a'}')
+		fi
+			
+		a=$(( a + 1 ))
+	done
+	
+	echo "$prime " >> $CORE_GETTER
+	
+	unset logicalCore; unset uniqueFreq; unset maxFreqList;
+	
+	b=1
+	while [ $b -le $((logicalCoresListSize)) ]; do
+		logicalCore=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$b'}')
+				
+        uniqueFreq=$($BUSYBOX cat $UNIQUE_FREQ | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $2}')
+		maxFreqList=$($BUSYBOX cat $MAX_FREQ_LIST | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$((logicalCore+1))'}')
+		
+		if [ "$uniqueFreq" -eq "$maxFreqList" ]; then
+			big=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$b'}')
+		fi
+			
+		b=$(( b + 1 ))
+	done
+	
+	echo "$big " >> $CORE_GETTER
+	
+	unset logicalCore; unset uniqueFreq; unset maxFreqList;
+	
+	c=1
+	while [ $c -le $((logicalCoresListSize)) ]; do
+		uniqueFreq=$($BUSYBOX cat $UNIQUE_FREQ | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $1}')
+		maxFreqList=$($BUSYBOX cat $MAX_FREQ_LIST | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$((logicalCore+1))'}')
+		
+		if [ "$uniqueFreq" -eq "$maxFreqList" ]; then
+			little=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$c'}')
+		fi
+			
+		c=$(( c + 1 ))
+	done
+	
+	echo "$little " >> $CORE_GETTER
+	
+	unset logicalCore; unset uniqueFreq; unset maxFreqList;
+
+elif [ "$logicalCoresListSize" -eq 2 ]; then
+	a=1
+	while [ $a -le $((logicalCoresListSize)) ]; do
+	    logicalCore=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$a'}')
+				
+		uniqueFreq=$($BUSYBOX cat $UNIQUE_FREQ | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $1}')
+		maxFreqList=$($BUSYBOX cat $MAX_FREQ_LIST | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$((logicalCore+1))'}')
+		
+		if [ "$uniqueFreq" -eq "$maxFreqList" ]; then
+			big=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$a'}')
+		fi
+			
+		a=$(( a + 1 ))
+	done
+	
+	echo "$big " >> $CORE_GETTER
+	
+	unset logicalCore; unset uniqueFreq; unset maxFreqList;
+	
+	c=1
+	while [ $c -le $((logicalCoresListSize)) ]; do
+		uniqueFreq=$($BUSYBOX cat $UNIQUE_FREQ | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $1}')
+		maxFreqList=$($BUSYBOX cat $MAX_FREQ_LIST | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$((logicalCore+1))'}')
+		
+		if [ "$uniqueFreq" -eq "$maxFreqList" ]; then
+			little=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$c'}')
+		fi
+			
+		c=$(( c + 1 ))
+	done
+	
+	echo "$little " >> $CORE_GETTER
+	
+	unset uniqueFreq; unset maxFreqList;
+else
+	echo "0" >> $CORE_GETTER
+	
+fi
+
+sleep 1
+}
+
+getMinAndMaxFreq
+getMinFreqList
+getMaxFreqList
+logicalCores
+getUniqueFreq
+coreGetter
