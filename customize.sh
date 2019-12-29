@@ -52,7 +52,14 @@ extractBusybox() {
 #
 performInstall() {
 	# Perform manager installation
-	installApk $MODPATH/app
+	unzip -o "$ZIPFILE" 'app/*' -d /data/local/tmp >&2	
+
+	apkDir="/data/local/tmp/app"
+	installApk $apkDir
+	
+	# Remove app dir from $MODPATH and tmp dir
+	rm -rf $apkDir
+	rm -rf $MODPATH/app
 	
 	# Extracting arch based busybox
 	extractBusybox

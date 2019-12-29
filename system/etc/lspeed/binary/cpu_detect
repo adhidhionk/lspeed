@@ -283,3 +283,5 @@ getMaxFreqList
 logicalCores
 getUniqueFreq
 coreGetter
+
+exit 0;
