@@ -7,8 +7,6 @@
 ########
 # Path where logs and setup is stored (/data)
 LSPEED_DATA_DIR=/data/lspeed
-LOG_DIR=$LSPEED_DATA_DIR/log
-
 SETUP_DIR=$LSPEED_DATA_DIR/setup
 
 # cpu_detect output files
@@ -39,7 +37,9 @@ getCPUcoreCount() {
 	cpu_cores=$((real_cpu_cores-1));
 	
 	echo "$cpu_cores" > $CPU_CORE_COUNT
-	echo "$real_cpu_cores" >> $REAL_CPU_CORE_COUNT
+	echo "$real_cpu_cores" > $REAL_CPU_CORE_COUNT
+	
+	unset real_cpu_cores; unset cpu_cores;
 }
 
 #######
@@ -48,8 +48,9 @@ getCPUcoreCount() {
 getMinAndMaxFreq() {
 	rm -rf $MIN_MAX_FREQ
 	
+	core_count=$($BUSYBOX cat $CPU_CORE_COUNT)
 	core=0
-	while [ "$core" -le "$CPU_CORE_COUNT" ]; do
+	while [ "$core" -le "$core_count" ]; do
 
 	scalingAvailableFrequencies=/sys/devices/system/cpu/cpu$core/cpufreq/scaling_available_frequencies
 	
