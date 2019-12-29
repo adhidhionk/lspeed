@@ -505,7 +505,7 @@ cpuOptimizationBattery() {
 		# If LITTLE cores count is less or equal 2 we will pass useTill=$littleCoresCount, otherwise we cannot do the calculations
 		# because we will get not proper output
 		# If LITTLE cores count is biger than 2 (e.g. 4,6 or so on) we will pass the real number of cores
-        # so we can do can use them in further calculations
+		# so we can do can use them in further calculations
 		if [ $littleCoresCount -le 2 ]; then
 			useTill=$littleCoresCount
 		else 
@@ -554,7 +554,7 @@ cpuOptimizationBattery() {
 		# If LITTLE cores count is less or equal 2 we will pass useTill=$littleCoresCount, otherwise we cannot do the calculations
 		# because we will get not proper output
 		# If LITTLE cores count is biger than 2 (e.g. 4,6 or so on) we will pass the real number of cores
-        # so we can do can use them in further calculations
+		# so we can do can use them in further calculations
 		if [ $littleCoresCount -le 2 ]; then
 			useTill=$littleCoresCount
 		else 
@@ -789,7 +789,7 @@ cpuOptimizationBalanced() {
 		# If LITTLE cores count is less or equal 2 we will pass useTill=$littleCoresCount, otherwise we cannot do the calculations
 		# because we will get not proper output
 		# If LITTLE cores count is biger than 2 (e.g. 4,6 or so on) we will pass the real number of cores
-        # so we can do can use them in further calculations
+		# so we can do can use them in further calculations
 		if [ $littleCoresCount -le 2 ]; then
 			useTill=$littleCoresCount
 		else 
@@ -838,7 +838,7 @@ cpuOptimizationBalanced() {
 		# If LITTLE cores count is less or equal 2 we will pass useTill=$littleCoresCount, otherwise we cannot do the calculations
 		# because we will get not proper output
 		# If LITTLE cores count is biger than 2 (e.g. 4,6 or so on) we will pass the real number of cores
-        # so we can do can use them in further calculations
+		# so we can do can use them in further calculations
 		if [ $littleCoresCount -le 2 ]; then
 			useTill=$littleCoresCount
 		else 
@@ -1075,7 +1075,7 @@ cpuOptimizationPerformance() {
 		# If LITTLE cores count is less or equal 2 we will pass useTill=$littleCoresCount, otherwise we cannot do the calculations
 		# because we will get not proper output
 		# If LITTLE cores count is biger than 2 (e.g. 4,6 or so on) we will pass the real number of cores
-        # so we can do can use them in further calculations
+		# so we can do can use them in further calculations
 		if [ $littleCoresCount -le 2 ]; then
 			useTill=$littleCoresCount
 		else 
@@ -1124,7 +1124,7 @@ cpuOptimizationPerformance() {
 		# If LITTLE cores count is less or equal 2 we will pass useTill=$littleCoresCount, otherwise we cannot do the calculations
 		# because we will get not proper output
 		# If LITTLE cores count is biger than 2 (e.g. 4,6 or so on) we will pass the real number of cores
-        # so we can do can use them in further calculations
+		# so we can do can use them in further calculations
 		if [ $littleCoresCount -le 2 ]; then
 			useTill=$littleCoresCount
 		else 
