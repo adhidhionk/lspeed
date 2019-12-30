@@ -3,7 +3,7 @@
 installApk() {
 
 	echo "- Uninstalling old manager, if exists..."
-	pm uninstall com.paget96.lspeedmanager 2>/dev/null
+	pm uninstall com.paget96.lspeedmanager
 	
 	filelist=$(ls $1)
 
@@ -13,7 +13,7 @@ installApk() {
 
 		if [ "$extension" = "apk" ]; then
 			echo "- Installing ""$file""..."
-			pm install -r "$1/$file" 2>/dev/null
+			pm install -r "$1/$file"
 			
 			ui_print "- Successfully installed $file"
 		else
