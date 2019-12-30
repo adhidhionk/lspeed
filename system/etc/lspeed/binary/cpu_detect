@@ -17,6 +17,7 @@ MIN_MAX_FREQ=$CPU_DETECT_DATA_DIR/min_max_freq
 MIN_FREQ_LIST=$CPU_DETECT_DATA_DIR/min_freq_list
 MAX_FREQ_LIST=$CPU_DETECT_DATA_DIR/max_freq_list
 LOGICAL_CORE=$CPU_DETECT_DATA_DIR/logical_core
+AFFECTED_CPU=$CPU_DETECT_DATA_DIR/affected_cpu
 UNIQUE_FREQ=$CPU_DETECT_DATA_DIR/unique_freq
 CORE_GETTER=$CPU_DETECT_DATA_DIR/core_getter
 
@@ -30,7 +31,7 @@ if [ ! -d $CPU_DETECT_DATA_DIR ]; then
 fi;
 
 #######
-# Method returns min and max frequencies as list
+# Method returns the numbers of CPU cores
 #######
 getCPUcoreCount() {
 	rm -rf $CPU_CORE_COUNT
@@ -53,32 +54,112 @@ getMinAndMaxFreq() {
 	
 	core_count=$($BUSYBOX cat $CPU_CORE_COUNT)
 	core=0
-	
 	while [ $core -le "$core_count" ]; do
 
 	scalingAvailableFrequencies=/sys/devices/system/cpu/cpu$core/cpufreq/scaling_available_frequencies
 	
-	echo $scalingAvailableFrequencies
-	
-	if [ -e $scalingAvailableFrequencies ]; then
-		minFreq=$($BUSYBOX cat $scalingAvailableFrequencies | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $1}')
-		maxFreq=$($BUSYBOX cat $scalingAvailableFrequencies | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $NF}')
+		if [ -e $scalingAvailableFrequencies ]; then
+			minFreq=$($BUSYBOX cat $scalingAvailableFrequencies | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $1}')
+			maxFreq=$($BUSYBOX cat $scalingAvailableFrequencies | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $NF}')
 
-		if [ "$minFreq" -lt "$maxFreq" ]; then
-			echo "$minFreq " >> $MIN_MAX_FREQ
-			echo "$maxFreq " >> $MIN_MAX_FREQ
-		elif [ "$minFreq" -gt "$maxFreq" ]; then
-			echo "$maxFreq " >> $MIN_MAX_FREQ
-			echo "$minFreq " >> $MIN_MAX_FREQ
+			if [ "$minFreq" -lt "$maxFreq" ]; then
+				echo "$minFreq " >> $MIN_MAX_FREQ
+				echo "$maxFreq " >> $MIN_MAX_FREQ
+			elif [ "$minFreq" -gt "$maxFreq" ]; then
+				echo "$maxFreq " >> $MIN_MAX_FREQ
+				echo "$minFreq " >> $MIN_MAX_FREQ
+			fi
 		fi
-	fi
-	
-	core=$(( core + 1 ))
-	done
 		
-	sleep 0.5
+		core=$(( core + 1 ))
+	done
 	
 	unset core; unset scalingAvailableFrequencies; unset minFreq; unset maxFreq;
+	
+	# This is for devices with mp-cpufreq dir
+	if [ ! -e /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies ]; then
+		rm -rf $MIN_MAX_FREQ
+		
+		cluster0FreqTable=/sys/devices/system/cpu/cpufreq/mp-cpufreq/cluster0_freq_table
+		cluster1FreqTable=/sys/devices/system/cpu/cpufreq/mp-cpufreq/cluster1_freq_table
+		cluster2FreqTable=/sys/devices/system/cpu/cpufreq/mp-cpufreq/cluster2_freq_table
+		kfcFreqTable=/sys/devices/system/cpu/cpufreq/mp-cpufreq/kfc_freq_table
+		cpuFreqTable=/sys/devices/system/cpu/cpufreq/mp-cpufreq/cpu_freq_table
+		
+		if [ -e $cluster0FreqTable ]; then
+			minFreq=$($BUSYBOX cat $cluster0FreqTable | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $1}')
+			maxFreq=$($BUSYBOX cat $cluster0FreqTable | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $NF}')
+
+			if [ "$minFreq" -lt "$maxFreq" ]; then
+				echo "$minFreq " >> $MIN_MAX_FREQ
+				echo "$maxFreq " >> $MIN_MAX_FREQ
+			elif [ "$minFreq" -gt "$maxFreq" ]; then
+				echo "$maxFreq " >> $MIN_MAX_FREQ
+				echo "$minFreq " >> $MIN_MAX_FREQ
+			fi
+		fi
+		unset minFreq; unset maxFreq;
+		
+		if [ -e $cluster1FreqTable ]; then
+			minFreq=$($BUSYBOX cat $cluster1FreqTable | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $1}')
+			maxFreq=$($BUSYBOX cat $cluster1FreqTable | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $NF}')
+
+			if [ "$minFreq" -lt "$maxFreq" ]; then
+				echo "$minFreq " >> $MIN_MAX_FREQ
+				echo "$maxFreq " >> $MIN_MAX_FREQ
+			elif [ "$minFreq" -gt "$maxFreq" ]; then
+				echo "$maxFreq " >> $MIN_MAX_FREQ
+				echo "$minFreq " >> $MIN_MAX_FREQ
+			fi
+		fi
+		unset minFreq; unset maxFreq;
+		
+		if [ -e $cluster2FreqTable ]; then
+			minFreq=$($BUSYBOX cat $cluster2FreqTable | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $1}')
+			maxFreq=$($BUSYBOX cat $cluster2FreqTable | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $NF}')
+
+			if [ "$minFreq" -lt "$maxFreq" ]; then
+				echo "$minFreq " >> $MIN_MAX_FREQ
+				echo "$maxFreq " >> $MIN_MAX_FREQ
+			elif [ "$minFreq" -gt "$maxFreq" ]; then
+				echo "$maxFreq " >> $MIN_MAX_FREQ
+				echo "$minFreq " >> $MIN_MAX_FREQ
+			fi
+		fi
+		unset minFreq; unset maxFreq;
+		
+		if [ -e $kfcFreqTable ]; then
+			minFreq=$($BUSYBOX cat $kfcFreqTable | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $1}')
+			maxFreq=$($BUSYBOX cat $kfcFreqTable | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $NF}')
+
+			if [ "$minFreq" -lt "$maxFreq" ]; then
+				echo "$minFreq " >> $MIN_MAX_FREQ
+				echo "$maxFreq " >> $MIN_MAX_FREQ
+			elif [ "$minFreq" -gt "$maxFreq" ]; then
+				echo "$maxFreq " >> $MIN_MAX_FREQ
+				echo "$minFreq " >> $MIN_MAX_FREQ
+			fi
+		fi
+		unset minFreq; unset maxFreq;
+		
+		if [ -e $cpuFreqTable ]; then
+			minFreq=$($BUSYBOX cat $cpuFreqTable | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $1}')
+			maxFreq=$($BUSYBOX cat $cpuFreqTable | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $NF}')
+
+			if [ "$minFreq" -lt "$maxFreq" ]; then
+				echo "$minFreq " >> $MIN_MAX_FREQ
+				echo "$maxFreq " >> $MIN_MAX_FREQ
+			elif [ "$minFreq" -gt "$maxFreq" ]; then
+				echo "$maxFreq " >> $MIN_MAX_FREQ
+				echo "$minFreq " >> $MIN_MAX_FREQ
+			fi
+		fi
+		unset minFreq; unset maxFreq;
+	fi
+	
+	sleep 0.5
+	
+	unset cluster0FreqTable; unset cluster1FreqTable; unset cluster2FreqTable; unset kfcFreqTable; unset cpuFreqTable;
 }
 
 #######
@@ -130,36 +211,68 @@ getMaxFreqList() {
 }
 
 #######
-#Logical cores detect the parent core of the cluster
+# Logical cores detect the parent core of the cluster
 #######
 logicalCores() {
 	rm -rf $LOGICAL_CORE
-	
-	maxFreqListSize=$($BUSYBOX cat $MAX_FREQ_LIST | $BUSYBOX tr '\n' ' ' | $BUSYBOX wc -w)
-
-	if [ "$maxFreqListSize" -ge 1 ]; then
-		i=1
+	rm -rf $AFFECTED_CPU
 		
+	#####
+	# Get the logical core over maxFreqListSize
+	#####
+	#maxFreqListSize=$($BUSYBOX cat $MAX_FREQ_LIST | $BUSYBOX tr '\n' ' ' | $BUSYBOX wc -w)
+
+	#if [ "$maxFreqListSize" -ge 1 ]; then
+		
+		# Counter
+	#	i=1
+
 		# Core 0 is always on
-		echo "0 " >> $LOGICAL_CORE
+	#	echo "0 " > $LOGICAL_CORE
 		
-		while [ $i -le $((maxFreqListSize)) ]; do
+	#	while [ $i -le $((maxFreqListSize)) ]; do
 				
-			if [ $((i + 1)) -le "$maxFreqListSize" ]; then
-				maxFreqList=$($BUSYBOX cat $MAX_FREQ_LIST | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$i'}')
-				nextMaxFreqList=$($BUSYBOX cat $MAX_FREQ_LIST | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$((i+1))'}')
+	#		if [ $((i + 1)) -le "$maxFreqListSize" ]; then
+	#			maxFreqList=$($BUSYBOX cat $MAX_FREQ_LIST | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$i'}')
+	#			nextMaxFreqList=$($BUSYBOX cat $MAX_FREQ_LIST | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$((i+1))'}')
 
-				if [ "$maxFreqList" != "$nextMaxFreqList" ]; then
-					echo "$i " >> $LOGICAL_CORE
-				fi
-			fi
-			i=$(( i + 1 ))
-		done
-	fi
+	#			if [ "$maxFreqList" != "$nextMaxFreqList" ]; then
+	#				echo "$i " >> $LOGICAL_CORE
+	#			fi
+	#		fi
+	#		i=$(( i + 1 ))
+	#	done
+	#fi
+
+	#unset i; unset maxFreqListSize; unset i; unset maxFreqList; unset nextMaxFreqList;
+	
+	#####
+	# Get the logical core over affected cpu list
+	#####
+	core_count=$($BUSYBOX cat $CPU_CORE_COUNT)
+	# Counter
+	core=0
+	
+	# Core 0 is always affected
+	echo "0 " > $LOGICAL_CORE
+	
+	while [ $core -le $core_count ]; do
+		affected_cpus=/sys/devices/system/cpu/cpu$core/cpufreq/affected_cpus
+	
+		getAffectedCPU=$($BUSYBOX cat $affected_cpus | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $1}')
+		
+		getLastInputAffectedCPU=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $NF}')
+
+		if [ ! $getLastInputAffectedCPU -eq $getAffectedCPU ]; then
+			echo "$getAffectedCPU " >> $LOGICAL_CORE
+		fi
+		
+		core=$(( core + 1 ))
+	done
 	
 	sleep 0.5
-
-	unset maxFreqListSize; unset i; unset maxFreqList; unset nextMaxFreqList;
+	
+	unset core_count; unset core; unset affected_cpus; unset getAffectedCPU; unset getLastInputAffectedCPU;
 }
 
 ##########
