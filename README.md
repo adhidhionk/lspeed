@@ -43,7 +43,7 @@ You only need a rooted Android device and proper installed busybox to function p
 </div>
 
 **Requirements:**
-1. Root (Magisk 18.0 +)
+1. Root (Magisk 19.x +)
 2. Properly installed busybox
 
 ## Downloads
