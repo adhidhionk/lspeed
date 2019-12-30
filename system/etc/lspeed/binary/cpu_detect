@@ -215,36 +215,6 @@ getMaxFreqList() {
 #######
 logicalCores() {
 	rm -rf $LOGICAL_CORE
-	rm -rf $AFFECTED_CPU
-		
-	#####
-	# Get the logical core over maxFreqListSize
-	#####
-	#maxFreqListSize=$($BUSYBOX cat $MAX_FREQ_LIST | $BUSYBOX tr '\n' ' ' | $BUSYBOX wc -w)
-
-	#if [ "$maxFreqListSize" -ge 1 ]; then
-		
-		# Counter
-	#	i=1
-
-		# Core 0 is always on
-	#	echo "0 " > $LOGICAL_CORE
-		
-	#	while [ $i -le $((maxFreqListSize)) ]; do
-				
-	#		if [ $((i + 1)) -le "$maxFreqListSize" ]; then
-	#			maxFreqList=$($BUSYBOX cat $MAX_FREQ_LIST | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$i'}')
-	#			nextMaxFreqList=$($BUSYBOX cat $MAX_FREQ_LIST | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$((i+1))'}')
-
-	#			if [ "$maxFreqList" != "$nextMaxFreqList" ]; then
-	#				echo "$i " >> $LOGICAL_CORE
-	#			fi
-	#		fi
-	#		i=$(( i + 1 ))
-	#	done
-	#fi
-
-	#unset i; unset maxFreqListSize; unset i; unset maxFreqList; unset nextMaxFreqList;
 	
 	#####
 	# Get the logical core over affected cpu list
@@ -294,105 +264,13 @@ getUniqueFreq() {
 coreGetter() {
 
 rm -rf $CORE_GETTER
-prime=0
-big=0
-little=0
 
-logicalCoresListSize=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX wc -w)
+sleep 0.2
+	
+$BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr ' ' '\n' | $BUSYBOX sort -n -r | $BUSYBOX uniq > $CORE_GETTER
+	
+sleep 0.5
 
-if [ "$logicalCoresListSize" -eq 3 ]; then
-	a=1
-	while [ $a -le $((logicalCoresListSize)) ]; do
-	    logicalCore=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$a'}')
-				
-		uniqueFreq=$($BUSYBOX cat $UNIQUE_FREQ | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $1}')
-		maxFreqList=$($BUSYBOX cat $MAX_FREQ_LIST | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$((logicalCore+1))'}')
-		
-		if [ "$uniqueFreq" -eq "$maxFreqList" ]; then
-			prime=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$a'}')
-		fi
-			
-		a=$(( a + 1 ))
-	done
-	
-	echo "$prime " >> $CORE_GETTER
-	
-	unset logicalCore; unset uniqueFreq; unset maxFreqList;
-	
-	b=1
-	while [ $b -le $((logicalCoresListSize)) ]; do
-		logicalCore=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$b'}')
-				
-        uniqueFreq=$($BUSYBOX cat $UNIQUE_FREQ | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $2}')
-		maxFreqList=$($BUSYBOX cat $MAX_FREQ_LIST | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$((logicalCore+1))'}')
-		
-		if [ "$uniqueFreq" -eq "$maxFreqList" ]; then
-			big=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$b'}')
-		fi
-			
-		b=$(( b + 1 ))
-	done
-	
-	echo "$big " >> $CORE_GETTER
-	
-	unset logicalCore; unset uniqueFreq; unset maxFreqList;
-	
-	c=1
-	while [ $c -le $((logicalCoresListSize)) ]; do
-		uniqueFreq=$($BUSYBOX cat $UNIQUE_FREQ | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $1}')
-		maxFreqList=$($BUSYBOX cat $MAX_FREQ_LIST | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$((logicalCore+1))'}')
-		
-		if [ "$uniqueFreq" -eq "$maxFreqList" ]; then
-			little=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$c'}')
-		fi
-			
-		c=$(( c + 1 ))
-	done
-	
-	echo "$little " >> $CORE_GETTER
-	
-	unset logicalCore; unset uniqueFreq; unset maxFreqList;
-
-elif [ "$logicalCoresListSize" -eq 2 ]; then
-	a=1
-	while [ $a -le $((logicalCoresListSize)) ]; do
-	    logicalCore=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$a'}')
-				
-		uniqueFreq=$($BUSYBOX cat $UNIQUE_FREQ | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $1}')
-		maxFreqList=$($BUSYBOX cat $MAX_FREQ_LIST | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$((logicalCore+1))'}')
-		
-		if [ "$uniqueFreq" -eq "$maxFreqList" ]; then
-			big=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$a'}')
-		fi
-			
-		a=$(( a + 1 ))
-	done
-	
-	echo "$big " >> $CORE_GETTER
-	
-	unset logicalCore; unset uniqueFreq; unset maxFreqList;
-	
-	c=1
-	while [ $c -le $((logicalCoresListSize)) ]; do
-		uniqueFreq=$($BUSYBOX cat $UNIQUE_FREQ | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $1}')
-		maxFreqList=$($BUSYBOX cat $MAX_FREQ_LIST | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$((logicalCore+1))'}')
-		
-		if [ "$uniqueFreq" -eq "$maxFreqList" ]; then
-			little=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$c'}')
-		fi
-			
-		c=$(( c + 1 ))
-	done
-	
-	echo "$little " >> $CORE_GETTER
-	
-	unset uniqueFreq; unset maxFreqList;
-else
-	echo "0" >> $CORE_GETTER
-	
-fi
-
-sleep 1
 }
 
 getCPUcoreCount
