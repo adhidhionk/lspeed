@@ -71,6 +71,7 @@ setPermissions() {
   set_perm $MODPATH/system/etc/lspeed/binary/main_function 0 0 0777
   set_perm $MODPATH/system/etc/lspeed/binary/governor_tuner 0 0 0777
   set_perm $MODPATH/system/etc/lspeed/binary/cpu_detect 0 0 0777
+  set_perm $MODPATH/system/etc/lspeed/binary/cpuset_tuner 0 0 0777
 
   # Here are some examples:
   # set_perm_recursive  $MODPATH/system/lib       0     0       0755      0644
