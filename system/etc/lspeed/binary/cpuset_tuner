@@ -146,7 +146,7 @@ elif [ "$core_getter_list_size" -eq 2 ]; then
 		# 0-1 2-3
 		if [ $littleCoresCount -eq 2 ] && [ $bigCoresCount -eq 2 ]; then
 			foreground="0-1"
-			topApp="0"
+			topApp="0-2"
 			background="0"
 			systemBackround="0-1"
 			
