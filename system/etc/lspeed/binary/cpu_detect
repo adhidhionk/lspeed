@@ -229,12 +229,14 @@ logicalCores() {
 	while [ $core -le $core_count ]; do
 		affected_cpus=/sys/devices/system/cpu/cpu$core/cpufreq/affected_cpus
 	
-		getAffectedCPU=$($BUSYBOX cat $affected_cpus | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $1}')
-		
-		getLastInputAffectedCPU=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $NF}')
+		if [ -e $affected_cpus ]; then
+			getAffectedCPU=$($BUSYBOX cat $affected_cpus | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $1}')
+			
+			getLastInputAffectedCPU=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $NF}')
 
-		if [ ! $getLastInputAffectedCPU -eq $getAffectedCPU ]; then
-			echo "$getAffectedCPU " >> $LOGICAL_CORE
+			if [ ! $getLastInputAffectedCPU -eq $getAffectedCPU ]; then
+				echo "$getAffectedCPU " >> $LOGICAL_CORE
+			fi
 		fi
 		
 		core=$(( core + 1 ))
