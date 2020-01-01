@@ -1,8 +1,8 @@
 #!/system/bin/sh
 # L Speed tweak
 # Codename : lspeed
-version="v1.6-c6";
-build_date=31-12-2019;
+version="v1.6-c7";
+build_date=1-1-2020;
 # Developer : Paget96
 # Paypal : https://paypal.me/Paget96
 
@@ -169,6 +169,7 @@ write $LSPEED_DATA_DIR/main_function_PID $$
 # This will be used for the Manager to take a control over the module
 if [ -d $USER_PROFILE ]; then
 	createFile $USER_PROFILE/battery_improvements
+	createFile $USER_PROFILE/doze_optimization
 
 	# CPU section
 	createFile $USER_PROFILE/cpu_optimization
@@ -346,6 +347,78 @@ sendToLog "Activating battery improvements...";
 	fi;
 
 	sendToLog "Battery improvements are enabled";
+	sendToLog "$divider";
+}
+
+#
+# Doze optimization
+#
+dozeOptimization() {
+
+	if [ "$api" -ge 23 ]; then
+		if [ "$1" = "1" ]; then
+			sendToLog "Enabling doze optimization";
+
+			# Get lockScreen timeout value to delay enter doze and avoid not locking device
+			lockScreenTimeout=$(settings get secure lock_screen_lock_after_timeout)
+			
+			case $lockScreenTimeout in
+				''|*[!0-9]*) lockScreenTimeout=5000 ;;
+				*) lockScreenTimeout=$lockScreenTimeout ;;
+			esac
+			
+			if [ $lockScreenTimeout -eq 0 ]; then 
+				lockScreenTimeout=$((lockScreenTimeout+1000));
+			fi
+
+			lightDozeTimeout=$lockScreenTimeout;
+			deepDozeTimeout=$((lockScreenTimeout+20000));
+
+			lightAfterInactiveTo=$lightDozeTimeout
+			lightPreIdleTo="60000"
+			lightIdleTo="180000"
+			lightIdleFactor="2.0"
+			lightMaxIdleTo="240000"
+			lightIdleMaintenanceMinBudget="60000"
+			lightIdleMaintenanceMaxBudget="180000"
+			minLightMaintenanceTime="5000"
+			minDeepMaintenanceTime="30000"
+			inactiveTo=$deepDozeTimeout
+			sensingTo="0"
+			locatingTo="0"
+			locationAccuracy="20.0"
+			motionInactiveTo="0"
+			idleAfterInactiveTo="0"
+			idlePendingTo="60000"
+			maxIdlePendingTo="120000"
+			idlePendingFactor="2.0"
+			idleTo="900000"
+			maxIdleTo="21600000"
+			idleFactor="2.0"
+			minTimeToAlarm="600000"
+			maxTempAppWhitelistDuration="10000"
+			mmsTempAppWhitelistDuration="10000"
+			smsTempAppWhitelistDuration="10000"
+			notificationWhitelistDuration="30000"
+
+			if [ "$api" -gt 23 ]; then
+				parameters="inactive_to=$inactiveTo,sensing_to=$sensingTo,locating_to=$locatingTo,location_accuracy=$locationAccuracy,motion_inactive_to=$motionInactiveTo,idle_after_inactive_to=$idleAfterInactiveTo,idle_pending_to=$idlePendingTo,max_idle_pending_to=$maxIdlePendingTo,idle_pending_factor=$idlePendingFactor,idle_to=$idleTo,max_idle_to=$maxIdleTo,idle_factor=$idleFactor,min_time_to_alarm=$minTimeToAlarm,max_temp_app_whitelist_duration=$maxTempAppWhitelistDuration,mms_temp_app_whitelist_duration=$mmsTempAppWhitelistDuration,sms_temp_app_whitelist_duration=$smsTempAppWhitelistDuration,light_after_inactive_to=$lightAfterInactiveTo,light_pre_idle_to=$lightPreIdleTo,light_idle_to=$lightIdleTo,light_idle_factor=$lightIdleFactor,light_max_idle_to=$lightMaxIdleTo,light_idle_maintenance_min_budget=$lightIdleMaintenanceMinBudget,light_idle_maintenance_max_budget=$lightIdleMaintenanceMaxBudget,min_light_maintenance_time=$minLightMaintenanceTime,min_deep_maintenance_time=$minDeepMaintenanceTime,notification_whitelist_duration=$notificationWhitelistDuration"
+			else
+				parameters="inactive_to=$inactiveTo,sensing_to=$sensingTo,locating_to=$locatingTo,location_accuracy=$locationAccuracy,motion_inactive_to=$motionInactiveTo,idle_after_inactive_to=$idleAfterInactiveTo,idle_pending_to=$idlePendingTo,max_idle_pending_to=$maxIdlePendingTo,idle_pending_factor=$idlePendingFactor,idle_to=$idleTo,max_idle_to=$maxIdleTo,idle_factor=$idleFactor,min_time_to_alarm=$minTimeToAlarm,max_temp_app_whitelist_duration=$maxTempAppWhitelistDuration,mms_temp_app_whitelist_duration=$mmsTempAppWhitelistDuration,sms_temp_app_whitelist_duration=$smsTempAppWhitelistDuration"
+			fi
+
+			settings put global device_idle_constants $parameters
+
+			sendToLog "device_idle_constants=$parameters";
+			sendToLog "Doze optimization enabled";
+		elif [ "$1" = "0" ]; then
+
+			sendToLog "Doze optimization disabled";
+		fi
+	else
+		sendToLog "Your device don't support doze";
+	fi
+
 	sendToLog "$divider";
 }
 
@@ -3328,6 +3401,7 @@ sendToLog "$divider";
 #
 setDefaultProfile() {
 	write "$USER_PROFILE"/battery_improvements "1"
+	write "$USER_PROFILE"/doze_optimization "1"
 
 	# CPU section
 	write "$USER_PROFILE"/cpu_optimization "0"
@@ -3374,6 +3448,7 @@ setDefaultProfile() {
 
 setPowerSavingProfile() {
 	write "$USER_PROFILE"/battery_improvements "1"
+	write "$USER_PROFILE"/doze_optimization "1"
 
 	# CPU section
 	write "$USER_PROFILE"/cpu_optimization "1"
@@ -3420,6 +3495,7 @@ setPowerSavingProfile() {
 
 setBalancedProfile() {
 	write "$USER_PROFILE"/battery_improvements "1"
+	write "$USER_PROFILE"/doze_optimization "1"
 
 	# CPU section
 	write "$USER_PROFILE"/cpu_optimization "2"
@@ -3466,6 +3542,7 @@ setBalancedProfile() {
 
 setPerformanceProfile() {
 	write "$USER_PROFILE"/battery_improvements "1"
+	write "$USER_PROFILE"/doze_optimization "1"
 
 	# CPU section
 	write "$USER_PROFILE"/cpu_optimization "3"
@@ -3578,6 +3655,10 @@ start=$($BUSYBOX date +%s)
 
 if [ "$($BUSYBOX cat "$USER_PROFILE"/battery_improvements)" -eq 1 ]; then
 	batteryImprovements;
+fi
+
+if [ "$($BUSYBOX cat "$USER_PROFILE"/doze_optimization)" -eq 1 ]; then
+	dozeOptimization;
 fi
 
 #
