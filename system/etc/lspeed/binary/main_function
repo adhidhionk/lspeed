@@ -1,7 +1,7 @@
 #!/system/bin/sh
 # L Speed tweak
 # Codename : lspeed
-version="v1.6-c7";
+version="v1.6-c8";
 build_date=1-1-2020;
 # Developer : Paget96
 # Paypal : https://paypal.me/Paget96
@@ -368,11 +368,11 @@ dozeOptimization() {
 			esac
 			
 			if [ $lockScreenTimeout -eq 0 ]; then 
-				lockScreenTimeout=$((lockScreenTimeout+1000));
+				lockScreenTimeout=$((lockScreenTimeout+1000))
 			fi
 
-			lightDozeTimeout=$lockScreenTimeout;
-			deepDozeTimeout=$((lockScreenTimeout+20000));
+			lightDozeTimeout=$lockScreenTimeout
+			deepDozeTimeout=$((lockScreenTimeout+20000))
 
 			lightAfterInactiveTo=$lightDozeTimeout
 			lightPreIdleTo="60000"
@@ -3658,7 +3658,9 @@ if [ "$($BUSYBOX cat "$USER_PROFILE"/battery_improvements)" -eq 1 ]; then
 fi
 
 if [ "$($BUSYBOX cat "$USER_PROFILE"/doze_optimization)" -eq 1 ]; then
-	dozeOptimization;
+	dozeOptimization 1;
+elif [ "$($BUSYBOX cat "$USER_PROFILE"/doze_optimization)" -eq 0 ]; then
+	dozeOptimization 0;
 fi
 
 #
