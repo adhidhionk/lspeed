@@ -87,6 +87,29 @@ You can pass them on any links from below (Telegram is recommended)
 If you want, you can support me over [Paypal donate](https://paypal.me/Paget96), to support my work.
 
 ## Changelog 
+**v1.6**
+- Updated magisk template (Starting with this version L Speed works just with Magisk 19.x+ versions)
+- Updated CFQ and BFQ scheduler parameters (Set CFQ and BFQ schedulers to gorup tasks this will slightly improve it's effectivness. It's better than threat every as separated IO queue Disable low_latency on both, so we can get a bit bigger r/w speeds)
+- Updated virtual memory tweaks, reduced diry pages flush time
+- Improved manager installation
+- Fixed issue with no busybox file
+- Fixed issue with execution
+- Added cpu_detect function
+- Improved CPU detection on some devices(for one with no reguler scaling_avalilable_freqs file such as Exynos)
+- Return just 0 to logical core if affected_cpu file don't exists
+- Updated manger app, added code to remove old one and replace with new
+- Separated cpuset from main script
+- Fixed output for triple cluster devices
+- Updated doze optimization
+- Fixed some root issues
+- Fixed hanging manager on splash logo
+- Fixed issue with chosing animation duration
+- Fixed adding L Speed app to doze ignore
+- Fixed issue  with Secure settings fatal exception
+- Fixed issues with aggressive doze
+- Fixed issue with not sticking or not working disable when charging and disable motion detection
+- Improved script code
+
 **v1.5**
 - Added force GPU rendering with brief explanation
 - Added force 4x msaa with brief explanation

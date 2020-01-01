@@ -1,7 +1,7 @@
 #!/system/bin/sh
 # L Speed tweak
 # Codename : lspeed
-version="v1.6-c8";
+version="v1.6";
 build_date=1-1-2020;
 # Developer : Paget96
 # Paypal : https://paypal.me/Paget96
