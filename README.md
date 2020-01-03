@@ -44,7 +44,6 @@ You only need a rooted Android device and proper installed busybox to function p
 
 **Requirements:**
 1. Root (Magisk 19.x +)
-2. Properly installed busybox
 
 ## Downloads
 * For stable and beta versions, download link is below
