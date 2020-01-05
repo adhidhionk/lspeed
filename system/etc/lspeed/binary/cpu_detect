@@ -267,8 +267,6 @@ coreGetter() {
 
 rm -rf $CORE_GETTER
 	
-#$BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr ' ' '\n' | $BUSYBOX sort -n -r | $BUSYBOX uniq > $CORE_GETTER
-	
 prime=0
 big=0
 little=0
@@ -306,10 +304,11 @@ elif [ "$logicalCoresListSize" -eq 2 ] && [ "$uniqueFreqListSize" -eq 2 ]; then
 	$BUSYBOX printf "$big\n$little" > $CORE_GETTER
 
 else
-	$BUSYBOX echo "0" > $CORE_GETTER
+	$BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr ' ' '\n' | $BUSYBOX sort -n -r | $BUSYBOX uniq > $CORE_GETTER
 	
 fi
 
+unset logicalCoresListSize; unset uniqueFreqListSize; unset prime; unset big; unset little; unset firtsHighestFreq; unset secondHighestFreq; unset thirdHighestFreq; unset getPrimeCluster; unset getBigCluster; unset getLittleCluster
 sleep 0.5
 
 }
