@@ -290,7 +290,7 @@ if [ "$logicalCoresListSize" -eq 3 ] && [ "$uniqueFreqListSize" -eq 3 ]; then
 	big=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$getBigCluster'}')
 	little=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$getLittleCluster'}')
 
-	echo "$prime\n$big\n$little" > $CORE_GETTER
+	$BUSYBOX printf "$prime\n$big\n$little" > $CORE_GETTER
 
 elif [ "$logicalCoresListSize" -eq 2 ] && [ "$uniqueFreqListSize" -eq 2 ]; then
 
@@ -303,10 +303,10 @@ elif [ "$logicalCoresListSize" -eq 2 ] && [ "$uniqueFreqListSize" -eq 2 ]; then
 	big=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$getBigCluster'}')
 	little=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$getLittleCluster'}')
 
-	echo "$big\n$little" > $CORE_GETTER
+	$BUSYBOX printf "$big\n$little" > $CORE_GETTER
 
 else
-	echo "0" > $CORE_GETTER
+	$BUSYBOX echo "0" > $CORE_GETTER
 	
 fi
 
