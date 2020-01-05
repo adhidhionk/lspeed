@@ -34,7 +34,7 @@ When we talk about the performances it'll improve your gaming experience (for ex
 If you are unsure, simple use the balance profile which is a perfect balance between those two.
 It's very simple to use, everything is well explained in the manager it self, every option have a info button beside it.
 The mod will and should work on any device that meets its minimum requirement.
-You only need a rooted Android device and proper installed busybox to function properly.
+You only need a rooted Android device with Magisk 19.x+ version..
 
 <div align="center">
 **Module with prebuilt manager**

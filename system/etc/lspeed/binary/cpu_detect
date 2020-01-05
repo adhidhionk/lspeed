@@ -255,22 +255,61 @@ getUniqueFreq() {
 	
 	sleep 0.2
 	
-	$BUSYBOX cat $MAX_FREQ_LIST | $BUSYBOX tr ' ' '\n' | $BUSYBOX sort -n -r | $BUSYBOX uniq > $UNIQUE_FREQ
+	$BUSYBOX cat $MAX_FREQ_LIST | $BUSYBOX uniq > $UNIQUE_FREQ
 	
 	sleep 0.5
 }
 
 ##########
-# coreGetter returns a list with parent core of clusters in descending order BIG to LITTLE
+# coreGetter returns a list with parent core of clusters in descending order PRIME to LITTLE
 ##########
 coreGetter() {
 
 rm -rf $CORE_GETTER
+	
+#$BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr ' ' '\n' | $BUSYBOX sort -n -r | $BUSYBOX uniq > $CORE_GETTER
+	
+prime=0
+big=0
+little=0
 
-sleep 0.2
+logicalCoresListSize=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX wc -w)
+uniqueFreqListSize=$($BUSYBOX cat $UNIQUE_FREQ | $BUSYBOX tr '\n' ' ' | $BUSYBOX wc -w)
+
+if [ "$logicalCoresListSize" -eq 3 ] && [ "$uniqueFreqListSize" -eq 3 ]; then
+
+	firtsHighestFreq=$($BUSYBOX cat $UNIQUE_FREQ | $BUSYBOX sort -n | $BUSYBOX tail -1 | $BUSYBOX head -1)
+	secondHighestFreq=$($BUSYBOX cat $UNIQUE_FREQ | $BUSYBOX sort -n | $BUSYBOX tail -2 | $BUSYBOX head -1)
+	thirdHighestFreq=$($BUSYBOX cat $UNIQUE_FREQ | $BUSYBOX sort -n | $BUSYBOX tail -3 | $BUSYBOX head -1)
+
+	getPrimeCluster="$(grep -n "$firtsHighestFreq" $UNIQUE_FREQ | head -n 1 | cut -d: -f1)"
+	getBigCluster="$(grep -n "$secondHighestFreq" $UNIQUE_FREQ | head -n 1 | cut -d: -f1)"
+	getLittleCluster="$(grep -n "$thirdHighestFreq" $UNIQUE_FREQ | head -n 1 | cut -d: -f1)"
+
+	prime=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$getPrimeCluster'}')
+	big=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$getBigCluster'}')
+	little=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$getLittleCluster'}')
+
+	echo "$prime\n$big\n$little" > $CORE_GETTER
+
+elif [ "$logicalCoresListSize" -eq 2 ] && [ "$uniqueFreqListSize" -eq 2 ]; then
+
+	firtsHighestFreq=$($BUSYBOX cat $UNIQUE_FREQ | $BUSYBOX sort -n | $BUSYBOX tail -1 | $BUSYBOX head -1)
+	secondHighestFreq=$($BUSYBOX cat $UNIQUE_FREQ | $BUSYBOX sort -n | $BUSYBOX tail -2 | $BUSYBOX head -1)
+
+	getBigCluster="$($BUSYBOX grep -n "$firtsHighestFreq" $UNIQUE_FREQ | $BUSYBOX head -n 1 | $BUSYBOX cut -d: -f1)"
+	getLittleCluster="$($BUSYBOX grep -n "$secondHighestFreq" $UNIQUE_FREQ | $BUSYBOX head -n 1 | $BUSYBOX cut -d: -f1)"
+
+	big=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$getBigCluster'}')
+	little=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $'$getLittleCluster'}')
+
+	echo "$big\n$little" > $CORE_GETTER
+
+else
+	echo "0" > $CORE_GETTER
 	
-$BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr ' ' '\n' | $BUSYBOX sort -n -r | $BUSYBOX uniq > $CORE_GETTER
-	
+fi
+
 sleep 0.5
 
 }
