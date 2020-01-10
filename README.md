@@ -30,8 +30,6 @@
 ## Introduction
 L Speed is a modification that combines tweaks inside an intuitive module who aims to improve kernel with optimal parameter changes for the widest range of devices.
 It's goal is to improve overall performance, reduce significant lags, extend battery life and improve your experience on Android. Fully customizable module with prebuit manager.
-When we talk about the performances it'll improve your gaming experience (for example PUBG, Garena Free-fire, and bunch of others), otherside there is battery profile who aims to increase your Screen on time and idle time with minimal performance loss.
-If you are unsure, simple use the balance profile which is a perfect balance between those two.
 It's very simple to use, everything is well explained in the manager it self, every option have a info button beside it.
 The mod will and should work on any device that meets its minimum requirement.
 You only need a rooted Android device with Magisk 19.x+ version..
