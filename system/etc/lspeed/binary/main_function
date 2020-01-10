@@ -1446,8 +1446,8 @@ for i in $blocks;
 	#set to 2 no merge algorithms will be tried (including one-hit or more
 	#complex tree/hash lookups).
 	if [ -e "$i/queue/nomerges" ]; then
-		write "$i/queue/nomerges" "2"
-		sendToLog "nomerges=2 in $i"
+		write "$i/queue/nomerges" "1"
+		sendToLog "nomerges=1 in $i"
 	fi
 		
 	#If this option is '1', the block layer will migrate request completions to the
@@ -1485,10 +1485,10 @@ for i in $blocks;
 	
 	# Tell scheduler that it's facing with non rotational drive to disable
 	# unnecessary seek-reducing logic in the scheduler. We are not using rotational HDDs
-	#if [ -e "$i/queue/rotational" ]; then
-	#	write "$i/queue/rotational" "0"
-	#	sendToLog "rotational=0 in $i"
-	#fi
+	if [ -e "$i/queue/rotational" ]; then
+		write "$i/queue/rotational" "0"
+		sendToLog "rotational=0 in $i"
+	fi
 	
 done
 
@@ -1536,8 +1536,8 @@ for i in $blocks;
 	#set to 2 no merge algorithms will be tried (including one-hit or more
 	#complex tree/hash lookups).
 	if [ -e "$i/queue/nomerges" ]; then
-		write "$i/queue/nomerges" "2"
-		sendToLog "nomerges=2 in $i"
+		write "$i/queue/nomerges" "1"
+		sendToLog "nomerges=1 in $i"
 	fi
 		
 	#If this option is '1', the block layer will migrate request completions to the
@@ -1575,10 +1575,10 @@ for i in $blocks;
 	
 	# Tell scheduler that it's facing with non rotational drive to disable
 	# unnecessary seek-reducing logic in the scheduler. We are not using rotational HDDs
-	#if [ -e "$i/queue/rotational" ]; then
-	#	write "$i/queue/rotational" "0"
-	#	sendToLog "rotational=0 in $i"
-	#fi
+	if [ -e "$i/queue/rotational" ]; then
+		write "$i/queue/rotational" "0"
+		sendToLog "rotational=0 in $i"
+	fi
 	
 done
 
@@ -1626,8 +1626,8 @@ for i in $blocks;
 	#set to 2 no merge algorithms will be tried (including one-hit or more
 	#complex tree/hash lookups).
 	if [ -e "$i/queue/nomerges" ]; then
-		write "$i/queue/nomerges" "2"
-		sendToLog "nomerges=2 in $i"
+		write "$i/queue/nomerges" "1"
+		sendToLog "nomerges=1 in $i"
 	fi
 	
 	#If this option is '1', the block layer will migrate request completions to the
@@ -1665,10 +1665,10 @@ for i in $blocks;
 
 	# Tell scheduler that it's facing with non rotational drive to disable
 	# unnecessary seek-reducing logic in the scheduler. We are not using rotational HDDs
-	#if [ -e "$i/queue/rotational" ]; then
-	#	write "$i/queue/rotational" "0"
-	#	sendToLog "rotational=0 in $i"
-	#fi
+	if [ -e "$i/queue/rotational" ]; then
+		write "$i/queue/rotational" "0"
+		sendToLog "rotational=0 in $i"
+	fi
 	
 done
 
