@@ -24,6 +24,8 @@ CPU_DETECT_DATA_DIR=$SETUP_DIR/cpu_detect
 CPU_CORE_COUNT=$CPU_DETECT_DATA_DIR/cpu_core_count
 REAL_CPU_CORE_COUNT=$CPU_DETECT_DATA_DIR/real_cpu_core_count
 CORE_GETTER=$CPU_DETECT_DATA_DIR/core_getter
+BIG_CORES_COUNT=$CPU_DETECT_DATA_DIR/big_cores_count
+LITTLE_CORES_COUNT=$CPU_DETECT_DATA_DIR/little_cores_count
 
 sendToLog() {
 timeZone=$(getprop persist.sys.timezone)
@@ -158,15 +160,12 @@ if [ "$core_getter_list_size" -eq 3 ]; then
 	fi
 	
 elif [ "$core_getter_list_size" -eq 2 ]; then
-	getBig=$($BUSYBOX cat $CORE_GETTER | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $1}')
-	getLittle=$($BUSYBOX cat $CORE_GETTER | $BUSYBOX tr '\n' ' ' | $BUSYBOX awk '{print $2}')
-
 	# This shows real numbers, for usage we should use n-1
 	# e.g. CPU have 6 LITTLE(0-5) and 2 BIG (6-7)
-	littleCoresCount=$((getBig))
-	bigCoresCount=$((real_core_count-getBig));
+	littleCoresCount=$($BUSYBOX cat $LITTLE_CORES_COUNT);
+	bigCoresCount=$($BUSYBOX cat $BIG_CORES_COUNT);
 		
-	sendToLog "Setting up cpuset for $littleCoresCount(0-$((getBig-1))) LITTLE CPU cores and $bigCoresCount($getBig-$core_count) BIG CPU cores"
+	sendToLog "Setting up cpuset for $littleCoresCount LITTLE CPU cores and $bigCoresCount BIG CPU cores"
 
 	# Setting up cpuset based on profiles
 	if [ "$1" = "1" ]; then

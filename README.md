@@ -84,6 +84,19 @@ You can pass them on any links from below (Telegram is recommended)
 If you want, you can support me over [Paypal donate](https://paypal.me/Paget96), to support my work.
 
 ## Changelog 
+**v1.6.1**
+- Added junk and app cache cleaner
+- Updated cpusets 
+- Improved CPU detection for the devices with tweaked frequencies
+- Improved detection of inverted clusters
+- Added cpuset tweaks for 0-3 4-5 6-7 cpu configuration
+- Fixed problem on devices with incompatible commands
+- Removed ads from dialogs
+- Improved L button optimization
+- Slightly updated I/O optimization profiles
+- Updated aggressive doze
+- Code optimization and overall improvements
+
 **v1.6**
 - Updated magisk template (Starting with this version L Speed works just with Magisk 19.x+ versions)
 - Updated CFQ and BFQ scheduler parameters (Set CFQ and BFQ schedulers to gorup tasks this will slightly improve it's effectivness. It's better than threat every as separated IO queue Disable low_latency on both, so we can get a bit bigger r/w speeds)
