@@ -84,6 +84,9 @@ You can pass them on any links from below (Telegram is recommended)
 If you want, you can support me over [Paypal donate](https://paypal.me/Paget96), to support my work.
 
 ## Changelog 
+**V1.6.2**
+- Fixed issues with freezing on some devices
+
 **v1.6.1**
 - Added junk and app cache cleaner
 - Updated cpusets 
