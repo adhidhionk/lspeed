@@ -198,9 +198,9 @@ elif [ "$core_getter_list_size" -eq 2 ]; then
 			
 		# 0-5 6-7
 		elif [ $littleCoresCount -eq 6 ] && [ $bigCoresCount -eq 2 ]; then
-			foreground="0-4"
-			topApp="0-3,6"
-			background="0-4"
+			foreground="0-5"
+			topApp="0-6"
+			background="0-2"
 			systemBackround="0-5"
 			
 			validConfig=true
@@ -239,9 +239,9 @@ elif [ "$core_getter_list_size" -eq 2 ]; then
 			
 		# 0-5 6-7
 		elif [ $littleCoresCount -eq 6 ] && [ $bigCoresCount -eq 2 ]; then
-			foreground="0-3,7"
+			foreground="0-5"
 			topApp="0-6"
-			background="0-4"
+			background="0-2"
 			systemBackround="0-5"
 			
 			validConfig=true
@@ -282,7 +282,7 @@ elif [ "$core_getter_list_size" -eq 2 ]; then
 		elif [ $littleCoresCount -eq 6 ] && [ $bigCoresCount -eq 2 ]; then
 			foreground="0-6"
 			topApp="0-7"
-			background="0-4"
+			background="0-2"
 			systemBackround="0-5"
 			
 			validConfig=true
@@ -321,7 +321,7 @@ else
 		elif [ "$real_core_count" -eq 8 ]; then
 			foreground="0-5"
 			topApp="0-6"
-			background="0-3"
+			background="0-2"
 			systemBackround="0-4"
 			
 			validConfig=true
@@ -330,7 +330,7 @@ else
 		elif [ "$real_core_count" -eq 10 ]; then
 			foreground="0-5"
 			topApp="0-6"
-			background="0-3"
+			background="0-2"
 			systemBackround="0-4"
 			
 			validConfig=true
@@ -363,7 +363,7 @@ else
 		elif [ "$real_core_count" -eq 8 ]; then
 			foreground="0-5"
 			topApp="0-6"
-			background="0-3"
+			background="0-2"
 			systemBackround="0-4"
 			
 			validConfig=true
@@ -372,8 +372,8 @@ else
 		elif [ "$real_core_count" -eq 10 ]; then
 			foreground="0-7"
 			topApp="0-8"
-			background="0"
-			systemBackround="0-2"
+			background="0-2"
+			systemBackround="0-4"
 			
 			validConfig=true
 		else
@@ -405,7 +405,7 @@ else
 		elif [ "$real_core_count" -eq 8 ]; then
 			foreground="0-6"
 			topApp="0-7"
-			background="0-4"
+			background="0-2"
 			systemBackround="0-5"
 			
 			validConfig=true
@@ -414,7 +414,7 @@ else
 		elif [ "$real_core_count" -eq 10 ]; then
 			foreground="0-8"
 			topApp="0-9"
-			background="0-4"
+			background="0-2"
 			systemBackround="0-5"
 			
 			validConfig=true
