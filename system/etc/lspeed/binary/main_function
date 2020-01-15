@@ -1,7 +1,7 @@
 #!/system/bin/sh
 # L Speed tweak
 # Codename : lspeed
-version="v1.6.3";
+version="v1.6.4-b1";
 build_date=14-1-2020;
 # Developer : Paget96
 # Paypal : https://paypal.me/Paget96
@@ -3010,16 +3010,16 @@ fi;
 # unsafe this is also a safeguard against data loss.
 dirty_expire_centisecs=/proc/sys/vm/dirty_expire_centisecs
 if [ -e $dirty_expire_centisecs ]; then
-	write $dirty_expire_centisecs "300"		
-	sendToLog "dirty_expire_centisecs=300"
+	write $dirty_expire_centisecs "500"		
+	sendToLog "dirty_expire_centisecs=500"
 fi;
 
 # vm.dirty_writeback_centisecs is how often the pdflush/flush/kdmflush processes wake up
 # and check to see if work needs to be done.
 dirty_writeback_centisecs=/proc/sys/vm/dirty_writeback_centisecs
 if [ -e $dirty_writeback_centisecs ]; then
-	write $dirty_writeback_centisecs "700"		
-	sendToLog "dirty_writeback_centisecs=700"
+	write $dirty_writeback_centisecs "1000"		
+	sendToLog "dirty_writeback_centisecs=1000"
 fi;
 
 # vm.dirty_background_ratio is the percentage of system memory(RAM)
@@ -3103,8 +3103,8 @@ fi;
 
 vfs_cache_pressure=/proc/sys/vm/vfs_cache_pressure
 if [ -e $vfs_cache_pressure ]; then
-	write $vfs_cache_pressure "40"		
-	sendToLog "vfs_cache_pressure=40"
+	write $vfs_cache_pressure "20"		
+	sendToLog "vfs_cache_pressure=20"
 fi;
 
 laptop_mode=/proc/sys/vm/laptop_mode
@@ -3149,8 +3149,8 @@ fi;
 # and check to see if work needs to be done.
 dirty_writeback_centisecs=/proc/sys/vm/dirty_writeback_centisecs
 if [ -e $dirty_writeback_centisecs ]; then
-	write $dirty_writeback_centisecs "1000"		
-	sendToLog "dirty_writeback_centisecs=1000"
+	write $dirty_writeback_centisecs "3000"		
+	sendToLog "dirty_writeback_centisecs=3000"
 fi;
 
 # vm.dirty_background_ratio is the percentage of system memory(RAM)
@@ -3272,16 +3272,16 @@ fi;
 # unsafe this is also a safeguard against data loss.
 dirty_expire_centisecs=/proc/sys/vm/dirty_expire_centisecs
 if [ -e $dirty_expire_centisecs ]; then
-	write $dirty_expire_centisecs "250"
-	sendToLog "dirty_expire_centisecs=250"
+	write $dirty_expire_centisecs "300"
+	sendToLog "dirty_expire_centisecs=300"
 fi;
 
 # vm.dirty_writeback_centisecs is how often the pdflush/flush/kdmflush processes wake up
 # and check to see if work needs to be done.
 dirty_writeback_centisecs=/proc/sys/vm/dirty_writeback_centisecs
 if [ -e $dirty_writeback_centisecs ]; then
-	write $dirty_writeback_centisecs "700"
-	sendToLog "dirty_writeback_centisecs=700"
+	write $dirty_writeback_centisecs "500"
+	sendToLog "dirty_writeback_centisecs=500"
 fi;
 
 # vm.dirty_background_ratio is the percentage of system memory(RAM)
@@ -3313,43 +3313,43 @@ sendToLog "$divider";
 }
 
 heapOptimization() {
-heapSize=$((memTotal*3/16));
+	heapSize=$((memTotal*3/16));
 
-# Don't use more than 512mb
-if [ "$heapSize" -gt "512" ]; then
-	heapSize=512;
-fi
+	# Don't use more than 512mb
+	if [ "$heapSize" -gt "512" ]; then
+		heapSize=512;
+	fi
 
-heapGrowthLimit=$((heapSize*5/11));
+	heapGrowthLimit=$((heapSize*5/11));
 
-sendToLog "Activating heap optimization";
+	sendToLog "Activating heap optimization";
 
-# The ideal ratio of live to free memory. It's good to have a value between 0.2 and 0.9.
-# This limit the managed hepSize to heapsize*heaptargetutilization so it won't be full every time
-setprop dalvik.vm.heaptargetutilization 0.80
-sendToLog "heapTargetUtilization=0.80";
+	# The ideal ratio of live to free memory. It's good to have a value between 0.2 and 0.9.
+	# This limit the managed hepSize to heapsize*heaptargetutilization so it won't be full every time
+	setprop dalvik.vm.heaptargetutilization 0.80
+	sendToLog "heapTargetUtilization=0.80";
 
-# This is the heap size that Dalvik/ART assigns to every new ‘large’ App.
-# Large Apps are the ones that include the ‘android:largeHeap’ option in their manifest.
-# Note that many apps abuse this option, in an effort to increase their performance.
-setprop dalvik.vm.heapsize "$((heapSize))m"
-sendToLog "heapSize=$((heapSize))m";
+	# This is the heap size that Dalvik/ART assigns to every new ‘large’ App.
+	# Large Apps are the ones that include the ‘android:largeHeap’ option in their manifest.
+	# Note that many apps abuse this option, in an effort to increase their performance.
+	setprop dalvik.vm.heapsize "$((heapSize))m"
+	sendToLog "heapSize=$((heapSize))m";
 
-# This is the heap size that is assigned to standard Apps.
-# This should typically be no more than half the dalvik.vm.heapsize value.
-setprop dalvik.vm.heapgrowthlimit "$((heapGrowthLimit))m"
-sendToLog "heapgrowthlimit=$((heapGrowthLimit))m";
+	# This is the heap size that is assigned to standard Apps.
+	# This should typically be no more than half the dalvik.vm.heapsize value.
+	setprop dalvik.vm.heapgrowthlimit "$((heapGrowthLimit))m"
+	sendToLog "heapgrowthlimit=$((heapGrowthLimit))m";
 
-# Forces the free memory to never be larger than the given value.
-setprop dalvik.vm.heapmaxfree 8m
-sendToLog "heapmaxfree=8m";
+	# Forces the free memory to never be larger than the given value.
+	setprop dalvik.vm.heapmaxfree 8m
+	sendToLog "heapmaxfree=8m";
 
-# Forces the free memory to never be smaller than the given value.
-setprop dalvik.vm.heapminfree 2m
-sendToLog "heapminfree=2m";
+	# Forces the free memory to never be smaller than the given value.
+	setprop dalvik.vm.heapminfree 2m
+	sendToLog "heapminfree=2m";
 
-sendToLog "Heap optimization for $((memTotal))mb device activated";
-sendToLog "$divider";
+	sendToLog "Heap optimization for $((memTotal))mb device activated";
+	sendToLog "$divider";
 }
 
 #
