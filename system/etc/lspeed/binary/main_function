@@ -3364,7 +3364,7 @@ setDefaultProfile() {
 	write "$USER_PROFILE"/governor_tuner "0"
 
 	# Entropy section
-	write "$USER_PROFILE"/entropy "0"
+	write "$USER_PROFILE"/entropy "1"
 
 	# GPU section
 	write "$USER_PROFILE"/gpu_optimizer "0"
@@ -3411,7 +3411,7 @@ setPowerSavingProfile() {
 	write "$USER_PROFILE"/governor_tuner "1"
 
 	# Entropy section
-	write "$USER_PROFILE"/entropy "0"
+	write "$USER_PROFILE"/entropy "1"
 
 	# GPU section
 	write "$USER_PROFILE"/gpu_optimizer "1"
@@ -3458,7 +3458,7 @@ setBalancedProfile() {
 	write "$USER_PROFILE"/governor_tuner "2"
 
 	# Entropy section
-	write "$USER_PROFILE"/entropy "0"
+	write "$USER_PROFILE"/entropy "1"
 
 	# GPU section
 	write "$USER_PROFILE"/gpu_optimizer "2"
@@ -3505,7 +3505,7 @@ setPerformanceProfile() {
 	write "$USER_PROFILE"/governor_tuner "3"
 
 	# Entropy section
-	write "$USER_PROFILE"/entropy "0"
+	write "$USER_PROFILE"/entropy "1"
 
 	# GPU section
 	write "$USER_PROFILE"/gpu_optimizer "3"
