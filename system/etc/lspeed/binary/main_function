@@ -549,6 +549,30 @@ cpuOptimizationBattery() {
 	fi;
 	
 	sh $CPUSET_TUNER 1
+	
+	stune_background_prefer_idle="/dev/stune/background/schedtune.prefer_idle"
+	if [ -e $stune_background_prefer_idle ]; then
+		write $stune_background_prefer_idle "1"
+		sendToLog "$stune_background_prefer_idle=1"
+	fi
+	
+	stune_foreground_prefer_idle="/dev/stune/foreground/schedtune.prefer_idle"
+	if [ -e $stune_foreground_prefer_idle ]; then
+		write $stune_foreground_prefer_idle "1"
+		sendToLog "$stune_foreground_prefer_idle=1"
+	fi
+	
+	stune_topapp_prefer_idle="/dev/stune/top-app/schedtune.prefer_idle"
+	if [ -e $stune_topapp_prefer_idle ]; then
+		write $stune_topapp_prefer_idle "1"
+		sendToLog "$stune_topapp_prefer_idle=1"
+	fi
+	
+	stune_global_prefer_idle="/dev/stune/schedtune.prefer_idle"
+	if [ -e $stune_global_prefer_idle ]; then
+		write $stune_global_prefer_idle "1"
+		sendToLog "$stune_global_prefer_idle=1"
+	fi
 
 	sendToLog "Power saving CPU optimization applied";
 	sendToLog "$divider";
@@ -688,6 +712,30 @@ cpuOptimizationBalanced() {
 	
 	sh $CPUSET_TUNER 2
 
+	stune_background_prefer_idle="/dev/stune/background/schedtune.prefer_idle"
+	if [ -e $stune_background_prefer_idle ]; then
+		write $stune_background_prefer_idle "1"
+		sendToLog "$stune_background_prefer_idle=1"
+	fi
+	
+	stune_foreground_prefer_idle="/dev/stune/foreground/schedtune.prefer_idle"
+	if [ -e $stune_foreground_prefer_idle ]; then
+		write $stune_foreground_prefer_idle "1"
+		sendToLog "$stune_foreground_prefer_idle=1"
+	fi
+	
+	stune_topapp_prefer_idle="/dev/stune/top-app/schedtune.prefer_idle"
+	if [ -e $stune_topapp_prefer_idle ]; then
+		write $stune_topapp_prefer_idle "1"
+		sendToLog "$stune_topapp_prefer_idle=1"
+	fi
+	
+	stune_global_prefer_idle="/dev/stune/schedtune.prefer_idle"
+	if [ -e $stune_global_prefer_idle ]; then
+		write $stune_global_prefer_idle "1"
+		sendToLog "$stune_global_prefer_idle=1"
+	fi
+
 	sendToLog "Balanced CPU optimization applied";
 	sendToLog "$divider";
 }
@@ -826,6 +874,30 @@ cpuOptimizationPerformance() {
 	fi;
 
 	sh $CPUSET_TUNER 3
+	
+	stune_background_prefer_idle="/dev/stune/background/schedtune.prefer_idle"
+	if [ -e $stune_background_prefer_idle ]; then
+		write $stune_background_prefer_idle "1"
+		sendToLog "$stune_background_prefer_idle=1"
+	fi
+	
+	stune_foreground_prefer_idle="/dev/stune/foreground/schedtune.prefer_idle"
+	if [ -e $stune_foreground_prefer_idle ]; then
+		write $stune_foreground_prefer_idle "1"
+		sendToLog "$stune_foreground_prefer_idle=1"
+	fi
+	
+	stune_topapp_prefer_idle="/dev/stune/top-app/schedtune.prefer_idle"
+	if [ -e $stune_topapp_prefer_idle ]; then
+		write $stune_topapp_prefer_idle "1"
+		sendToLog "$stune_topapp_prefer_idle=1"
+	fi
+	
+	stune_global_prefer_idle="/dev/stune/schedtune.prefer_idle"
+	if [ -e $stune_global_prefer_idle ]; then
+		write $stune_global_prefer_idle "1"
+		sendToLog "$stune_global_prefer_idle=1"
+	fi
 
 	sendToLog "Performance CPU optimization applied";
 	sendToLog "$divider";
