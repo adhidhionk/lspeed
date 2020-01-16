@@ -220,7 +220,8 @@ fi;
 # this will be done only on boot or executed service with sh over terminal
 if [ "$#" -eq 0 ] || [ ! -e $LOG ]; then
 	sendToLog "L Speed finished with base setup";
-
+	write $IS_EXECUTED "true"
+	
 	sendToLog "Starting with logging...";
 	sendToLog $divider;
 	sendToLog "Getting module info"
@@ -1043,11 +1044,6 @@ gpuOptimizerBalanced() {
 		sendToLog "GPU throttling disabled"
 	fi;
 
-	if [ -e $gpu/max_pwrlevel ]; then
-		write $gpu/max_pwrlevel "0"
-		sendToLog "GPU max power level disabled"
-	fi;
-
 	if [ -e $gpu/force_no_nap ]; then
 		write $gpu/force_no_nap "1"
 		sendToLog "force_no_nap enabled"
@@ -1160,11 +1156,6 @@ gpuOptimizerPerformance() {
 		sendToLog "GPU throttling disabled"
 	fi;
 
-	if [ -e $gpu/max_pwrlevel ]; then
-		write $gpu/max_pwrlevel "0"
-		sendToLog "GPU max power level disabled"
-	fi;
-
 	if [ -e $gpu/force_no_nap ]; then
 		write $gpu/force_no_nap "1"
 		sendToLog "force_no_nap enabled"
@@ -1274,13 +1265,8 @@ gpuOptimizerPowerSaving() {
 	fi;
 
 	if [ -e $gpu/throttling ]; then
-		write $gpu/throttling "0"
-		sendToLog "GPU throttling disabled"
-	fi;
-
-	if [ -e $gpu/max_pwrlevel ]; then
-		write $gpu/max_pwrlevel "0"
-		sendToLog "GPU max power level disabled"
+		write $gpu/throttling "1"
+		sendToLog "GPU throttling enabled"
 	fi;
 
 	if [ -e $gpu/force_no_nap ]; then
@@ -3884,7 +3870,6 @@ runtime=$((end-start))
 sendToLog "Applying took $runtime seconds";
 sendToLog "Successfully applied $profile profile";
 sendToLog "$divider";
-write $IS_EXECUTED "true"
 
 exit 0
 fi
