@@ -2,7 +2,7 @@
 # L Speed tweak
 # Codename : lspeed
 version="v1.6.4-b2";
-build_date=15-1-2020;
+build_date=16-1-2020;
 # Developer : Paget96
 # Paypal : https://paypal.me/Paget96
 
@@ -917,47 +917,36 @@ governorTuner() {
 	sendToLog "$divider";
 }
 
-entropyAggressive() {
-	sendToLog "Activating aggressive entropy profile..."
+entropy() {
+	if [ "$1" = "1" ]; then
+		sendToLog "Activating light entropy profile..."
+		$BUSYBOX sysctl -e -w kernel.random.read_wakeup_threshold=64
+		$BUSYBOX sysctl -e -w kernel.random.write_wakeup_threshold=128
+		$BUSYBOX sysctl -e -w kernel.random.urandom_min_reseed_secs=90
+		sendToLog "Light entropy profile activated"
+	
+	elif [ "$1" = "2" ]; then
+		sendToLog "Activating enlarger entropy profile..."
+		$BUSYBOX sysctl -e -w kernel.random.read_wakeup_threshold=128
+		$BUSYBOX sysctl -e -w kernel.random.write_wakeup_threshold=896
+		$BUSYBOX sysctl -e -w kernel.random.urandom_min_reseed_secs=90
+		sendToLog "Enlarger entropy profile activated"
+		
+	elif [ "$1" = "3" ]; then	
+		sendToLog "Activating moderate entropy profile..."
+		$BUSYBOX sysctl -e -w kernel.random.read_wakeup_threshold=128
+		$BUSYBOX sysctl -e -w kernel.random.write_wakeup_threshold=256
+		$BUSYBOX sysctl -e -w kernel.random.urandom_min_reseed_secs=90
+		sendToLog "Moderate entropy profile activated"
+		
+	elif [ "$1" = "4" ]; then	
+		sendToLog "Activating aggressive entropy profile..."
+		$BUSYBOX sysctl -e -w kernel.random.read_wakeup_threshold=512
+		$BUSYBOX sysctl -e -w kernel.random.write_wakeup_threshold=1024
+		$BUSYBOX sysctl -e -w kernel.random.urandom_min_reseed_secs=90
+		sendToLog "Aggressive entropy profile activated"
+	fi
 
-	$BUSYBOX sysctl -e -w kernel.random.read_wakeup_threshold=512
-	$BUSYBOX sysctl -e -w kernel.random.write_wakeup_threshold=1024
-	$BUSYBOX sysctl -e -w kernel.random.urandom_min_reseed_secs=90
-
-	sendToLog "Aggressive entropy profile activated"
-	sendToLog "$divider";
-}
-
-entropyEnlarger() {
-	sendToLog "Activating enlarger entropy profile..."
-
-	$BUSYBOX sysctl -e -w kernel.random.read_wakeup_threshold=128
-	$BUSYBOX sysctl -e -w kernel.random.write_wakeup_threshold=896
-	$BUSYBOX sysctl -e -w kernel.random.urandom_min_reseed_secs=90
-
-	sendToLog "Enlarger entropy profile activated"
-	sendToLog "$divider";
-}
-
-entropyLight() {
-	sendToLog "Activating light entropy profile..."
-
-	$BUSYBOX sysctl -e -w kernel.random.read_wakeup_threshold=64
-	$BUSYBOX sysctl -e -w kernel.random.write_wakeup_threshold=128
-	$BUSYBOX sysctl -e -w kernel.random.urandom_min_reseed_secs=90
-
-	sendToLog "Light entropy profile activated"
-	sendToLog "$divider";
-}
-
-entropyModerate() {
-	sendToLog "Activating moderate entropy profile..."
-
-	$BUSYBOX sysctl -e -w kernel.random.read_wakeup_threshold=128
-	$BUSYBOX sysctl -e -w kernel.random.write_wakeup_threshold=256
-	$BUSYBOX sysctl -e -w kernel.random.urandom_min_reseed_secs=90
-
-	sendToLog "Moderate entropy profile activated"
 	sendToLog "$divider";
 }
 
@@ -1475,8 +1464,16 @@ sdTweak() {
 	sendToLog "$divider";
 }
  
-ioBlocksOptimizationBalanced() {
-	sendToLog "Activating balanced I/O blocks optimization..."
+ioBlocksOptimization() {
+	if [ "$1" = "1" ]; then
+		profile="battery"
+	elif [ "$1" = "2" ]; then
+		profile="balanced"
+	elif [ "$1" = "3" ]; then
+		profile="performance"
+	fi
+	
+	sendToLog "Activating $profile I/O blocks optimization..."
 
 	blocks="/sys/block/*"
 
@@ -1506,99 +1503,23 @@ ioBlocksOptimizationBalanced() {
 		#For storage configurations that need to maximize distribution of completion
 		#processing setting this option to '2' forces the completion to run on the
 		#requesting cpu (bypassing the "group" aggregation logic).
-		if [ -e "$i/queue/rq_affinity" ]; then
-			write "$i/queue/rq_affinity" "1"
-			sendToLog "rq_affinity=1 in $i"
-		fi
+		if [ "$1" = "1" ]; then
+			if [ -e "$i/queue/rq_affinity" ]; then
+				write "$i/queue/rq_affinity" "1"
+				sendToLog "rq_affinity=1 in $i"
+			fi
 		
-		#This controls how many requests may be allocated in the block layer for
-		#read or write requests. Note that the total allocated number may be twice
-		#this amount, since it applies only to reads or writes (not the accumulated
-		#sum).
-		#To avoid priority inversion through request starvation, a request
-		#queue maintains a separate request pool per each cgroup when
-		#CONFIG_BLK_CGROUP is enabled, and this parameter applies to each such
-		#per-block-cgroup request pool.  IOW, if there are N block cgroups,
-		#each request queue may have up to N request pools, each independently
-		#regulated by nr_requests.
-		if [ -e "$i/queue/nr_requests" ]; then
-			write "$i/queue/nr_requests" "128"
-			sendToLog "nr_requests=128 in $i"
-		fi
-		
-		#Maximum number of kilobytes to read-ahead for filesystems on this block
-		#device.
-		if [ -e "$i/queue/read_ahead_kb" ]; then
-			write "$i/queue/read_ahead_kb" "128"
-			sendToLog "read_ahead_kb=128 in $i"
-		fi
-		
-		# Tell scheduler that it's facing with non rotational drive to disable
-		# unnecessary seek-reducing logic in the scheduler. We are not using rotational HDDs
-		if [ -e "$i/queue/rotational" ]; then
-			write "$i/queue/rotational" "0"
-			sendToLog "rotational=0 in $i"
-		fi
-		
-	done
-
-	# MMC CRC disabled
-	removable=/sys/module/mmc_core/parameters/removable
-	if [ -e $removable ]; then
-		write $removable "N"
-		sendToLog "CRC Checks disabled $removable"
-	fi;
-
-	crc=/sys/module/mmc_core/parameters/crc
-	if [ -e $crc ]; then
-		write $crc "N"
-		sendToLog "CRC Checks disabled $crc"
-	fi;
-
-	use_spi_crc=/sys/module/mmc_core/parameters/use_spi_crc
-	if [ -e $use_spi_crc ]; then
-		write $use_spi_crc "N"
-		sendToLog "CRC Checks disabled $use_spi_crc"
-	fi;
-
-	sendToLog "Balanced I/O blocks optimization activated"
-	sendToLog "$divider";
-}
-
-ioBlocksOptimizationPerformance() {
-	sendToLog "Activating performance I/O blocks optimization..."
-
-	blocks="/sys/block/*"
-
-	for i in $blocks;
-		do
-		
-		#This file allows to turn off the disk entropy contribution. Default
-		#value of this file is '1'(on).
-		if [ -e "$i/queue/add_random" ]; then
-			write "$i/queue/add_random" "0"
-			sendToLog "add_random=0 in $i"
-		fi
-		
-		#This enables the user to disable the lookup logic involved with IO
-		#merging requests in the block layer. By default (0) all merges are
-		#enabled. When set to 1 only simple one-hit merges will be tried. When
-		#set to 2 no merge algorithms will be tried (including one-hit or more
-		#complex tree/hash lookups).
-		if [ -e "$i/queue/nomerges" ]; then
-			write "$i/queue/nomerges" "2"
-			sendToLog "nomerges=2 in $i"
-		fi
+		elif [ "$1" = "2" ]; then
+			if [ -e "$i/queue/rq_affinity" ]; then
+				write "$i/queue/rq_affinity" "1"
+				sendToLog "rq_affinity=1 in $i"
+			fi
 			
-		#If this option is '1', the block layer will migrate request completions to the
-		#cpu "group" that originally submitted the request. For some workloads this
-		#provides a significant reduction in CPU cycles due to caching effects.
-		#For storage configurations that need to maximize distribution of completion
-		#processing setting this option to '2' forces the completion to run on the
-		#requesting cpu (bypassing the "group" aggregation logic).
-		if [ -e "$i/queue/rq_affinity" ]; then
-			write "$i/queue/rq_affinity" "2"
-			sendToLog "rq_affinity=2 in $i"
+		elif [ "$1" = "3" ]; then
+			if [ -e "$i/queue/rq_affinity" ]; then
+				write "$i/queue/rq_affinity" "2"
+				sendToLog "rq_affinity=2 in $i"
+			fi	
 		fi
 		
 		#This controls how many requests may be allocated in the block layer for
@@ -1611,16 +1532,44 @@ ioBlocksOptimizationPerformance() {
 		#per-block-cgroup request pool.  IOW, if there are N block cgroups,
 		#each request queue may have up to N request pools, each independently
 		#regulated by nr_requests.
-		if [ -e "$i/queue/nr_requests" ]; then
-			write "$i/queue/nr_requests" "256"
-			sendToLog "nr_requests=256 in $i"
+		if [ "$1" = "1" ]; then
+			if [ -e "$i/queue/nr_requests" ]; then
+				write "$i/queue/nr_requests" "64"
+				sendToLog "nr_requests=64 in $i"
+			fi
+		
+		elif [ "$1" = "2" ]; then
+			if [ -e "$i/queue/nr_requests" ]; then
+				write "$i/queue/nr_requests" "128"
+				sendToLog "nr_requests=128 in $i"
+			fi
+			
+		elif [ "$1" = "3" ]; then
+			if [ -e "$i/queue/nr_requests" ]; then
+				write "$i/queue/nr_requests" "256"
+				sendToLog "nr_requests=256 in $i"
+			fi	
 		fi
 		
 		#Maximum number of kilobytes to read-ahead for filesystems on this block
 		#device.
-		if [ -e "$i/queue/read_ahead_kb" ]; then
-			write "$i/queue/read_ahead_kb" "256"
-			sendToLog "read_ahead_kb=256 in $i"
+		if [ "$1" = "1" ]; then
+			if [ -e "$i/queue/read_ahead_kb" ]; then
+				write "$i/queue/read_ahead_kb" "128"
+				sendToLog "read_ahead_kb=128 in $i"
+			fi
+		
+		elif [ "$1" = "2" ]; then
+			if [ -e "$i/queue/read_ahead_kb" ]; then
+				write "$i/queue/read_ahead_kb" "128"
+				sendToLog "read_ahead_kb=128 in $i"
+			fi
+			
+		elif [ "$1" = "3" ]; then
+			if [ -e "$i/queue/read_ahead_kb" ]; then
+				write "$i/queue/read_ahead_kb" "256"
+				sendToLog "read_ahead_kb=256 in $i"
+			fi
 		fi
 		
 		# Tell scheduler that it's facing with non rotational drive to disable
@@ -1629,7 +1578,7 @@ ioBlocksOptimizationPerformance() {
 			write "$i/queue/rotational" "0"
 			sendToLog "rotational=0 in $i"
 		fi
-		
+
 	done
 
 	# MMC CRC disabled
@@ -1651,97 +1600,7 @@ ioBlocksOptimizationPerformance() {
 		sendToLog "CRC Checks disabled $use_spi_crc"
 	fi;
 
-	sendToLog "Performance I/O blocks optimization activated"
-	sendToLog "$divider";
-}
-
-ioBlocksOptimizationPowerSaving() {
-	sendToLog "Activating power saving I/O blocks optimization..."
-
-	blocks="/sys/block/*"
-
-	for i in $blocks;
-		do
-		
-		#This file allows to turn off the disk entropy contribution. Default
-		#value of this file is '1'(on).
-		if [ -e "$i/queue/add_random" ]; then
-			write "$i/queue/add_random" "0"
-			sendToLog "add_random=0 in $i"
-		fi
-		
-		#This enables the user to disable the lookup logic involved with IO
-		#merging requests in the block layer. By default (0) all merges are
-		#enabled. When set to 1 only simple one-hit merges will be tried. When
-		#set to 2 no merge algorithms will be tried (including one-hit or more
-		#complex tree/hash lookups).
-		if [ -e "$i/queue/nomerges" ]; then
-			write "$i/queue/nomerges" "2"
-			sendToLog "nomerges=2 in $i"
-		fi
-		
-		#If this option is '1', the block layer will migrate request completions to the
-		#cpu "group" that originally submitted the request. For some workloads this
-		#provides a significant reduction in CPU cycles due to caching effects.
-		#For storage configurations that need to maximize distribution of completion
-		#processing setting this option to '2' forces the completion to run on the
-		#requesting cpu (bypassing the "group" aggregation logic).
-		if [ -e "$i/queue/rq_affinity" ]; then
-			write "$i/queue/rq_affinity" "2"
-			sendToLog "rq_affinity=2 in $i"
-		fi
-		
-		#This controls how many requests may be allocated in the block layer for
-		#read or write requests. Note that the total allocated number may be twice
-		#this amount, since it applies only to reads or writes (not the accumulated
-		#sum).
-		#To avoid priority inversion through request starvation, a request
-		#queue maintains a separate request pool per each cgroup when
-		#CONFIG_BLK_CGROUP is enabled, and this parameter applies to each such
-		#per-block-cgroup request pool.  IOW, if there are N block cgroups,
-		#each request queue may have up to N request pools, each independently
-		#regulated by nr_requests.
-		if [ -e "$i/queue/nr_requests" ]; then
-			write "$i/queue/nr_requests" "64"
-			sendToLog "nr_requests=64 in $i"
-		fi
-		
-		#Maximum number of kilobytes to read-ahead for filesystems on this block
-		#device.
-		if [ -e "$i/queue/read_ahead_kb" ]; then
-			write "$i/queue/read_ahead_kb" "128"
-			sendToLog "read_ahead_kb=128 in $i"
-		fi
-
-		# Tell scheduler that it's facing with non rotational drive to disable
-		# unnecessary seek-reducing logic in the scheduler. We are not using rotational HDDs
-		if [ -e "$i/queue/rotational" ]; then
-			write "$i/queue/rotational" "0"
-			sendToLog "rotational=0 in $i"
-		fi
-		
-	done
-
-	# MMC CRC disabled
-	removable=/sys/module/mmc_core/parameters/removable
-	if [ -e $removable ]; then
-		write $removable "N"
-		sendToLog "CRC Checks disabled $removable"
-	fi;
-
-	crc=/sys/module/mmc_core/parameters/crc
-	if [ -e $crc ]; then
-		write $crc "N"
-		sendToLog "CRC Checks disabled $crc"
-	fi;
-
-	use_spi_crc=/sys/module/mmc_core/parameters/use_spi_crc
-	if [ -e $use_spi_crc ]; then
-		write $use_spi_crc "N"
-		sendToLog "CRC Checks disabled $use_spi_crc"
-	fi;
-
-	sendToLog "Power saving I/O blocks optimization activated"
+	sendToLog "Activating of $profile I/O blocks optimization is successful"
 	sendToLog "$divider";
 }
 
@@ -3018,8 +2877,8 @@ fi;
 # This parameter tells how much of physical RAM to take when swap is full
 overcommit_ratio=/proc/sys/vm/overcommit_ratio
 if [ -e overcommit_ratio ]; then
-	write $overcommit_ratio "0"		
-	sendToLog "overcommit_ratio=0"
+	write $overcommit_ratio "25"		
+	sendToLog "overcommit_ratio=25"
 fi;
 
 oom_dump_tasks=/proc/sys/vm/oom_dump_tasks
@@ -3030,8 +2889,8 @@ fi;
 
 vfs_cache_pressure=/proc/sys/vm/vfs_cache_pressure
 if [ -e $vfs_cache_pressure ]; then
-	write $vfs_cache_pressure "60"		
-	sendToLog "vfs_cache_pressure=60"
+	write $vfs_cache_pressure "70"		
+	sendToLog "vfs_cache_pressure=70"
 fi;
 
 laptop_mode=/proc/sys/vm/laptop_mode
@@ -3076,8 +2935,8 @@ fi;
 # and check to see if work needs to be done.
 dirty_writeback_centisecs=/proc/sys/vm/dirty_writeback_centisecs
 if [ -e $dirty_writeback_centisecs ]; then
-	write $dirty_writeback_centisecs "1000"		
-	sendToLog "dirty_writeback_centisecs=1000"
+	write $dirty_writeback_centisecs "2000"		
+	sendToLog "dirty_writeback_centisecs=2000"
 fi;
 
 # vm.dirty_background_ratio is the percentage of system memory(RAM)
@@ -3100,8 +2959,8 @@ fi;
 # but is a safeguard against too much data being cached unsafely in memory.
 dirty_ratio=/proc/sys/vm/dirty_ratio
 if [ -e $dirty_ratio ]; then
-	write $dirty_ratio "25"		
-	sendToLog "dirty_ratio=25"
+	write $dirty_ratio "10"		
+	sendToLog "dirty_ratio=10"
 fi;
 
 sendToLog "Balanced virtual memory tweaks activated"
@@ -3149,8 +3008,8 @@ fi;
 # This parameter tells how much of physical RAM to take when swap is full
 overcommit_ratio=/proc/sys/vm/overcommit_ratio
 if [ -e overcommit_ratio ]; then
-	write $overcommit_ratio "0"		
-	sendToLog "overcommit_ratio=0"
+	write $overcommit_ratio "25"		
+	sendToLog "overcommit_ratio=25"
 fi;
 
 oom_dump_tasks=/proc/sys/vm/oom_dump_tasks
@@ -3161,8 +3020,8 @@ fi;
 
 vfs_cache_pressure=/proc/sys/vm/vfs_cache_pressure
 if [ -e $vfs_cache_pressure ]; then
-	write $vfs_cache_pressure "20"		
-	sendToLog "vfs_cache_pressure=20"
+	write $vfs_cache_pressure "50"		
+	sendToLog "vfs_cache_pressure=50"
 fi;
 
 laptop_mode=/proc/sys/vm/laptop_mode
@@ -3199,8 +3058,8 @@ fi;
 # unsafe this is also a safeguard against data loss.
 dirty_expire_centisecs=/proc/sys/vm/dirty_expire_centisecs
 if [ -e $dirty_expire_centisecs ]; then
-	write $dirty_expire_centisecs "500"		
-	sendToLog "dirty_expire_centisecs=500"
+	write $dirty_expire_centisecs "1000"		
+	sendToLog "dirty_expire_centisecs=1000"
 fi;
 
 # vm.dirty_writeback_centisecs is how often the pdflush/flush/kdmflush processes wake up
@@ -3220,8 +3079,8 @@ fi;
 # dirty_background_ratio = dirty_ratio / 2 (or 4)
 dirty_background_ratio=/proc/sys/vm/dirty_background_ratio
 if [ -e $dirty_background_ratio ]; then
-	write $dirty_background_ratio "5"		
-	sendToLog "dirty_background_ratio=5"
+	write $dirty_background_ratio "10"		
+	sendToLog "dirty_background_ratio=10"
 fi;
 
 # vm.dirty_ratio is the absolute maximum amount of system memory
@@ -3231,8 +3090,8 @@ fi;
 # but is a safeguard against too much data being cached unsafely in memory.
 dirty_ratio=/proc/sys/vm/dirty_ratio
 if [ -e $dirty_ratio ]; then
-	write $dirty_ratio "30"		
-	sendToLog "dirty_ratio=30"
+	write $dirty_ratio "20"		
+	sendToLog "dirty_ratio=20"
 fi;
 
 sendToLog "Battery virtual memory tweaks activated"
@@ -3292,8 +3151,8 @@ fi;
 
 vfs_cache_pressure=/proc/sys/vm/vfs_cache_pressure
 if [ -e $vfs_cache_pressure ]; then
-	write $vfs_cache_pressure "100"
-	sendToLog "vfs_cache_pressure=100"
+	write $vfs_cache_pressure "80"
+	sendToLog "vfs_cache_pressure=80"
 fi;
 
 laptop_mode=/proc/sys/vm/laptop_mode
@@ -3700,13 +3559,13 @@ fi
 # Entropy section
 #
 if [ "$($BUSYBOX cat "$USER_PROFILE"/entropy)" -eq 1 ]; then
-	entropyLight;
+	entropy 1;
 elif [ "$($BUSYBOX cat "$USER_PROFILE"/entropy)" -eq 2 ]; then
-	entropyEnlarger;
+	entropy 2;
 elif [ "$($BUSYBOX cat "$USER_PROFILE"/entropy)" -eq 3 ]; then
-	entropyModerate;
+	entropy 3;
 elif [ "$($BUSYBOX cat "$USER_PROFILE"/entropy)" -eq 4 ]; then
-	entropyAggressive;
+	entropy 4;
 fi
 
 #
@@ -3742,11 +3601,11 @@ elif [ "$($BUSYBOX cat "$USER_PROFILE"/disable_io_stats)" -eq 1 ]; then
 fi
 
 if [ "$($BUSYBOX cat "$USER_PROFILE"/io_blocks_optimization)" -eq 1 ]; then
-	ioBlocksOptimizationPowerSaving;
+	ioBlocksOptimization 1;
 elif [ "$($BUSYBOX cat "$USER_PROFILE"/io_blocks_optimization)" -eq 2 ]; then
-	ioBlocksOptimizationBalanced;
+	ioBlocksOptimization 2;
 elif [ "$($BUSYBOX cat "$USER_PROFILE"/io_blocks_optimization)" -eq 3 ]; then
-	ioBlocksOptimizationPerformance;
+	ioBlocksOptimization 3;
 fi
 
 if [ "$($BUSYBOX cat "$USER_PROFILE"/io_extended_queue)" -eq 1 ]; then
