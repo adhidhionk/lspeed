@@ -1174,8 +1174,16 @@ gpuOptimizerPerformance() {
 	sendToLog "$divider";
 }
 
-gpuOptimizerPowerSaving() {
-	sendToLog "Applying power saving GPU optimization...";
+gpuOptimizer() {
+	if [ "$1" = "1" ]; then
+		profile="power saving"
+	elif [ "$1" = "2" ]; then
+		profile="balanced"
+	elif [ "$1" = "3" ]; then
+		profile="performance"
+	fi
+	
+	sendToLog "Applying $profile GPU optimization...";
 
 	# GPU related tweaks
 	if [ -d "/sys/class/kgsl/kgsl-3d0" ]; then
@@ -1223,67 +1231,167 @@ gpuOptimizerPowerSaving() {
 	fi
 	sendToLog "Optimized GPU caches";
 
-
 	if [ -e /proc/gpufreq/gpufreq_limited_thermal_ignore ]; then
-		write /proc/gpufreq/gpufreq_limited_thermal_ignore "1"
-		sendToLog "Disabled gpufreq thermal"
-	fi;
+		if [ "$1" = "1" ]; then
+			write /proc/gpufreq/gpufreq_limited_thermal_ignore "0"
+			sendToLog "Enabled gpufreq thermal"
+			
+		elif [ "$1" = "2" ]; then
+			write /proc/gpufreq/gpufreq_limited_thermal_ignore "1"
+			sendToLog "Disabled gpufreq thermal"
+			
+		elif [ "$1" = "3" ]; then
+			write /proc/gpufreq/gpufreq_limited_thermal_ignore "1"
+			sendToLog "Disabled gpufreq thermal"
+		fi
+	fi
 
+	# Dynamic voltage frequency scheduler for gpu on
 	if [ -e /proc/mali/dvfs_enable ]; then
-		write /proc/mali/dvfs_enable "1"
+		write /proc/mali/dvfs_enable "1"		
 		sendToLog "dvfs enabled"
-	fi;
-
+	fi
+	
+	if [ -e /sys/module/pvrsrvkm/parameters/gpu_dvfs_enable ]; then
+		write /sys/module/pvrsrvkm/parameters/gpu_dvfs_enable "1"		
+		sendToLog "dvfs enabled"
+	fi
+	
 	if [ -e /sys/module/simple_gpu_algorithm/parameters/simple_gpu_activate ]; then
 		write /sys/module/simple_gpu_algorithm/parameters/simple_gpu_activate "1"
 		sendToLog "Simple GPU algorithm enabled"
 	fi;
-
+	
 	# Adreno idler
 	if [ -e /sys/module/adreno_idler/parameters/adreno_idler_active ]; then
-		write /sys/module/adreno_idler/parameters/adreno_idler_active "Y"
-		write /sys/module/adreno_idler/parameters/adreno_idler_idleworkload "10000"
-		write /sys/module/adreno_idler/parameters/adreno_idler_downdifferential "35"
-		write /sys/module/adreno_idler/parameters/adreno_idler_idlewait "25"
-		sendToLog "Enabled and tweaked adreno idler"
-	fi;
+		if [ "$1" = "1" ]; then
+			write /sys/module/adreno_idler/parameters/adreno_idler_active "Y"
+			write /sys/module/adreno_idler/parameters/adreno_idler_idleworkload "10000"
+			write /sys/module/adreno_idler/parameters/adreno_idler_downdifferential "35"
+			write /sys/module/adreno_idler/parameters/adreno_idler_idlewait "25"
+			sendToLog "Enabled and tweaked adreno idler"
+			
+		elif [ "$1" = "2" ]; then
+			write /sys/module/adreno_idler/parameters/adreno_idler_active "Y"
+			write /sys/module/adreno_idler/parameters/adreno_idler_idleworkload "6000"
+			write /sys/module/adreno_idler/parameters/adreno_idler_downdifferential "15"
+			write /sys/module/adreno_idler/parameters/adreno_idler_idlewait "15"
+			sendToLog "Disabled and tweaked adreno idler"
+			
+		elif [ "$1" = "3" ]; then
+			write /sys/module/adreno_idler/parameters/adreno_idler_active "N"
+			write /sys/module/adreno_idler/parameters/adreno_idler_idleworkload "6000"
+			write /sys/module/adreno_idler/parameters/adreno_idler_downdifferential "15"
+			write /sys/module/adreno_idler/parameters/adreno_idler_idlewait "15"
+			sendToLog "Disabled and tweaked adreno idler"
+		fi
+	fi
 
+	# Adreni boost 0 for off , 1 for low , 2 for medium , 3 for high
 	if [ -e $gpu/devfreq/adrenoboost ]; then
-		write $gpu/devfreq/adrenoboost "0"
-		sendToLog "Adreno boost is set to 0"
-	fi;
+		if [ "$1" = "1" ]; then
+			write $gpu/devfreq/adrenoboost "0"
+			sendToLog "Adreno boost is set to 0"
+		elif [ "$1" = "2" ]; then
+			write $gpu/devfreq/adrenoboost "1"
+			sendToLog "Adreno boost is set to 1"
+		elif [ "$1" = "3" ]; then
+			write $gpu/devfreq/adrenoboost "2"
+			sendToLog "Adreno boost is set to 2"
+		fi
+	fi
 
+	# GPU freq throttling
 	if [ -e $gpu/throttling ]; then
-		write $gpu/throttling "1"
-		sendToLog "GPU throttling enabled"
-	fi;
-
+		if [ "$1" = "1" ]; then
+			write $gpu/throttling "1"
+			sendToLog "GPU throttling enabled"
+		elif [ "$1" = "2" ]; then
+			write $gpu/throttling "1"
+			sendToLog "GPU throttling enabled"
+		elif [ "$1" = "3" ]; then
+			write $gpu/throttling "0"
+			sendToLog "GPU throttling disabled"
+		fi
+	fi
+	
+	# GPU idle timer, the time after the GPU going idle
+	if [ -e $gpu/idle_time ]; then
+		if [ "$1" = "1" ]; then
+			write $gpu/idle_time "50"
+			sendToLog "Setting GPU idle timer to 50"
+		elif [ "$1" = "2" ]; then
+			write $gpu/idle_time "200"
+			sendToLog "Setting GPU idle timer to 200"
+		elif [ "$1" = "3" ]; then
+			write $gpu/idle_time "1000"
+		sendToLog "Setting GPU idle timer to 1000"
+		fi
+	fi
+	
+	# Setting up the force GPU clock, this will keep clocks on until the idle timeout forces the power rail off
+	if [ -e $gpu/force_clk_on ]; then
+		if [ "$1" = "1" ]; then
+			write $gpu/force_clk_on "0"
+			sendToLog "Force clock disabled"
+		elif [ "$1" = "2" ]; then
+			write $gpu/force_clk_on "0"
+			sendToLog "Force clock disabled"
+		elif [ "$1" = "3" ]; then
+			write $gpu/force_clk_on "1"
+			sendToLog "Force clock enabled"
+		fi
+	fi
+	
+	# Keep the graphics power rail on permanently.
+	# Enabling this can cause a pretty big drainage because the rail(power) is always on, so it'll be just on performance for now!
+	if [ -e $gpu/force_rail_on ]; then
+		if [ "$1" = "1" ]; then
+			write $gpu/force_rail_on "0"
+			sendToLog "force_rail_on disabled"
+		elif [ "$1" = "2" ]; then
+			write $gpu/force_rail_on "0"		
+			sendToLog "force_rail_on disabled"
+		elif [ "$1" = "3" ]; then
+			write $gpu/force_rail_on "1"		
+			sendToLog "force_rail_on enabled"
+		fi
+	fi
+	
 	if [ -e $gpu/force_no_nap ]; then
 		write $gpu/force_no_nap "0"
 		sendToLog "force_no_nap disabled"
-	fi;
+	fi
 
 	if [ -e $gpu/bus_split ]; then
-		write $gpu/bus_split "1"
-		sendToLog "bus_split enabled"
-	fi;
+		if [ "$1" = "1" ]; then
+			write $gpu/bus_split "1"
+			sendToLog "bus_split enabled"
+		elif [ "$1" = "2" ]; then
+			write $gpu/bus_split "1"
+			sendToLog "bus_split enabled"
+		elif [ "$1" = "3" ]; then
+			write $gpu/bus_split "0"
+			sendToLog "bus_split disabled"
+		fi
+	fi
 
+	# Keep the bus vote on permanently, whatever that means I found it in some Qualcomm references
+	# They mention that for full GPU performance it should be turned On. No side-effects
 	if [ -e $gpu/force_bus_on ]; then
-		write $gpu/force_bus_on "0"
-		sendToLog "force_bus_on disabled"
-	fi;
-
-	if [ -e $gpu/force_clk_on ]; then
-		write $gpu/force_clk_on "0"
-		sendToLog "force_clk_on disabled"
-	fi;
-
-	if [ -e $gpu/force_rail_on ]; then
-		write $gpu/force_rail_on "0"
-		sendToLog "force_rail_on disabled"
-	fi;
-
-	sendToLog "Power saving GPU optimization applied"
+		if [ "$1" = "1" ]; then
+			write $gpu/force_bus_on "0"
+			sendToLog "force_bus_on disabled"
+		elif [ "$1" = "2" ]; then
+			write $gpu/force_bus_on "0"		
+			sendToLog "force_bus_on disabled"
+		elif [ "$1" = "3" ]; then
+			write $gpu/force_bus_on "1"		
+			sendToLog "force_bus_on enabled"
+		fi
+	fi
+	
+	sendToLog "GPU optimization has successfully applied $profile profile"
 	sendToLog "$divider";
 }
 
@@ -1511,8 +1619,8 @@ ioBlocksOptimization() {
 		
 		elif [ "$1" = "2" ]; then
 			if [ -e "$i/queue/rq_affinity" ]; then
-				write "$i/queue/rq_affinity" "1"
-				sendToLog "rq_affinity=1 in $i"
+				write "$i/queue/rq_affinity" "2"
+				sendToLog "rq_affinity=2 in $i"
 			fi
 			
 		elif [ "$1" = "3" ]; then
