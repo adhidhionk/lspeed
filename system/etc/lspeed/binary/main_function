@@ -3680,11 +3680,11 @@ fi
 # GPU section
 #
 if [ "$($BUSYBOX cat "$USER_PROFILE"/gpu_optimizer)" -eq 1 ]; then
-	gpuOptimizerPowerSaving;
+	gpuOptimizer 1;
 elif [ "$($BUSYBOX cat "$USER_PROFILE"/gpu_optimizer)" -eq 2 ]; then
-	gpuOptimizerBalanced;
+	gpuOptimizer 2;
 elif [ "$($BUSYBOX cat "$USER_PROFILE"/gpu_optimizer)" -eq 3 ]; then
-	gpuOptimizerPerformance;
+	gpuOptimizer 3;
 fi
 
 if [ "$($BUSYBOX cat "$USER_PROFILE"/optimize_buffers)" -eq 1 ]; then
