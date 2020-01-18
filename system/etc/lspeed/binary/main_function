@@ -553,14 +553,14 @@ cpuOptimizationBattery() {
 	
 	stune_background_prefer_idle="/dev/stune/background/schedtune.prefer_idle"
 	if [ -e $stune_background_prefer_idle ]; then
-		write $stune_background_prefer_idle "1"
-		sendToLog "$stune_background_prefer_idle=1"
+		write $stune_background_prefer_idle "0"
+		sendToLog "$stune_background_prefer_idle=0"
 	fi
 	
 	stune_foreground_prefer_idle="/dev/stune/foreground/schedtune.prefer_idle"
 	if [ -e $stune_foreground_prefer_idle ]; then
-		write $stune_foreground_prefer_idle "1"
-		sendToLog "$stune_foreground_prefer_idle=1"
+		write $stune_foreground_prefer_idle "0"
+		sendToLog "$stune_foreground_prefer_idle=0"
 	fi
 	
 	stune_topapp_prefer_idle="/dev/stune/top-app/schedtune.prefer_idle"
@@ -571,8 +571,8 @@ cpuOptimizationBattery() {
 	
 	stune_global_prefer_idle="/dev/stune/schedtune.prefer_idle"
 	if [ -e $stune_global_prefer_idle ]; then
-		write $stune_global_prefer_idle "1"
-		sendToLog "$stune_global_prefer_idle=1"
+		write $stune_global_prefer_idle "0"
+		sendToLog "$stune_global_prefer_idle=0"
 	fi
 
 	sendToLog "Power saving CPU optimization applied";
@@ -715,14 +715,14 @@ cpuOptimizationBalanced() {
 
 	stune_background_prefer_idle="/dev/stune/background/schedtune.prefer_idle"
 	if [ -e $stune_background_prefer_idle ]; then
-		write $stune_background_prefer_idle "1"
-		sendToLog "$stune_background_prefer_idle=1"
+		write $stune_background_prefer_idle "0"
+		sendToLog "$stune_background_prefer_idle=0"
 	fi
 	
 	stune_foreground_prefer_idle="/dev/stune/foreground/schedtune.prefer_idle"
 	if [ -e $stune_foreground_prefer_idle ]; then
-		write $stune_foreground_prefer_idle "1"
-		sendToLog "$stune_foreground_prefer_idle=1"
+		write $stune_foreground_prefer_idle "0"
+		sendToLog "$stune_foreground_prefer_idle=0"
 	fi
 	
 	stune_topapp_prefer_idle="/dev/stune/top-app/schedtune.prefer_idle"
@@ -733,8 +733,8 @@ cpuOptimizationBalanced() {
 	
 	stune_global_prefer_idle="/dev/stune/schedtune.prefer_idle"
 	if [ -e $stune_global_prefer_idle ]; then
-		write $stune_global_prefer_idle "1"
-		sendToLog "$stune_global_prefer_idle=1"
+		write $stune_global_prefer_idle "0"
+		sendToLog "$stune_global_prefer_idle=0"
 	fi
 
 	sendToLog "Balanced CPU optimization applied";
@@ -878,14 +878,14 @@ cpuOptimizationPerformance() {
 	
 	stune_background_prefer_idle="/dev/stune/background/schedtune.prefer_idle"
 	if [ -e $stune_background_prefer_idle ]; then
-		write $stune_background_prefer_idle "1"
-		sendToLog "$stune_background_prefer_idle=1"
+		write $stune_background_prefer_idle "0"
+		sendToLog "$stune_background_prefer_idle=0"
 	fi
 	
 	stune_foreground_prefer_idle="/dev/stune/foreground/schedtune.prefer_idle"
 	if [ -e $stune_foreground_prefer_idle ]; then
-		write $stune_foreground_prefer_idle "1"
-		sendToLog "$stune_foreground_prefer_idle=1"
+		write $stune_foreground_prefer_idle "0"
+		sendToLog "$stune_foreground_prefer_idle=0"
 	fi
 	
 	stune_topapp_prefer_idle="/dev/stune/top-app/schedtune.prefer_idle"
@@ -896,8 +896,8 @@ cpuOptimizationPerformance() {
 	
 	stune_global_prefer_idle="/dev/stune/schedtune.prefer_idle"
 	if [ -e $stune_global_prefer_idle ]; then
-		write $stune_global_prefer_idle "1"
-		sendToLog "$stune_global_prefer_idle=1"
+		write $stune_global_prefer_idle "0"
+		sendToLog "$stune_global_prefer_idle=0"
 	fi
 
 	sendToLog "Performance CPU optimization applied";
