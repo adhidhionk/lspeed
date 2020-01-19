@@ -49,6 +49,8 @@ getCPUcoreCount() {
 	echo "$cpu_cores" > $CPU_CORE_COUNT
 	echo "$real_cpu_cores" > $REAL_CPU_CORE_COUNT
 	
+	sleep 0.5
+	
 	unset real_cpu_cores; unset cpu_cores;
 }
 

@@ -1873,8 +1873,8 @@ for i in $blocks;
 		fi
 		
 		if [ -e "$QUANTUM" ]; then
-			write "$QUANTUM" "8"
-			sendToLog "quantum=8 in $i"
+			write "$QUANTUM" "16"
+			sendToLog "quantum=16 in $i"
 		fi
 		
 		if [ -e "$SLICE_ASYNC" ]; then
@@ -2076,8 +2076,8 @@ for i in $blocks;
 		fi
 		
 		if [ -e "$ASYNC_WRITE_EXPIRE" ]; then
-			write "$ASYNC_WRITE_EXPIRE" "2000"
-			sendToLog "async_write_expire=2000 in $i"
+			write "$ASYNC_WRITE_EXPIRE" "1500"
+			sendToLog "async_write_expire=1500 in $i"
 		fi
 		
 		if [ -e "$FIFO_BATCH" ]; then
