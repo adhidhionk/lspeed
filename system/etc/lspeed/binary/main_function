@@ -574,6 +574,12 @@ cpuOptimizationBattery() {
 		write $stune_global_prefer_idle "0"
 		sendToLog "$stune_global_prefer_idle=0"
 	fi
+	
+	stune_rt_prefer_idle="/dev/stune/rt/schedtune.prefer_idle"
+	if [ -e $stune_rt_prefer_idle ]; then
+		write $stune_rt_prefer_idle "0"
+		sendToLog "$stune_rt_prefer_idle=0"
+	fi
 
 	sendToLog "Power saving CPU optimization applied";
 	sendToLog "$divider";
@@ -735,6 +741,12 @@ cpuOptimizationBalanced() {
 	if [ -e $stune_global_prefer_idle ]; then
 		write $stune_global_prefer_idle "0"
 		sendToLog "$stune_global_prefer_idle=0"
+	fi
+	
+	stune_rt_prefer_idle="/dev/stune/rt/schedtune.prefer_idle"
+	if [ -e $stune_rt_prefer_idle ]; then
+		write $stune_rt_prefer_idle "0"
+		sendToLog "$stune_rt_prefer_idle=0"
 	fi
 
 	sendToLog "Balanced CPU optimization applied";
@@ -900,6 +912,12 @@ cpuOptimizationPerformance() {
 		sendToLog "$stune_global_prefer_idle=0"
 	fi
 
+	stune_rt_prefer_idle="/dev/stune/rt/schedtune.prefer_idle"
+	if [ -e $stune_rt_prefer_idle ]; then
+		write $stune_rt_prefer_idle "0"
+		sendToLog "$stune_rt_prefer_idle=0"
+	fi
+	
 	sendToLog "Performance CPU optimization applied";
 	sendToLog "$divider";
 }
