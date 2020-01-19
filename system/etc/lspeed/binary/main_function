@@ -2945,396 +2945,183 @@ swappinessTendency() {
 	sendToLog "$divider";
 }
 
-virtualMemoryTweaksBalanced() {
-sendToLog "Activating balanced virtual memory tweaks..."
+virtualMemoryTweaks() {
+	if [ "$1" = "1" ]; then
+		profile="battery"
+	elif [ "$1" = "2" ]; then
+		profile="balanced"
+	elif [ "$1" = "3" ]; then
+		profile="performance"
+	fi
 
-sync
+	sendToLog "Activating $profile virtual memory tweaks..."
 
-leases_enable=/proc/sys/fs/leases-enable
-if [ -e $leases_enable ]; then
-	write $leases_enable "1"		
-	sendToLog "leases_enable=1"
-fi;
+	sync
 
-# This file specifies the grace period (in seconds) that the kernel grants
-# to a process holding a file lease after it has sent a signal to that process
-# notifying it that another process is waiting to open the file.
-# If the lease holder does not remove or downgrade the lease within this grace period,
-# the kernel forcibly breaks the lease.
-lease_break_time=/proc/sys/fs/lease-break-time
-if [ -e $lease_break_time ]; then
-	write $lease_break_time "20"		
-	sendToLog "lease_break_time=20"
-fi;
+	leases_enable=/proc/sys/fs/leases-enable
+	if [ -e $leases_enable ]; then
+		write $leases_enable "1"		
+		sendToLog "leases_enable=1"
+	fi;
 
-# dnotify is a signal used to notify a process about file/directory changes.
-dir_notify_enable=/proc/sys/fs/dir-notify-enable
-if [ -e $dir_notify_enable ]; then
-	write $dir_notify_enable "0"		
-	sendToLog "dir_notify_enable=0"
-fi;
+	# This file specifies the grace period (in seconds) that the kernel grants
+	# to a process holding a file lease after it has sent a signal to that process
+	# notifying it that another process is waiting to open the file.
+	# If the lease holder does not remove or downgrade the lease within this grace period,
+	# the kernel forcibly breaks the lease.
 
-sendToLog "File system parameters are updated"
+	lease_break_time=/proc/sys/fs/lease-break-time
+	if [ -e $lease_break_time ]; then
+		write $lease_break_time "20"		
+		sendToLog "lease_break_time=20"
+	fi;
 
-enable_process_reclaim=/sys/module/process_reclaim/parameters/enable_process_reclaim
-if [ -e $enable_process_reclaim ]; then
-	write $enable_process_reclaim "0"		
-	sendToLog "Reclaiming pages of inactive tasks disabled"
-fi;
+	# dnotify is a signal used to notify a process about file/directory changes.
+	dir_notify_enable=/proc/sys/fs/dir-notify-enable
+	if [ -e $dir_notify_enable ]; then
+		write $dir_notify_enable "0"		
+		sendToLog "dir_notify_enable=0"
+	fi;
 
-# This parameter tells how much of physical RAM to take when swap is full
-overcommit_ratio=/proc/sys/vm/overcommit_ratio
-if [ -e overcommit_ratio ]; then
-	write $overcommit_ratio "25"		
-	sendToLog "overcommit_ratio=25"
-fi;
+	sendToLog "File system parameters are updated"
 
-oom_dump_tasks=/proc/sys/vm/oom_dump_tasks
-if [ -e $oom_dump_tasks ]; then
-	write $oom_dump_tasks "0"		
-	sendToLog "OOM dump tasks are disabled"
-fi;
+	enable_process_reclaim=/sys/module/process_reclaim/parameters/enable_process_reclaim
+	if [ -e $enable_process_reclaim ]; then
+		write $enable_process_reclaim "0"		
+		sendToLog "Reclaiming pages of inactive tasks disabled"
+	fi;
 
-vfs_cache_pressure=/proc/sys/vm/vfs_cache_pressure
-if [ -e $vfs_cache_pressure ]; then
-	write $vfs_cache_pressure "70"		
-	sendToLog "vfs_cache_pressure=70"
-fi;
+	# This parameter tells how much of physical RAM to take when swap is full
+	overcommit_ratio=/proc/sys/vm/overcommit_ratio
+	if [ -e overcommit_ratio ]; then
+		write $overcommit_ratio "25"		
+		sendToLog "overcommit_ratio=25"
+	fi;
 
-laptop_mode=/proc/sys/vm/laptop_mode
-if [ -e $laptop_mode ]; then
-	write $laptop_mode "0"		
-	sendToLog "laptop_mode=0"
-fi;
+	oom_dump_tasks=/proc/sys/vm/oom_dump_tasks
+	if [ -e $oom_dump_tasks ]; then
+		write $oom_dump_tasks "0"		
+		sendToLog "OOM dump tasks are disabled"
+	fi;
 
-# page-cluster controls the number of pages up to which consecutive pages
-# are read in from swap in a single attempt. This is the swap counterpart
-# to page cache readahead.
-# The mentioned consecutivity is not in terms of virtual/physical addresses,
-# but consecutive on swap space - that means they were swapped out together.
-# It is a logarithmic value - setting it to zero means "1 page", setting
-# it to 1 means "2 pages", setting it to 2 means "4 pages", etc.
-# Zero disables swap readahead completely.
-# The default value is three (eight pages at a time).  There may be some
-# small benefits in tuning this to a different value if your workload is
-# swap-intensive.
-# Lower values mean lower latencies for initial faults, but at the same time
-# extra faults and I/O delays for following faults if they would have been part of
-# that consecutive pages readahead would have brought in.
-page_cluster=/proc/sys/vm/page-cluster
-if [ -e $page_cluster ]; then
-	write $page_cluster "0"		
-	sendToLog "page_cluster=0"
-fi;
+	vfs_cache_pressure=/proc/sys/vm/vfs_cache_pressure
+	if [ -e $vfs_cache_pressure ]; then
+		if [ "$1" = "1" ]; then
+			write $vfs_cache_pressure "20"		
+			sendToLog "vfs_cache_pressure=20"
+		elif [ "$1" = "2" ]; then
+			write $vfs_cache_pressure "75"		
+			sendToLog "vfs_cache_pressure=75"
+		elif [ "$1" = "3" ]; then
+			write $vfs_cache_pressure "100"		
+			sendToLog "vfs_cache_pressure=100"
+		fi
+	fi
 
-# vm.dirty_expire_centisecs is how long something can be in cache
-# before it needs to be written.
-# When the pdflush/flush/kdmflush processes kick in they will
-# check to see how old a dirty page is, and if it’s older than this value it’ll
-# be written asynchronously to disk. Since holding a dirty page in memory is
-# unsafe this is also a safeguard against data loss.
-dirty_expire_centisecs=/proc/sys/vm/dirty_expire_centisecs
-if [ -e $dirty_expire_centisecs ]; then
-	write $dirty_expire_centisecs "500"		
-	sendToLog "dirty_expire_centisecs=500"
-fi;
+	laptop_mode=/proc/sys/vm/laptop_mode
+	if [ -e $laptop_mode ]; then
+		write $laptop_mode "0"		
+		sendToLog "laptop_mode=0"
+	fi;
 
-# vm.dirty_writeback_centisecs is how often the pdflush/flush/kdmflush processes wake up
-# and check to see if work needs to be done.
-dirty_writeback_centisecs=/proc/sys/vm/dirty_writeback_centisecs
-if [ -e $dirty_writeback_centisecs ]; then
-	write $dirty_writeback_centisecs "2000"		
-	sendToLog "dirty_writeback_centisecs=2000"
-fi;
+	# page-cluster controls the number of pages up to which consecutive pages
+	# are read in from swap in a single attempt. This is the swap counterpart
+	# to page cache readahead.
+	# The mentioned consecutivity is not in terms of virtual/physical addresses,
+	# but consecutive on swap space - that means they were swapped out together.
+	# It is a logarithmic value - setting it to zero means "1 page", setting
+	# it to 1 means "2 pages", setting it to 2 means "4 pages", etc.
+	# Zero disables swap readahead completely.
+	# The default value is three (eight pages at a time).  There may be some
+	# small benefits in tuning this to a different value if your workload is
+	# swap-intensive.
+	# Lower values mean lower latencies for initial faults, but at the same time
+	# extra faults and I/O delays for following faults if they would have been part of
+	# that consecutive pages readahead would have brought in.
+	page_cluster=/proc/sys/vm/page-cluster
+	if [ -e $page_cluster ]; then
+		write $page_cluster "0"		
+		sendToLog "page_cluster=0"
+	fi;
 
-# vm.dirty_background_ratio is the percentage of system memory(RAM)
-# that can be filled with “dirty” pages — memory pages that
-# still need to be written to disk — before the pdflush/flush/kdmflush
-# background processes kick in to write it to disk.
-# It can be 50% or less of dirtyRatio
-# If ( dirty_background_ratio >= dirty_ratio ) {
-# dirty_background_ratio = dirty_ratio / 2 (or 4)
-dirty_background_ratio=/proc/sys/vm/dirty_background_ratio
-if [ -e $dirty_background_ratio ]; then
-	write $dirty_background_ratio "5"		
-	sendToLog "dirty_background_ratio=5"
-fi;
+	# vm.dirty_expire_centisecs is how long something can be in cache
+	# before it needs to be written.
+	# When the pdflush/flush/kdmflush processes kick in they will
+	# check to see how old a dirty page is, and if it’s older than this value it’ll
+	# be written asynchronously to disk. Since holding a dirty page in memory is
+	# unsafe this is also a safeguard against data loss.
+	dirty_expire_centisecs=/proc/sys/vm/dirty_expire_centisecs
+	if [ -e $dirty_expire_centisecs ]; then
+		if [ "$1" = "1" ]; then
+			write $dirty_expire_centisecs "500"		
+			sendToLog "dirty_expire_centisecs=500"
+		elif [ "$1" = "2" ]; then
+			write $dirty_expire_centisecs "250"		
+			sendToLog "dirty_expire_centisecs=250"
+		elif [ "$1" = "3" ]; then
+			write $dirty_expire_centisecs "250"		
+			sendToLog "dirty_expire_centisecs=250"
+		fi
+	fi;
 
-# vm.dirty_ratio is the absolute maximum amount of system memory
-# that can be filled with dirty pages before everything must get committed to disk.
-# When the system gets to this point all new I/O blocks until dirty pages
-# have been written to disk. This is often the source of long I/O pauses,
-# but is a safeguard against too much data being cached unsafely in memory.
-dirty_ratio=/proc/sys/vm/dirty_ratio
-if [ -e $dirty_ratio ]; then
-	write $dirty_ratio "10"		
-	sendToLog "dirty_ratio=10"
-fi;
+	# vm.dirty_writeback_centisecs is how often the pdflush/flush/kdmflush processes wake up
+	# and check to see if work needs to be done.
+	dirty_writeback_centisecs=/proc/sys/vm/dirty_writeback_centisecs
+	if [ -e $dirty_writeback_centisecs ]; 
+		if [ "$1" = "1" ]; then
+			write $dirty_writeback_centisecs "5000"		
+			sendToLog "dirty_writeback_centisecs=5000"
+		elif [ "$1" = "2" ]; then
+			write $dirty_writeback_centisecs "3000"		
+			sendToLog "dirty_writeback_centisecs=3000"
+		elif [ "$1" = "3" ]; then
+			write $dirty_writeback_centisecs "750"		
+			sendToLog "dirty_writeback_centisecs=750"
+		fi
+	fi
 
-sendToLog "Balanced virtual memory tweaks activated"
-sendToLog "$divider";
-}
+	# vm.dirty_background_ratio is the percentage of system memory(RAM)
+	# that can be filled with “dirty” pages — memory pages that
+	# still need to be written to disk — before the pdflush/flush/kdmflush
+	# background processes kick in to write it to disk.
+	# It can be 50% or less of dirtyRatio
+	# If ( dirty_background_ratio >= dirty_ratio ) {
+	# dirty_background_ratio = dirty_ratio / 2 (or 4)
+	dirty_background_ratio=/proc/sys/vm/dirty_background_ratio
+	if [ -e $dirty_background_ratio ]; then
+		if [ "$1" = "1" ]; then
+			write $dirty_background_ratio "10"		
+			sendToLog "dirty_background_ratio=10"
+		elif [ "$1" = "2" ]; then
+			write $dirty_background_ratio "5"		
+			sendToLog "dirty_background_ratio=5"
+		elif [ "$1" = "3" ]; then
+			write $dirty_background_ratio "2"		
+			sendToLog "dirty_background_ratio=2"
+		fi
+	fi
 
-virtualMemoryTweaksBattery() {
-sendToLog "Activating battery virtual memory tweaks..."
+	# vm.dirty_ratio is the absolute maximum amount of system memory
+	# that can be filled with dirty pages before everything must get committed to disk.
+	# When the system gets to this point all new I/O blocks until dirty pages
+	# have been written to disk. This is often the source of long I/O pauses,
+	# but is a safeguard against too much data being cached unsafely in memory.
+	dirty_ratio=/proc/sys/vm/dirty_ratio
+	if [ -e $dirty_ratio ]; then
+		if [ "$1" = "1" ]; then
+			write $dirty_ratio "20"		
+			sendToLog "dirty_ratio=20"
+		elif [ "$1" = "2" ]; then
+			write $dirty_ratio "20"		
+			sendToLog "dirty_ratio=20"
+		elif [ "$1" = "3" ]; then
+			write $dirty_ratio "10"		
+			sendToLog "dirty_ratio=10"
+		fi
+	fi
 
-sync
-
-leases_enable=/proc/sys/fs/leases-enable
-if [ -e $leases_enable ]; then
-	write $leases_enable "1"		
-	sendToLog "leases_enable=1"
-fi;
-
-# This file specifies the grace period (in seconds) that the kernel grants
-# to a process holding a file lease after it has sent a signal to that process
-# notifying it that another process is waiting to open the file.
-# If the lease holder does not remove or downgrade the lease within this grace period,
-# the kernel forcibly breaks the lease.
-
-lease_break_time=/proc/sys/fs/lease-break-time
-if [ -e $lease_break_time ]; then
-	write $lease_break_time "20"		
-	sendToLog "lease_break_time=20"
-fi;
-
-# dnotify is a signal used to notify a process about file/directory changes.
-dir_notify_enable=/proc/sys/fs/dir-notify-enable
-if [ -e $dir_notify_enable ]; then
-	write $dir_notify_enable "0"		
-	sendToLog "dir_notify_enable=0"
-fi;
-
-sendToLog "File system parameters are updated"
-
-enable_process_reclaim=/sys/module/process_reclaim/parameters/enable_process_reclaim
-if [ -e $enable_process_reclaim ]; then
-	write $enable_process_reclaim "0"		
-	sendToLog "Reclaiming pages of inactive tasks disabled"
-fi;
-
-# This parameter tells how much of physical RAM to take when swap is full
-overcommit_ratio=/proc/sys/vm/overcommit_ratio
-if [ -e overcommit_ratio ]; then
-	write $overcommit_ratio "25"		
-	sendToLog "overcommit_ratio=25"
-fi;
-
-oom_dump_tasks=/proc/sys/vm/oom_dump_tasks
-if [ -e $oom_dump_tasks ]; then
-	write $oom_dump_tasks "0"		
-	sendToLog "OOM dump tasks are disabled"
-fi;
-
-vfs_cache_pressure=/proc/sys/vm/vfs_cache_pressure
-if [ -e $vfs_cache_pressure ]; then
-	write $vfs_cache_pressure "50"		
-	sendToLog "vfs_cache_pressure=50"
-fi;
-
-laptop_mode=/proc/sys/vm/laptop_mode
-if [ -e $laptop_mode ]; then
-	write $laptop_mode "0"		
-	sendToLog "laptop_mode=0"
-fi;
-
-# page-cluster controls the number of pages up to which consecutive pages
-# are read in from swap in a single attempt. This is the swap counterpart
-# to page cache readahead.
-# The mentioned consecutivity is not in terms of virtual/physical addresses,
-# but consecutive on swap space - that means they were swapped out together.
-# It is a logarithmic value - setting it to zero means "1 page", setting
-# it to 1 means "2 pages", setting it to 2 means "4 pages", etc.
-# Zero disables swap readahead completely.
-# The default value is three (eight pages at a time).  There may be some
-# small benefits in tuning this to a different value if your workload is
-# swap-intensive.
-# Lower values mean lower latencies for initial faults, but at the same time
-# extra faults and I/O delays for following faults if they would have been part of
-# that consecutive pages readahead would have brought in.
-page_cluster=/proc/sys/vm/page-cluster
-if [ -e $page_cluster ]; then
-	write $page_cluster "0"		
-	sendToLog "page_cluster=0"
-fi;
-
-# vm.dirty_expire_centisecs is how long something can be in cache
-# before it needs to be written.
-# When the pdflush/flush/kdmflush processes kick in they will
-# check to see how old a dirty page is, and if it’s older than this value it’ll
-# be written asynchronously to disk. Since holding a dirty page in memory is
-# unsafe this is also a safeguard against data loss.
-dirty_expire_centisecs=/proc/sys/vm/dirty_expire_centisecs
-if [ -e $dirty_expire_centisecs ]; then
-	write $dirty_expire_centisecs "1000"		
-	sendToLog "dirty_expire_centisecs=1000"
-fi;
-
-# vm.dirty_writeback_centisecs is how often the pdflush/flush/kdmflush processes wake up
-# and check to see if work needs to be done.
-dirty_writeback_centisecs=/proc/sys/vm/dirty_writeback_centisecs
-if [ -e $dirty_writeback_centisecs ]; then
-	write $dirty_writeback_centisecs "3000"		
-	sendToLog "dirty_writeback_centisecs=3000"
-fi;
-
-# vm.dirty_background_ratio is the percentage of system memory(RAM)
-# that can be filled with “dirty” pages — memory pages that
-# still need to be written to disk — before the pdflush/flush/kdmflush
-# background processes kick in to write it to disk.
-# It can be 50% or less of dirtyRatio
-# If ( dirty_background_ratio >= dirty_ratio ) {
-# dirty_background_ratio = dirty_ratio / 2 (or 4)
-dirty_background_ratio=/proc/sys/vm/dirty_background_ratio
-if [ -e $dirty_background_ratio ]; then
-	write $dirty_background_ratio "10"		
-	sendToLog "dirty_background_ratio=10"
-fi;
-
-# vm.dirty_ratio is the absolute maximum amount of system memory
-# that can be filled with dirty pages before everything must get committed to disk.
-# When the system gets to this point all new I/O blocks until dirty pages
-# have been written to disk. This is often the source of long I/O pauses,
-# but is a safeguard against too much data being cached unsafely in memory.
-dirty_ratio=/proc/sys/vm/dirty_ratio
-if [ -e $dirty_ratio ]; then
-	write $dirty_ratio "20"		
-	sendToLog "dirty_ratio=20"
-fi;
-
-sendToLog "Battery virtual memory tweaks activated"
-sendToLog "$divider";
-}
-
-virtualMemoryTweaksPerformance() {
-sendToLog "Activating performance virtual memory tweaks..."
-
-sync
-
-leases_enable=/proc/sys/fs/leases-enable
-if [ -e $leases_enable ]; then
-	write $leases_enable "1"
-	sendToLog "leases_enable=1"
-fi;
-
-# This file specifies the grace period (in seconds) that the kernel grants
-# to a process holding a file lease after it has sent a signal to that process
-# notifying it that another process is waiting to open the file.
-# If the lease holder does not remove or downgrade the lease within this grace period,
-# the kernel forcibly breaks the lease.
-
-lease_break_time=/proc/sys/fs/lease-break-time
-if [ -e $lease_break_time ]; then
-	write $lease_break_time "20"
-	sendToLog "lease_break_time=20"
-fi;
-
-# dnotify is a signal used to notify a process about file/directory changes.
-dir_notify_enable=/proc/sys/fs/dir-notify-enable
-if [ -e $dir_notify_enable ]; then
-	write $dir_notify_enable "0"
-	sendToLog "dir_notify_enable=0"
-fi;
-
-sendToLog "File system parameters are updated"
-
-enable_process_reclaim=/sys/module/process_reclaim/parameters/enable_process_reclaim
-if [ -e $enable_process_reclaim ]; then
-	write $enable_process_reclaim "0"
-	sendToLog "Reclaiming pages of inactive tasks disabled"
-fi;
-
-# This parameter tells how much of physical RAM to take when swap is full
-overcommit_ratio=/proc/sys/vm/overcommit_ratio
-if [ -e $overcommit_ratio ]; then
-	write $overcommit_ratio "0"
-	sendToLog "overcommit_ratio=0"
-fi;
-
-oom_dump_tasks=/proc/sys/vm/oom_dump_tasks
-if [ -e $oom_dump_tasks ]; then
-	write $oom_dump_tasks "0"
-	sendToLog "oom_dump_tasks=0"
-fi;
-
-vfs_cache_pressure=/proc/sys/vm/vfs_cache_pressure
-if [ -e $vfs_cache_pressure ]; then
-	write $vfs_cache_pressure "80"
-	sendToLog "vfs_cache_pressure=80"
-fi;
-
-laptop_mode=/proc/sys/vm/laptop_mode
-if [ -e $laptop_mode ]; then
-	write $laptop_mode "0"
-	sendToLog "laptop_mode=0"
-fi;
-
-# page-cluster controls the number of pages up to which consecutive pages
-# are read in from swap in a single attempt. This is the swap counterpart
-# to page cache readahead.
-# The mentioned consecutivity is not in terms of virtual/physical addresses,
-# but consecutive on swap space - that means they were swapped out together.
-# It is a logarithmic value - setting it to zero means "1 page", setting
-# it to 1 means "2 pages", setting it to 2 means "4 pages", etc.
-# Zero disables swap readahead completely.
-# The default value is three (eight pages at a time).  There may be some
-# small benefits in tuning this to a different value if your workload is
-# swap-intensive.
-# Lower values mean lower latencies for initial faults, but at the same time
-# extra faults and I/O delays for following faults if they would have been part of
-# that consecutive pages readahead would have brought in.
-page_cluster=/proc/sys/vm/page-cluster
-if [ -e $page_cluster ]; then
-	write $page_cluster "0"
-	sendToLog "page_cluster=0"
-fi;
-
-# vm.dirty_expire_centisecs is how long something can be in cache
-# before it needs to be written.
-# When the pdflush/flush/kdmflush processes kick in they will
-# check to see how old a dirty page is, and if it’s older than this value it’ll
-# be written asynchronously to disk. Since holding a dirty page in memory is
-# unsafe this is also a safeguard against data loss.
-dirty_expire_centisecs=/proc/sys/vm/dirty_expire_centisecs
-if [ -e $dirty_expire_centisecs ]; then
-	write $dirty_expire_centisecs "300"
-	sendToLog "dirty_expire_centisecs=300"
-fi;
-
-# vm.dirty_writeback_centisecs is how often the pdflush/flush/kdmflush processes wake up
-# and check to see if work needs to be done.
-dirty_writeback_centisecs=/proc/sys/vm/dirty_writeback_centisecs
-if [ -e $dirty_writeback_centisecs ]; then
-	write $dirty_writeback_centisecs "500"
-	sendToLog "dirty_writeback_centisecs=500"
-fi;
-
-# vm.dirty_background_ratio is the percentage of system memory(RAM)
-# that can be filled with “dirty” pages — memory pages that
-# still need to be written to disk — before the pdflush/flush/kdmflush
-# background processes kick in to write it to disk.
-# It can be 50% or less of dirtyRatio
-# If ( dirty_background_ratio >= dirty_ratio ) {
-# dirty_background_ratio = dirty_ratio / 2 (or 4)
-dirty_background_ratio=/proc/sys/vm/dirty_background_ratio
-if [ -e $dirty_background_ratio ]; then
-	write $dirty_background_ratio "5"
-	sendToLog "dirty_background_ratio=5"
-fi;
-
-# vm.dirty_ratio is the absolute maximum amount of system memory
-# that can be filled with dirty pages before everything must get committed to disk.
-# When the system gets to this point all new I/O blocks until dirty pages
-# have been written to disk. This is often the source of long I/O pauses,
-# but is a safeguard against too much data being cached unsafely in memory.
-dirty_ratio=/proc/sys/vm/dirty_ratio
-if [ -e $dirty_ratio ]; then
-	write $dirty_ratio "10"
-	sendToLog "dirty_ratio=10"
-fi;
-
-sendToLog "Performance virtual memory tweaks activated"
-sendToLog "$divider";
+	sendToLog "Virtual memory tweaks successfully applied $profile profile"
+	sendToLog "$divider";
 }
 
 heapOptimization() {
@@ -3816,11 +3603,11 @@ elif [ "$($BUSYBOX cat "$USER_PROFILE"/swappiness)" -eq 6 ]; then
 fi
 
 if [ "$($BUSYBOX cat "$USER_PROFILE"/virtual_memory)" -eq 1 ]; then
-	virtualMemoryTweaksBattery;
+	virtualMemoryTweaks 1;
 elif [ "$($BUSYBOX cat "$USER_PROFILE"/virtual_memory)" -eq 2 ]; then
-	virtualMemoryTweaksBalanced;
+	virtualMemoryTweaks 2;
 elif [ "$($BUSYBOX cat "$USER_PROFILE"/virtual_memory)" -eq 3 ]; then
-	virtualMemoryTweaksPerformance;
+	virtualMemoryTweaks 3;
 fi
 
 if [ "$($BUSYBOX cat "$USER_PROFILE"/heap_optimization)" -eq 1 ]; then
