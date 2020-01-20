@@ -1288,8 +1288,10 @@ ioBlocksOptimization() {
 	#the buffer cache.  The default value is 32 blocks.
 	for ext4block in /sys/fs/ext4/*;
 		do 
-		write "$ext4block/inode_readahead_blks" "64"
-		sendToLog "Increased pre-read cache of ext4 in $ext4block"
+		if [ -e "$ext4block/inode_readahead_blks" ]; then
+			write "$ext4block/inode_readahead_blks" "64"
+			sendToLog "Increased pre-read cache of ext4 in $ext4block"
+		fi
 	done
 
 	blocks="/sys/block/*"
