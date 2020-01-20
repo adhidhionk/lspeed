@@ -1,8 +1,8 @@
 #!/system/bin/sh
 # L Speed tweak
 # Codename : lspeed
-version="v1.6.4-b2";
-build_date=16-1-2020;
+version="v1.6.4-b3";
+build_date=20-1-2020;
 # Developer : Paget96
 # Paypal : https://paypal.me/Paget96
 
@@ -1286,11 +1286,24 @@ ioBlocksOptimization() {
 	#number of inode table blocks that ext4's inode
 	#table readahead algorithm will pre-read into
 	#the buffer cache.  The default value is 32 blocks.
-	for ext4block in /sys/fs/ext4/*;
-		do 
-		if [ -e "$ext4block/inode_readahead_blks" ]; then
-			write "$ext4block/inode_readahead_blks" "64"
-			sendToLog "Increased pre-read cache of ext4 in $ext4block"
+	ext4blocks="/sys/fs/ext4/*"
+	for ext4block in $ext4blocks;
+		do
+		if [ "$1" = "1" ]; then
+			if [ -e "$ext4block/inode_readahead_blks" ]; then
+				write "$ext4block/inode_readahead_blks" "32"
+				sendToLog "Pre-read cache of ext4 in $ext4block set to 32"
+			fi
+		elif [ "$1" = "2" ]; then
+			if [ -e "$ext4block/inode_readahead_blks" ]; then
+				write "$ext4block/inode_readahead_blks" "32"
+				sendToLog "Pre-read cache of ext4 in $ext4block set to 32"
+			fi
+		elif [ "$1" = "3" ]; then
+			if [ -e "$ext4block/inode_readahead_blks" ]; then
+				write "$ext4block/inode_readahead_blks" "64"
+				sendToLog "Pre-read cache of ext4 in $ext4block set to 64"
+			fi
 		fi
 	done
 
@@ -1372,22 +1385,70 @@ ioBlocksOptimization() {
 		#Maximum number of kilobytes to read-ahead for filesystems on this block
 		#device.
 		if [ "$1" = "1" ]; then
-			if [ -e "$i/queue/read_ahead_kb" ]; then
-				write "$i/queue/read_ahead_kb" "128"
-				sendToLog "read_ahead_kb=128 in $i"
-			fi
+			case $i in 
+			*"/sys/block/sd"*) 
+				if [ -e "$i/queue/read_ahead_kb" ]; then
+					write "$i/queue/read_ahead_kb" "512"
+					sendToLog "read_ahead_kb=512 in $i"
+				fi
+			;;
+			*"/sys/block/dm-"*) 
+				if [ -e "$i/queue/read_ahead_kb" ]; then
+					write "$i/queue/read_ahead_kb" "512"
+					sendToLog "read_ahead_kb=512 in $i"
+				fi
+			;;
+			*) 
+				if [ -e "$i/queue/read_ahead_kb" ]; then
+					write "$i/queue/read_ahead_kb" "128"
+					sendToLog "read_ahead_kb=128 in $i"
+				fi 
+			;;
+			esac
 		
 		elif [ "$1" = "2" ]; then
-			if [ -e "$i/queue/read_ahead_kb" ]; then
-				write "$i/queue/read_ahead_kb" "128"
-				sendToLog "read_ahead_kb=128 in $i"
-			fi
+			case $i in 
+			*"/sys/block/sd"*) 
+				if [ -e "$i/queue/read_ahead_kb" ]; then
+					write "$i/queue/read_ahead_kb" "512"
+					sendToLog "read_ahead_kb=512 in $i"
+				fi
+			;;
+			*"/sys/block/dm-"*) 
+				if [ -e "$i/queue/read_ahead_kb" ]; then
+					write "$i/queue/read_ahead_kb" "512"
+					sendToLog "read_ahead_kb=512 in $i"
+				fi
+			;;
+			*) 
+				if [ -e "$i/queue/read_ahead_kb" ]; then
+					write "$i/queue/read_ahead_kb" "128"
+					sendToLog "read_ahead_kb=128 in $i"
+				fi 
+			;;
+			esac
 			
 		elif [ "$1" = "3" ]; then
-			if [ -e "$i/queue/read_ahead_kb" ]; then
-				write "$i/queue/read_ahead_kb" "256"
-				sendToLog "read_ahead_kb=256 in $i"
-			fi
+			case $i in 
+			*"/sys/block/sd"*) 
+				if [ -e "$i/queue/read_ahead_kb" ]; then
+					write "$i/queue/read_ahead_kb" "1024"
+					sendToLog "read_ahead_kb=1024 in $i"
+				fi
+			;;
+			*"/sys/block/dm-"*) 
+				if [ -e "$i/queue/read_ahead_kb" ]; then
+					write "$i/queue/read_ahead_kb" "1024"
+					sendToLog "read_ahead_kb=1024 in $i"
+				fi
+			;;
+			*) 
+				if [ -e "$i/queue/read_ahead_kb" ]; then
+					write "$i/queue/read_ahead_kb" "256"
+					sendToLog "read_ahead_kb=256 in $i"
+				fi 
+			;;
+			esac
 		fi
 		
 		# Tell scheduler that it's facing with non rotational drive to disable
@@ -2777,7 +2838,7 @@ virtualMemoryTweaks() {
 	# vm.dirty_writeback_centisecs is how often the pdflush/flush/kdmflush processes wake up
 	# and check to see if work needs to be done.
 	dirty_writeback_centisecs=/proc/sys/vm/dirty_writeback_centisecs
-	if [ -e $dirty_writeback_centisecs ]; 
+	if [ -e $dirty_writeback_centisecs ]; then
 		if [ "$1" = "1" ]; then
 			write $dirty_writeback_centisecs "5000"		
 			sendToLog "dirty_writeback_centisecs=5000"
