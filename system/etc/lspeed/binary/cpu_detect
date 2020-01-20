@@ -31,10 +31,7 @@ BUSYBOX=$LSPEED/binary/busybox
 # Create cpu_detect dir if not exists
 if [ ! -d $CPU_DETECT_DATA_DIR ]; then
 	mkdir -p $CPU_DETECT_DATA_DIR
-fi;
-
-core_count=$($BUSYBOX cat $CPU_CORE_COUNT)
-real_core_count=$($BUSYBOX cat $REAL_CPU_CORE_COUNT)	
+fi;	
 
 #######
 # Method returns the numbers of CPU cores
@@ -281,6 +278,7 @@ little=0
 
 logicalCoresListSize=$($BUSYBOX cat $LOGICAL_CORE | $BUSYBOX tr '\n' ' ' | $BUSYBOX wc -w)
 uniqueFreqListSize=$($BUSYBOX cat $UNIQUE_FREQ | $BUSYBOX tr '\n' ' ' | $BUSYBOX wc -w)
+real_core_count=$($BUSYBOX cat $REAL_CPU_CORE_COUNT)
 
 if [ "$logicalCoresListSize" -eq 3 ] && [ "$uniqueFreqListSize" -eq 3 ]; then
 
