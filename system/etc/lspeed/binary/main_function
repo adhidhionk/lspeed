@@ -1375,8 +1375,17 @@ ioBlocksOptimization() {
 	
 	sendToLog "Activating $profile I/O blocks optimization..."
 
-	blocks="/sys/block/*"
+	#This tuning parameter controls the maximum
+	#number of inode table blocks that ext4's inode
+	#table readahead algorithm will pre-read into
+	#the buffer cache.  The default value is 32 blocks.
+	for ext4block in /sys/fs/ext4/*;
+		do 
+		write "$ext4block/inode_readahead_blks" "64"
+		sendToLog "Increased pre-read cache of ext4 in $ext4block"
+	done
 
+	blocks="/sys/block/*"
 	for i in $blocks;
 		do
 		
