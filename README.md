@@ -84,6 +84,34 @@ You can pass them on any links from below (Telegram is recommended)
 If you want, you can support me over [Paypal donate](https://paypal.me/Paget96), to support my work.
 
 ## Changelog 
+**v1.6.4**
+- Changed name of DNS optimization to DNS manager
+- Added Open DNS
+- Changed applying of other DNS
+- Added closing Shell on app closing
+- Updated toggling options per profile
+- Light entropy tweak enabled on all profiles by default
+- Fixed double executing on boot
+- Updated CPU sets
+- Updated I/O block optimization
+- Increased pre-read caches of ext4 mounted blocks for performance profile
+- Reduced nr_requests to 128 for performance profile
+- Added check for path (inode_readahead_blks)
+- SD tweak removed and some stuff of it will be merged with IO optimization
+- Updated GPU Optimizer, according to qualcomm docs
+- Updated app paths to functions
+- Reconfigured stune, some tasks shouldn't prefer running on idle CPUs
+- Updated scheduler tuner 
+- Added little wait after getting CPU cores list
+- Simplified and updated virtual memory tweaks
+- Updated prefer.idle for rt
+- Updated adreno idler parameters. Enabled on all profiles
+- Fixed issue with no executing
+- Fixed issue with not detecting CPU cores list
+- Updated kernel thread freeze time
+- Added support for ondemand and optdemand
+- Reduced code size
+
 **v1.6.3**
 - Improved UI flow
 - Updated cpusets
