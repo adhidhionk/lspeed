@@ -298,21 +298,29 @@ if [ "$#" -gt 0 ]; then
 		# REGULAR CPU
 		#
 		getCurrentGovernor=$($BUSYBOX cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor)
-		regularGovernorPath="/sys/devices/system/cpu/cpufreq/$getCurrentGovernor"
-		
+		regularGovernorPath1="/sys/devices/system/cpu/cpufreq/$getCurrentGovernor"
+		regularGovernorPath2="/sys/devices/system/cpu/cpu0/cpufreq/$getCurrentGovernor"
+
 		sendToLog "REGULAR CPU located on cpu0"
 		sendToLog "Current governor on REGULAR: $getCurrentGovernor"
 		
 		if [ -e $GOVERNOR_TUNER_PRESETS/"$1"/"$getCurrentGovernor" ]; then
-			sendToLog "Changing governor parameters"
-			sh $GOVERNOR_TUNER_PRESETS/"$1"/"$getCurrentGovernor" "regular" "$regularGovernorPath"
-			sendToLog "Governor parameters successfully changed"
+			if [ -e "$regularGovernorPath1" ]; then
+				sendToLog "Changing governor parameters"
+				sh $GOVERNOR_TUNER_PRESETS/"$1"/"$getCurrentGovernor" "regular" "$regularGovernorPath1"
+				sendToLog "Governor parameters successfully changed"
+				
+			elif [ -e "$regularGovernorPath2" ]; then
+				sendToLog "Changing governor parameters"
+				sh $GOVERNOR_TUNER_PRESETS/"$1"/"$getCurrentGovernor" "regular" "$regularGovernorPath2"
+				sendToLog "Governor parameters successfully changed"
+			fi
 		else
 			sendToLog "Governor $getCurrentGovernor is not supported"
 		fi
 		
 		sendToLog "$divider"
-		unset getCurrentGovernor; unset regularGovernorPath;
+		unset getCurrentGovernor; unset regularGovernorPath1; unset regularGovernorPath2;
 	fi
 fi
 }
