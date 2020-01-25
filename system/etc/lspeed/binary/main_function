@@ -1,8 +1,8 @@
 #!/system/bin/sh
 # L Speed tweak
 # Codename : lspeed
-version="v1.6.4";
-build_date=21-1-2020;
+version="v1.6.5";
+build_date=25-1-2020;
 # Developer : Paget96
 # Paypal : https://paypal.me/Paget96
 
@@ -1397,14 +1397,26 @@ ioBlocksOptimization() {
 			case $i in 
 			*"/sys/block/sd"*) 
 				if [ -e "$i/queue/read_ahead_kb" ]; then
-					write "$i/queue/read_ahead_kb" "512"
-					sendToLog "read_ahead_kb=512 in $i"
+					write "$i/queue/read_ahead_kb" "256"
+					sendToLog "read_ahead_kb=256 in $i"
 				fi
 			;;
 			*"/sys/block/dm-"*) 
 				if [ -e "$i/queue/read_ahead_kb" ]; then
-					write "$i/queue/read_ahead_kb" "512"
-					sendToLog "read_ahead_kb=512 in $i"
+					write "$i/queue/read_ahead_kb" "256"
+					sendToLog "read_ahead_kb=256 in $i"
+				fi
+			;;
+			"/sys/block/mmcblk0") 
+				if [ -e "$i/queue/read_ahead_kb" ]; then
+					write "$i/queue/read_ahead_kb" "256"
+					sendToLog "read_ahead_kb=256 in $i"
+				fi
+			;;
+			"/sys/block/mmcblk1") 
+				if [ -e "$i/queue/read_ahead_kb" ]; then
+					write "$i/queue/read_ahead_kb" "256"
+					sendToLog "read_ahead_kb=256 in $i"
 				fi
 			;;
 			*) 
@@ -1419,14 +1431,26 @@ ioBlocksOptimization() {
 			case $i in 
 			*"/sys/block/sd"*) 
 				if [ -e "$i/queue/read_ahead_kb" ]; then
-					write "$i/queue/read_ahead_kb" "512"
-					sendToLog "read_ahead_kb=512 in $i"
+					write "$i/queue/read_ahead_kb" "256"
+					sendToLog "read_ahead_kb=256 in $i"
 				fi
 			;;
 			*"/sys/block/dm-"*) 
 				if [ -e "$i/queue/read_ahead_kb" ]; then
-					write "$i/queue/read_ahead_kb" "512"
-					sendToLog "read_ahead_kb=512 in $i"
+					write "$i/queue/read_ahead_kb" "256"
+					sendToLog "read_ahead_kb=256 in $i"
+				fi
+			;;
+			"/sys/block/mmcblk0") 
+				if [ -e "$i/queue/read_ahead_kb" ]; then
+					write "$i/queue/read_ahead_kb" "256"
+					sendToLog "read_ahead_kb=256 in $i"
+				fi
+			;;
+			"/sys/block/mmcblk1") 
+				if [ -e "$i/queue/read_ahead_kb" ]; then
+					write "$i/queue/read_ahead_kb" "256"
+					sendToLog "read_ahead_kb=256 in $i"
 				fi
 			;;
 			*) 
@@ -1441,14 +1465,27 @@ ioBlocksOptimization() {
 			case $i in 
 			*"/sys/block/sd"*) 
 				if [ -e "$i/queue/read_ahead_kb" ]; then
-					write "$i/queue/read_ahead_kb" "1024"
-					sendToLog "read_ahead_kb=1024 in $i"
+					write "$i/queue/read_ahead_kb" "512"
+					sendToLog "read_ahead_kb=512 in $i"
 				fi
+				
 			;;
 			*"/sys/block/dm-"*) 
 				if [ -e "$i/queue/read_ahead_kb" ]; then
-					write "$i/queue/read_ahead_kb" "1024"
-					sendToLog "read_ahead_kb=1024 in $i"
+					write "$i/queue/read_ahead_kb" "512"
+					sendToLog "read_ahead_kb=512 in $i"
+				fi
+			;;
+			"/sys/block/mmcblk0") 
+				if [ -e "$i/queue/read_ahead_kb" ]; then
+					write "$i/queue/read_ahead_kb" "512"
+					sendToLog "read_ahead_kb=512 in $i"
+				fi
+			;;
+			"/sys/block/mmcblk1") 
+				if [ -e "$i/queue/read_ahead_kb" ]; then
+					write "$i/queue/read_ahead_kb" "512"
+					sendToLog "read_ahead_kb=512 in $i"
 				fi
 			;;
 			*) 
