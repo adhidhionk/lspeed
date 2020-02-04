@@ -1,3 +1,28 @@
+**v1.6.5-beta3**
+- Updated IO Optimization
+- Changes list of applying options on profile change
+- Updated busybox path
+- Fixed running issues
+- Removed exit dialog
+- Improved execution time (not much but it is)
+- Updated dependencies
+- Updated execution mechanism
+- Updated CPU optimization 
+- Updated I/O optiomization
+- Updated VM tweaks
+- Fixed issues with executing on boot
+- Fixed issue with a not deleting log on a boot
+- Fixed heating issues on some devices
+- Fixed executing of Governor tuner
+- Updated and optimized app code
+- Added backup and restore function
+- Added ability to remove and save log to sdcard
+- Log view should show bottom of the log when showing it
+- Improved applying scripts
+- Fixed previously mentioned issues
+- Improved design
+- Optimized app code
+
 **v1.6.4**
 - Changed name of DNS optimization to DNS manager
 - Added Open DNS
