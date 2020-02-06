@@ -1,3 +1,14 @@
+**v1.6.5**
+- Added backup and restore function
+- Added ability to remove and save log to sdcard
+- Log view should show bottom of the log when showing it
+- Improved applying scripts
+- Updated CPU optimization, removed some things
+- Updated VM tweaks
+- Fixed previously mentioned issues
+- Improved design
+- Optimized app code
+
 **v1.6.5-beta3**
 - Updated IO Optimization
 - Changes list of applying options on profile change
