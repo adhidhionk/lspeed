@@ -1,3 +1,7 @@
+**v1.7**
+- Updated dependencies
+- Updated tweaks
+
 **v1.6.6**
 - Added backup and restore function
 - Added ability to remove and save log to sdcard

@@ -1,8 +1,8 @@
 #!/system/bin/sh
 # L Speed tweak
 # Codename : lspeed
-version="v1.6.6";
-build_date=06-Feb-2020;
+version="v1.7";
+build_date=18-Feb-2020;
 # Developer : Paget96
 # Paypal : https://paypal.me/Paget96
 
@@ -1040,12 +1040,6 @@ sendToLog "Activating battery improvements...";
 		sendToLog "Fast charge enabled";
 	fi;
 
-	scsi_disk=$($BUSYBOX ls -d /sys/class/scsi_disk/*) 2>/dev/null
-	for i in $scsi_disk; do
- 		write "$i"/cache_type "temporary none"
- 		sendToLog "Set cache type to temporary none in $i";
- 	done
-
 	if [ -e /sys/module/wakeup/parameters/enable_bluetooth_timer ]; then
 		write /sys/module/wakeup/parameters/enable_bluetooth_timer "Y"
 		write /sys/module/wakeup/parameters/enable_ipa_ws "N"
@@ -1780,8 +1774,13 @@ ioBlocksOptimization() {
 	for ext4block in $ext4blocks;
 		do
 		if [ -e "$ext4block/inode_readahead_blks" ]; then
-			write "$ext4block/inode_readahead_blks" "64"
-			sendToLog "Pre-read cache of ext4 in $ext4block set to 64"
+			if [ "$1" = "3" ]; then
+				write "$ext4block/inode_readahead_blks" "64"
+				sendToLog "Pre-read cache of ext4 in $ext4block set to 64"
+			else
+				write "$ext4block/inode_readahead_blks" "32"
+				sendToLog "Pre-read cache of ext4 in $ext4block set to 32"
+			fi
 		fi
 	done
 
@@ -1820,8 +1819,8 @@ ioBlocksOptimization() {
 		
 		elif [ "$1" = "2" ]; then
 			if [ -e "$i/queue/rq_affinity" ]; then
-				write "$i/queue/rq_affinity" "2"
-				sendToLog "rq_affinity=2 in $i"
+				write "$i/queue/rq_affinity" "1"
+				sendToLog "rq_affinity=1 in $i"
 			fi
 			
 		elif [ "$1" = "3" ]; then
@@ -3360,12 +3359,12 @@ virtualMemoryTweaks() {
 			sendToLog "dirty_writeback_centisecs=5000"
 			
 		elif [ "$1" = "2" ]; then
-			write $dirty_writeback_centisecs "3000"		
-			sendToLog "dirty_writeback_centisecs=3000"
+			write $dirty_writeback_centisecs "2000"		
+			sendToLog "dirty_writeback_centisecs=2000"
 			
 		elif [ "$1" = "3" ]; then
-			write $dirty_writeback_centisecs "1500"		
-			sendToLog "dirty_writeback_centisecs=1500"
+			write $dirty_writeback_centisecs "1000"		
+			sendToLog "dirty_writeback_centisecs=1000"
 		fi
 	fi
 
